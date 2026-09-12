@@ -2,5 +2,4 @@ streamlit
 groq
 pandas
 Pillow
-pytesseract
 plotly
