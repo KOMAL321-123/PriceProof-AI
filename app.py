@@ -27,13 +27,14 @@ st.title("🧾 PriceProof AI")
 st.subheader("Detect overpricing. Verify the price. Know your rights.")
 
 st.write(
-    "Upload a shopping receipt and let AI extract the receipt information "
-    "and automatically verify purchased items against reference prices."
+    "Upload a shopping receipt and let AI extract receipt information, "
+    "verify prices, and answer questions about your purchase."
 )
 
 st.info(
-    "⚠️ Reference prices are prototype market benchmarks, not official government prices. "
-    "Actual prices may vary by city, shop, brand, package size, date, and promotions."
+    "⚠️ Reference prices are prototype market benchmarks, not official "
+    "government prices. Actual prices may vary by city, shop, brand, "
+    "package size, date, and promotions."
 )
 
 
@@ -68,7 +69,8 @@ if groq_client:
     st.success("🟢 AI system is connected")
 else:
     st.warning(
-        "🟡 AI system is not connected. Please add GROQ_API_KEY in Streamlit Secrets."
+        "🟡 AI system is not connected. "
+        "Please add GROQ_API_KEY in Streamlit Secrets."
     )
 
 
@@ -366,13 +368,15 @@ def find_best_match(
                 database_brand
             )
 
-        # Give extra importance to brand when available
         if brand_score > 0:
+
             final_score = (
                 product_score * 0.70
                 + brand_score * 0.30
             )
+
         else:
+
             final_score = product_score
 
         if final_score > best_score:
@@ -380,7 +384,6 @@ def find_best_match(
             best_score = final_score
             best_match = row
 
-    # Minimum confidence for automatic matching
     if best_score >= 0.55:
 
         return best_match, best_score
@@ -510,6 +513,89 @@ Requirements:
     except Exception as e:
 
         return f"AI analysis could not be completed: {e}"
+
+
+# =========================================================
+# AI RECEIPT CHAT
+# =========================================================
+
+def ask_receipt_ai(
+    question,
+    receipt_data,
+    verification_results
+):
+
+    if not groq_client:
+
+        return (
+            "AI chat is unavailable because "
+            "the Groq API key is not configured."
+        )
+
+    try:
+
+        receipt_context = json.dumps(
+            receipt_data,
+            indent=2
+        )
+
+        verification_context = json.dumps(
+            verification_results,
+            indent=2
+        )
+
+        prompt = f"""
+You are PriceProof AI, an AI consumer price assistant.
+
+Answer the user's question using ONLY the receipt
+information and price verification information provided below.
+
+RECEIPT INFORMATION:
+{receipt_context}
+
+PRICE VERIFICATION RESULTS:
+{verification_context}
+
+USER QUESTION:
+{question}
+
+Rules:
+1. Answer directly and clearly.
+2. Keep the answer concise but complete.
+3. Use simple language.
+4. Do not invent missing information.
+5. If the receipt does not contain enough information,
+   clearly say that.
+6. Treat reference prices as benchmarks, not official legal prices.
+7. Do not claim that a shop committed a crime.
+8. Do not provide legal advice.
+9. If the user asks which item is most overpriced,
+   compare the percentage differences.
+10. If the user asks how much extra was paid,
+    use the calculated differences where available.
+"""
+
+        response = groq_client.chat.completions.create(
+
+            model="openai/gpt-oss-20b",
+
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+
+            temperature=0.2,
+
+            max_completion_tokens=600
+        )
+
+        return response.choices[0].message.content
+
+    except Exception as e:
+
+        return f"AI chat could not be completed: {e}"
 
 
 # =========================================================
@@ -663,6 +749,8 @@ if uploaded_file:
         # AUTOMATIC PRICE VERIFICATION
         # =================================================
 
+        verification_results = []
+
         if items:
 
             st.header(
@@ -674,8 +762,6 @@ if uploaded_file:
                 "the extracted receipt items with the "
                 "prototype reference database."
             )
-
-            verification_results = []
 
             for item in items:
 
@@ -729,6 +815,16 @@ if uploaded_file:
                                 if brand
                                 else "Not detected",
 
+                            "Matched Product":
+                                matched_row[
+                                    "product_name"
+                                ],
+
+                            "Matched Brand":
+                                matched_row[
+                                    "brand"
+                                ],
+
                             "Charged Price":
                                 float(
                                     charged_price
@@ -757,7 +853,6 @@ if uploaded_file:
                                     match_score * 100,
                                     1
                                 )
-
                         })
 
                     else:
@@ -771,6 +866,16 @@ if uploaded_file:
                                 brand
                                 if brand
                                 else "Not detected",
+
+                            "Matched Product":
+                                matched_row[
+                                    "product_name"
+                                ],
+
+                            "Matched Brand":
+                                matched_row[
+                                    "brand"
+                                ],
 
                             "Charged Price":
                                 "Not detected",
@@ -792,7 +897,6 @@ if uploaded_file:
                                     match_score * 100,
                                     1
                                 )
-
                         })
 
                 else:
@@ -806,6 +910,12 @@ if uploaded_file:
                             brand
                             if brand
                             else "Not detected",
+
+                        "Matched Product":
+                            "No match",
+
+                        "Matched Brand":
+                            "-",
 
                         "Charged Price":
                             charged_price
@@ -829,7 +939,6 @@ if uploaded_file:
                                 match_score * 100,
                                 1
                             )
-
                     })
 
 
@@ -911,16 +1020,67 @@ if uploaded_file:
                 )
 
 
-            # =================================================
-            # IMPORTANT NOTICE
-            # =================================================
-
             st.info(
                 "💡 A 'Potentially Overpriced' result means the "
                 "charged price is significantly higher than our "
                 "prototype reference benchmark. It does not by "
                 "itself prove illegal overcharging."
             )
+
+
+        # =====================================================
+        # AI CONSUMER CHAT
+        # =====================================================
+
+        st.header("💬 Ask PriceProof AI")
+
+        st.write(
+            "Ask questions about your receipt and its "
+            "price-verification results."
+        )
+
+        st.caption(
+            "Examples: "
+            "Which item is most overpriced? • "
+            "How much extra did I pay? • "
+            "Explain this receipt in simple words."
+        )
+
+        user_question = st.text_input(
+            "Enter your question",
+            placeholder="Ask something about this receipt..."
+        )
+
+        if st.button(
+            "🤖 Ask AI",
+            use_container_width=False
+        ):
+
+            if not user_question.strip():
+
+                st.warning(
+                    "Please enter a question first."
+                )
+
+            else:
+
+                with st.spinner(
+                    "AI is analyzing your receipt..."
+                ):
+
+                    answer = ask_receipt_ai(
+                        user_question,
+                        receipt_data,
+                        verification_results
+                    )
+
+                st.subheader(
+                    "💡 AI Answer"
+                )
+
+                st.info(
+                    answer
+                )
 
 
         # =====================================================
