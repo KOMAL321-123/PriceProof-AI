@@ -4,6 +4,7 @@ from PIL import Image
 from groq import Groq
 import base64
 
+
 # -----------------------------
 # Page Configuration
 # -----------------------------
@@ -34,20 +35,25 @@ def load_price_data():
 
 
 price_data = load_price_data()
+
+
 # -----------------------------
 # Groq Vision Receipt Reader
 # -----------------------------
-def extract_receipt_text_with_ai(image):
+def extract_receipt_text_with_ai(uploaded_file):
 
     if not groq_client:
         return None, "Groq API key is not configured."
 
     try:
+
         image_bytes = uploaded_file.getvalue()
 
         base64_image = base64.b64encode(
             image_bytes
         ).decode("utf-8")
+
+        file_type = uploaded_file.type
 
         response = groq_client.chat.completions.create(
             model="qwen/qwen3.8-27b",
@@ -60,33 +66,41 @@ def extract_receipt_text_with_ai(image):
                             "text": """
 Read this shopping receipt carefully.
 
-Extract all visible receipt information, especially:
-- product names
-- quantities
-- charged prices
-- total amount
+Extract all visible receipt information.
 
-Return the information as clear plain text.
+Focus especially on:
 
-Do not guess missing or unreadable information.
-If something cannot be read, say "Unreadable".
-""",
+1. Product names
+2. Quantities
+3. Individual charged prices
+4. Total amount
+5. Store name if visible
+6. Date if visible
+
+Return the extracted information in clear and readable text.
+
+Do not guess information.
+
+If something is unclear or cannot be read,
+write "Unreadable" instead.
+
+Keep the response concise.
+"""
                         },
                         {
                             "type": "image_url",
                             "image_url": {
                                 "url": (
-                                    f"data:image/jpeg;base64,"
+                                    f"data:{file_type};base64,"
                                     f"{base64_image}"
                                 )
-                            },
-                        },
-                    ],
+                            }
+                        }
+                    ]
                 }
             ],
             temperature=0.2,
-            max_completion_tokens=1000,
-            reasoning_effort="none"
+            max_completion_tokens=1000
         )
 
         extracted_text = (
@@ -97,7 +111,8 @@ If something cannot be read, say "Unreadable".
 
     except Exception as error:
 
-        return None, f"Receipt analysis failed: {error}"
+        return None, str(error)
+
 
 # -----------------------------
 # Price Comparison Function
@@ -111,21 +126,29 @@ def compare_price(charged_price, reference_price):
     ) * 100
 
     if percentage_difference >= 20:
+
         status = "Potentially Overpriced"
+
     elif percentage_difference > 0:
+
         status = "Above Reference Price"
+
     else:
+
         status = "Within Reference Range"
 
     return {
         "difference": round(difference, 2),
-        "percentage_difference": round(percentage_difference, 2),
+        "percentage_difference": round(
+            percentage_difference,
+            2
+        ),
         "status": status
     }
 
 
 # -----------------------------
-# AI Analysis Function
+# AI Price Analysis Function
 # -----------------------------
 def analyze_with_ai(
     product_name,
@@ -140,9 +163,10 @@ def analyze_with_ai(
         return "Groq API key is not configured."
 
     prompt = f"""
-You are PriceProof AI, a consumer price analysis assistant.
+You are PriceProof AI, a careful consumer
+price analysis assistant.
 
-Analyze the following price comparison:
+Analyze this price comparison:
 
 Product: {product_name}
 Charged price: PKR {charged_price:.2f}
@@ -151,14 +175,17 @@ Difference: PKR {difference:.2f}
 Percentage difference: {percentage_difference:.2f}%
 System status: {status}
 
-Give a short, clear explanation for the consumer.
+Give a short and clear explanation for the consumer.
 
 Rules:
-- Do not claim that the price is legally illegal.
+
+- Do not claim the price is legally illegal.
 - Do not invent market information.
-- Explain that the reference price is only a comparison benchmark.
-- Mention that prices can vary by shop, location, brand, quantity, date, and promotions.
-- If the charged price is significantly higher, explain why the consumer may want to verify the price.
+- The reference price is only a comparison benchmark.
+- Prices can vary by shop, location, brand,
+  quantity, date, and promotions.
+- If the charged price is significantly higher,
+  explain that the consumer may want to verify it.
 - Keep the answer concise and useful.
 """
 
@@ -170,8 +197,8 @@ Rules:
                 {
                     "role": "system",
                     "content": (
-                        "You are a careful consumer price "
-                        "verification assistant."
+                        "You are a careful consumer "
+                        "price verification assistant."
                     )
                 },
                 {
@@ -188,7 +215,9 @@ Rules:
 
     except Exception as error:
 
-        return f"AI analysis could not be completed: {error}"
+        return (
+            f"AI analysis could not be completed: {error}"
+        )
 
 
 # -----------------------------
@@ -201,9 +230,9 @@ st.subheader(
 )
 
 st.write(
-    "Upload your shopping receipt to analyze product prices, "
-    "compare them with reference market prices, and identify "
-    "potentially suspicious price differences."
+    "Upload your shopping receipt to analyze product "
+    "prices, compare them with reference market prices, "
+    "and identify potentially suspicious price differences."
 )
 
 st.divider()
@@ -223,7 +252,9 @@ uploaded_file = st.file_uploader(
 
 if uploaded_file is not None:
 
-    st.success("Receipt uploaded successfully!")
+    st.success(
+        "Receipt uploaded successfully!"
+    )
 
     image = Image.open(uploaded_file)
 
@@ -236,29 +267,44 @@ if uploaded_file is not None:
     st.divider()
 
     if st.button(
-        "🔍 Extract Receipt Text",
+        "🔍 Analyze Receipt with AI",
         type="primary"
     ):
 
-        st.subheader("📄 Extracted Receipt Text")
+        with st.spinner(
+            "AI is reading your receipt..."
+        ):
 
-        if extracted_text.strip():
+            extracted_text, error_message = (
+                extract_receipt_text_with_ai(
+                    uploaded_file
+                )
+            )
+
+        st.subheader(
+            "📄 AI Receipt Analysis"
+        )
+
+        if extracted_text:
 
             st.text_area(
                 "Receipt content",
                 extracted_text,
-                height=250
+                height=300
             )
 
             st.success(
-                "Receipt text extracted successfully!"
+                "Receipt information extracted successfully!"
             )
 
         else:
 
-            st.warning(
-                "No readable text was detected. "
-                "Please upload a clearer receipt image."
+            st.error(
+                "Receipt analysis failed."
+            )
+
+            st.caption(
+                f"Error: {error_message}"
             )
 
 
@@ -295,7 +341,9 @@ charged_price = st.number_input(
 )
 
 
-if st.button("⚖️ Compare Price"):
+if st.button(
+    "⚖️ Compare Price"
+):
 
     result = compare_price(
         charged_price,
@@ -305,18 +353,21 @@ if st.button("⚖️ Compare Price"):
     col1, col2, col3 = st.columns(3)
 
     with col1:
+
         st.metric(
             "Reference Price",
             f"PKR {reference_price:,.0f}"
         )
 
     with col2:
+
         st.metric(
             "Charged Price",
             f"PKR {charged_price:,.0f}"
         )
 
     with col3:
+
         st.metric(
             "Difference",
             f"{result['percentage_difference']:+.1f}%"
@@ -345,7 +396,9 @@ if st.button("⚖️ Compare Price"):
     # -----------------------------
     st.divider()
 
-    st.subheader("🤖 AI Price Analysis")
+    st.subheader(
+        "🤖 AI Price Analysis"
+    )
 
     if groq_client:
 
@@ -376,7 +429,9 @@ if st.button("⚖️ Compare Price"):
 # -----------------------------
 st.divider()
 
-st.subheader("🤖 Generative AI Status")
+st.subheader(
+    "🤖 Generative AI Status"
+)
 
 if groq_client:
 
@@ -387,19 +442,21 @@ if groq_client:
 else:
 
     st.warning(
-        "Groq API key is not configured yet. "
-        "We will configure it securely before deployment."
+        "Groq API key is not configured yet."
     )
 
 
 # -----------------------------
 # Reference Database
 # -----------------------------
-with st.expander("📊 Reference Price Database"):
+with st.expander(
+    "📊 Reference Price Database"
+):
 
     st.write(
         "These are prototype reference prices used "
-        "for comparison. They are not official legal prices."
+        "for comparison. They are not official "
+        "legal prices."
     )
 
     st.dataframe(
