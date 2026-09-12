@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import pytesseract
 from PIL import Image
 from groq import Groq
 
@@ -177,12 +176,6 @@ if uploaded_file is not None:
         "🔍 Extract Receipt Text",
         type="primary"
     ):
-
-        with st.spinner("Reading your receipt..."):
-
-            extracted_text = pytesseract.image_to_string(
-                image
-            )
 
         st.subheader("📄 Extracted Receipt Text")
 
