@@ -41,6 +41,7 @@ price_data = load_price_data()
 # Price Comparison Function
 # -----------------------------
 def compare_price(charged_price, reference_price):
+
     difference = charged_price - reference_price
 
     percentage_difference = (
@@ -62,10 +63,80 @@ def compare_price(charged_price, reference_price):
 
 
 # -----------------------------
+# AI Analysis Function
+# -----------------------------
+def analyze_with_ai(
+    product_name,
+    charged_price,
+    reference_price,
+    difference,
+    percentage_difference,
+    status
+):
+
+    if not groq_client:
+        return "Groq API key is not configured."
+
+    prompt = f"""
+You are PriceProof AI, a consumer price analysis assistant.
+
+Analyze the following price comparison:
+
+Product: {product_name}
+Charged price: PKR {charged_price:.2f}
+Reference price: PKR {reference_price:.2f}
+Difference: PKR {difference:.2f}
+Percentage difference: {percentage_difference:.2f}%
+System status: {status}
+
+Give a short, clear explanation for the consumer.
+
+Rules:
+- Do not claim that the price is legally illegal.
+- Do not invent market information.
+- Explain that the reference price is only a comparison benchmark.
+- Mention that prices can vary by shop, location, brand, quantity, date, and promotions.
+- If the charged price is significantly higher, explain why the consumer may want to verify the price.
+- Keep the answer concise and useful.
+"""
+
+    try:
+
+        response = groq_client.chat.completions.create(
+            model="openai/gpt-oss-20b",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a careful consumer price "
+                        "verification assistant."
+                    )
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            temperature=0.2,
+            max_completion_tokens=500,
+            include_reasoning=False
+        )
+
+        return response.choices[0].message.content
+
+    except Exception as error:
+
+        return f"AI analysis could not be completed: {error}"
+
+
+# -----------------------------
 # App Header
 # -----------------------------
 st.title("🧾 PriceProof AI")
-st.subheader("Smart Receipt-Based Price Verification")
+
+st.subheader(
+    "Smart Receipt-Based Price Verification"
+)
 
 st.write(
     "Upload your shopping receipt to analyze product prices, "
@@ -88,9 +159,6 @@ uploaded_file = st.file_uploader(
 )
 
 
-# -----------------------------
-# Receipt OCR
-# -----------------------------
 if uploaded_file is not None:
 
     st.success("Receipt uploaded successfully!")
@@ -105,11 +173,16 @@ if uploaded_file is not None:
 
     st.divider()
 
-    if st.button("🔍 Extract Receipt Text", type="primary"):
+    if st.button(
+        "🔍 Extract Receipt Text",
+        type="primary"
+    ):
 
         with st.spinner("Reading your receipt..."):
 
-            extracted_text = pytesseract.image_to_string(image)
+            extracted_text = pytesseract.image_to_string(
+                image
+            )
 
         st.subheader("📄 Extracted Receipt Text")
 
@@ -121,7 +194,9 @@ if uploaded_file is not None:
                 height=250
             )
 
-            st.success("Receipt text extracted successfully!")
+            st.success(
+                "Receipt text extracted successfully!"
+            )
 
         else:
 
@@ -132,7 +207,7 @@ if uploaded_file is not None:
 
 
 # -----------------------------
-# Price Comparison Demo
+# Price Comparison
 # -----------------------------
 st.divider()
 
@@ -152,7 +227,9 @@ product_row = price_data[
     price_data["product_name"] == selected_product
 ].iloc[0]
 
-reference_price = float(product_row["reference_price"])
+reference_price = float(
+    product_row["reference_price"]
+)
 
 charged_price = st.number_input(
     "Enter charged price (PKR)",
@@ -160,6 +237,7 @@ charged_price = st.number_input(
     value=reference_price,
     step=10.0
 )
+
 
 if st.button("⚖️ Compare Price"):
 
@@ -189,18 +267,51 @@ if st.button("⚖️ Compare Price"):
         )
 
     if result["status"] == "Potentially Overpriced":
+
         st.error(
             f"⚠️ {result['status']}"
         )
 
     elif result["status"] == "Above Reference Price":
+
         st.warning(
             f"⚠️ {result['status']}"
         )
 
     else:
+
         st.success(
             f"✅ {result['status']}"
+        )
+
+    # -----------------------------
+    # Generative AI Analysis
+    # -----------------------------
+    st.divider()
+
+    st.subheader("🤖 AI Price Analysis")
+
+    if groq_client:
+
+        with st.spinner(
+            "AI is analyzing the price difference..."
+        ):
+
+            ai_analysis = analyze_with_ai(
+                selected_product,
+                charged_price,
+                reference_price,
+                result["difference"],
+                result["percentage_difference"],
+                result["status"]
+            )
+
+        st.info(ai_analysis)
+
+    else:
+
+        st.warning(
+            "Groq API key is not configured yet."
         )
 
 
@@ -209,11 +320,16 @@ if st.button("⚖️ Compare Price"):
 # -----------------------------
 st.divider()
 
-st.subheader("🤖 Generative AI")
+st.subheader("🤖 Generative AI Status")
 
 if groq_client:
-    st.success("Groq AI is connected and ready.")
+
+    st.success(
+        "Groq AI is configured and ready."
+    )
+
 else:
+
     st.warning(
         "Groq API key is not configured yet. "
         "We will configure it securely before deployment."
@@ -226,8 +342,8 @@ else:
 with st.expander("📊 Reference Price Database"):
 
     st.write(
-        "These are prototype reference prices used for comparison. "
-        "They are not official legal prices."
+        "These are prototype reference prices used "
+        "for comparison. They are not official legal prices."
     )
 
     st.dataframe(
