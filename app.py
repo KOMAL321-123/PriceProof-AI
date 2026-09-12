@@ -29,34 +29,143 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+
+    /* Main page */
     .main {
         padding-top: 1rem;
     }
 
+    /* Hero */
     .hero {
-        padding: 25px;
-        border-radius: 18px;
-        margin-bottom: 20px;
-        border: 1px solid rgba(128,128,128,0.2);
+        padding: 34px 32px;
+        border-radius: 22px;
+        margin-bottom: 22px;
+        border: 1px solid rgba(128,128,128,0.20);
+        background: linear-gradient(
+            135deg,
+            rgba(30, 100, 255, 0.10),
+            rgba(0, 180, 140, 0.08)
+        );
     }
 
+    .hero-title {
+        font-size: 46px;
+        font-weight: 800;
+        margin-bottom: 5px;
+        letter-spacing: -1px;
+    }
+
+    .hero-subtitle {
+        font-size: 20px;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .hero-description {
+        font-size: 16px;
+        opacity: 0.80;
+        line-height: 1.6;
+    }
+
+    /* Feature cards */
+    .feature-card {
+        padding: 20px;
+        border-radius: 17px;
+        border: 1px solid rgba(128,128,128,0.18);
+        min-height: 150px;
+        margin-bottom: 10px;
+    }
+
+    .feature-icon {
+        font-size: 28px;
+        margin-bottom: 8px;
+    }
+
+    .feature-title {
+        font-size: 17px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .feature-text {
+        font-size: 14px;
+        opacity: 0.75;
+        line-height: 1.5;
+    }
+
+    /* Metric cards */
     .metric-card {
-        padding: 18px;
-        border-radius: 15px;
-        border: 1px solid rgba(128,128,128,0.2);
+        padding: 20px;
+        border-radius: 17px;
+        border: 1px solid rgba(128,128,128,0.20);
         text-align: center;
-        min-height: 120px;
+        min-height: 125px;
     }
 
     .metric-title {
         font-size: 14px;
-        opacity: 0.75;
+        opacity: 0.72;
+        margin-bottom: 7px;
     }
 
     .metric-value {
         font-size: 27px;
-        font-weight: 700;
+        font-weight: 750;
     }
+
+    /* Section labels */
+    .section-label {
+        font-size: 24px;
+        font-weight: 750;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    /* Status box */
+    .status-box {
+        padding: 18px;
+        border-radius: 16px;
+        border: 1px solid rgba(128,128,128,0.20);
+        margin: 8px 0 18px 0;
+    }
+
+    /* Small badge */
+    .badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        border: 1px solid rgba(128,128,128,0.20);
+        font-size: 13px;
+        font-weight: 600;
+        margin-right: 5px;
+    }
+
+    /* Disclaimer */
+    .disclaimer {
+        padding: 18px;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 170, 0, 0.35);
+        background: rgba(255, 170, 0, 0.07);
+        line-height: 1.6;
+        font-size: 14px;
+    }
+
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        border-right: 1px solid rgba(128,128,128,0.15);
+    }
+
+    /* Buttons */
+    .stButton > button {
+        border-radius: 10px;
+        font-weight: 650;
+    }
+
+    /* File uploader */
+    [data-testid="stFileUploader"] {
+        border-radius: 14px;
+    }
+
     </style>
     """,
     unsafe_allow_html=True
@@ -64,22 +173,112 @@ st.markdown(
 
 
 # ============================================================
-# HEADER
+# HERO HEADER
 # ============================================================
 
 st.markdown(
     """
     <div class="hero">
-        <h1>💰 PriceProof AI</h1>
-        <p>
-        AI-powered consumer price verification. Upload a receipt,
-        compare prices with benchmark data, and understand important
-        price differences.
-        </p>
+
+        <div class="badge">🤖 AI-Powered</div>
+        <div class="badge">💰 Price Verification</div>
+        <div class="badge">📊 Consumer Intelligence</div>
+
+        <div class="hero-title">
+            💰 PriceProof AI
+        </div>
+
+        <div class="hero-subtitle">
+            AI-Powered Consumer Price Verification
+        </div>
+
+        <div class="hero-description">
+            Upload a shopping receipt and let AI extract products,
+            compare prices against benchmark data, identify important
+            price differences, and generate a clear consumer-friendly
+            verification report.
+        </div>
+
     </div>
     """,
     unsafe_allow_html=True
 )
+
+
+# ============================================================
+# VALUE PROPOSITION
+# ============================================================
+
+st.markdown(
+    '<div class="section-label">🚀 What PriceProof AI Does</div>',
+    unsafe_allow_html=True
+)
+
+feature1, feature2, feature3, feature4 = st.columns(4)
+
+with feature1:
+
+    st.markdown(
+        """
+        <div class="feature-card">
+            <div class="feature-icon">🧾</div>
+            <div class="feature-title">Read Receipts</div>
+            <div class="feature-text">
+                AI extracts store information, products,
+                quantities and prices from receipt images.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+with feature2:
+
+    st.markdown(
+        """
+        <div class="feature-card">
+            <div class="feature-icon">🔎</div>
+            <div class="feature-title">Match Products</div>
+            <div class="feature-text">
+                Extracted products are matched with
+                benchmark reference data.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+with feature3:
+
+    st.markdown(
+        """
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <div class="feature-title">Compare Prices</div>
+            <div class="feature-text">
+                See charged prices, reference prices,
+                percentage differences and trends.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+with feature4:
+
+    st.markdown(
+        """
+        <div class="feature-card">
+            <div class="feature-icon">💡</div>
+            <div class="feature-title">Understand Results</div>
+            <div class="feature-text">
+                Ask AI questions and generate a simple
+                consumer verification report.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 # ============================================================
@@ -88,29 +287,57 @@ st.markdown(
 
 with st.expander("🔎 How PriceProof AI Works"):
 
-    st.markdown(
-        """
-        ### 1️⃣ Upload Receipt
-        Upload a clear receipt image.
+    step1, step2, step3 = st.columns(3)
 
-        ### 2️⃣ AI Extraction
-        AI reads store, date, products, quantities and prices.
+    with step1:
 
-        ### 3️⃣ Benchmark Matching
-        Products are matched with the reference database.
+        st.markdown(
+            """
+            ### 1️⃣ Upload
+            Upload a clear shopping receipt.
 
-        ### 4️⃣ Price Comparison
-        Charged prices are compared with benchmark prices.
+            ### 2️⃣ Extract
+            AI reads the receipt and extracts
+            products, quantities and prices.
 
-        ### 5️⃣ AI Explanation
-        AI explains important price differences.
+            ### 3️⃣ Match
+            Products are compared with benchmark data.
+            """
+        )
 
-        ### 6️⃣ Consumer Report
-        Generate and download a verification report.
+    with step2:
 
-        **Important:** Benchmark prices are reference values only.
-        A difference does not automatically prove illegal overcharging.
-        """
+        st.markdown(
+            """
+            ### 4️⃣ Analyze
+            Price differences are calculated automatically.
+
+            ### 5️⃣ Score
+            A Price Health Score summarizes the result.
+
+            ### 6️⃣ Explain
+            AI explains important differences in simple language.
+            """
+        )
+
+    with step3:
+
+        st.markdown(
+            """
+            ### 7️⃣ Ask
+            Ask your own questions about the receipt.
+
+            ### 8️⃣ Verify
+            Check receipt totals and manually verify prices.
+
+            ### 9️⃣ Report
+            Download CSV, JSON and consumer reports.
+            """
+        )
+
+    st.info(
+        "Benchmark prices are reference values only. "
+        "A price difference does not automatically prove illegal overcharging."
     )
 
 
@@ -144,7 +371,10 @@ products_df = load_products()
 # GROQ CLIENT
 # ============================================================
 
-api_key = st.secrets.get("GROQ_API_KEY", "")
+api_key = st.secrets.get(
+    "GROQ_API_KEY",
+    ""
+)
 
 if not api_key:
 
@@ -165,12 +395,17 @@ groq_client = Groq(
 # ============================================================
 
 if "receipt_data" not in st.session_state:
+
     st.session_state.receipt_data = None
 
+
 if "chat_history" not in st.session_state:
+
     st.session_state.chat_history = []
 
+
 if "processed" not in st.session_state:
+
     st.session_state.processed = False
 
 
@@ -181,14 +416,17 @@ if "processed" not in st.session_state:
 def normalize_text(text):
 
     if text is None:
+
         return ""
 
     try:
 
         if pd.isna(text):
+
             return ""
 
     except Exception:
+
         pass
 
     text = str(text).lower().strip()
@@ -208,17 +446,26 @@ def normalize_text(text):
     return text
 
 
-def safe_float(value, default=0.0):
+def safe_float(
+    value,
+    default=0.0
+):
 
     if value is None:
+
         return default
 
-    if isinstance(value, (int, float)):
+    if isinstance(
+        value,
+        (int, float)
+    ):
 
         try:
+
             return float(value)
 
         except Exception:
+
             return default
 
     text = str(value)
@@ -234,18 +481,24 @@ def safe_float(value, default=0.0):
     )
 
     if not match:
+
         return default
 
     try:
 
-        return float(match.group())
+        return float(
+            match.group()
+        )
 
     except Exception:
 
         return default
 
 
-def safe_int(value, default=1):
+def safe_int(
+    value,
+    default=1
+):
 
     number = safe_float(
         value,
@@ -264,12 +517,17 @@ def safe_int(value, default=1):
         return default
 
 
-def calculate_similarity(text1, text2):
+def calculate_similarity(
+    text1,
+    text2
+):
 
     text1 = normalize_text(text1)
+
     text2 = normalize_text(text2)
 
     if not text1 or not text2:
+
         return 0
 
     return SequenceMatcher(
@@ -285,6 +543,7 @@ def find_best_match(
 ):
 
     if products_df.empty:
+
         return None, 0
 
     product_name = normalize_text(
@@ -296,9 +555,11 @@ def find_best_match(
     )
 
     if not product_name:
+
         return None, 0
 
     best_row = None
+
     best_score = 0
 
     for _, row in products_df.iterrows():
@@ -338,6 +599,7 @@ def find_best_match(
         if final_score > best_score:
 
             best_score = final_score
+
             best_row = row
 
     return best_row, best_score
@@ -399,7 +661,9 @@ def compare_price(
 # IMAGE PREPARATION
 # ============================================================
 
-def prepare_image(uploaded_file):
+def prepare_image(
+    uploaded_file
+):
 
     image = Image.open(
         uploaded_file
@@ -633,7 +897,9 @@ def process_items(
         )
 
         reference_price = 0
+
         reference_product = ""
+
         reference_brand = ""
 
         if reference_row is not None:
@@ -688,7 +954,9 @@ def process_items(
 # AI PRICE EXPLANATION
 # ============================================================
 
-def analyze_with_ai(item):
+def analyze_with_ai(
+    item
+):
 
     prompt = f"""
 Explain this receipt price difference briefly.
@@ -889,7 +1157,9 @@ def calculate_health_score(
     )
 
 
-def get_verdict(score):
+def get_verdict(
+    score
+):
 
     if score >= 85:
 
@@ -1121,7 +1391,9 @@ def generate_consumer_report(
         "prove illegal overcharging."
     )
 
-    return "\n".join(report)
+    return "\n".join(
+        report
+    )
 
 
 # ============================================================
@@ -1130,27 +1402,65 @@ def generate_consumer_report(
 
 with st.sidebar:
 
-    st.header("⚙️ PriceProof AI")
+    st.markdown(
+        """
+        # 💰 PriceProof AI
+
+        **AI-powered consumer price verification**
+        """
+    )
+
+    st.divider()
+
+    st.markdown(
+        "### 🧠 AI Features"
+    )
 
     st.markdown(
         """
-        **Features**
-
-        ✅ AI Receipt Reading  
+        ✅ Receipt Reading  
         ✅ Product Matching  
         ✅ Price Comparison  
         ✅ Price Health Score  
         ✅ Suspicious Item Detection  
         ✅ Receipt Total Check  
         ✅ AI Explanations  
-        ✅ AI Receipt Chat  
+        ✅ AI Receipt Chat
+        """
+    )
+
+    st.markdown(
+        "### 📁 Consumer Tools"
+    )
+
+    st.markdown(
+        """
         ✅ Consumer Report  
-        ✅ CSV / JSON Export  
+        ✅ CSV Export  
+        ✅ JSON Export  
         ✅ Manual Verification
         """
     )
 
     st.divider()
+
+    if products_df.empty:
+
+        st.warning(
+            "⚠️ Reference database unavailable"
+        )
+
+    else:
+
+        st.success(
+            f"📚 {len(products_df)} reference products loaded"
+        )
+
+    st.divider()
+
+    st.caption(
+        "PriceProof AI • Hackathon Prototype"
+    )
 
     st.caption(
         "Benchmark data is for reference only."
@@ -1161,8 +1471,14 @@ with st.sidebar:
 # UPLOAD RECEIPT
 # ============================================================
 
-st.subheader(
-    "📷 Upload Your Receipt"
+st.markdown(
+    '<div class="section-label">📷 Upload Your Receipt</div>',
+    unsafe_allow_html=True
+)
+
+st.write(
+    "Start by uploading a clear receipt image. "
+    "PriceProof AI will extract and analyze the visible information."
 )
 
 uploaded_file = st.file_uploader(
@@ -1181,7 +1497,7 @@ uploaded_file = st.file_uploader(
 # ============================================================
 
 with st.expander(
-    "📚 Reference Product Database"
+    "📚 View Reference Product Database"
 ):
 
     if products_df.empty:
@@ -1245,6 +1561,11 @@ if uploaded_file is not None:
             "🤖 AI Verification"
         )
 
+        st.info(
+            "AI will extract readable receipt information "
+            "and compare it with the benchmark database."
+        )
+
         if st.button(
             "🚀 Analyze Receipt",
             type="primary",
@@ -1252,7 +1573,7 @@ if uploaded_file is not None:
         ):
 
             with st.spinner(
-                "AI is reading your receipt..."
+                "🤖 AI is reading and analyzing your receipt..."
             ):
 
                 try:
@@ -1312,6 +1633,11 @@ if (
     )
 
     st.divider()
+
+    st.markdown(
+        '<div class="section-label">📊 Verification Dashboard</div>',
+        unsafe_allow_html=True
+    )
 
     # ========================================================
     # RECEIPT INFO
@@ -1416,6 +1742,7 @@ if (
     # ========================================================
 
     potential_extra = 0
+
     potential_savings = 0
 
     for item in processed_items:
@@ -1611,7 +1938,13 @@ if (
         fig.update_layout(
             xaxis_title="Product",
             yaxis_title="Price (PKR)",
-            xaxis_tickangle=-45
+            xaxis_tickangle=-45,
+            margin=dict(
+                l=20,
+                r=20,
+                t=60,
+                b=100
+            )
         )
 
         st.plotly_chart(
@@ -1660,19 +1993,31 @@ if (
                 f"{item['percentage']:.1f}% higher"
             ):
 
-                st.write(
-                    f"**Charged:** "
-                    f"PKR {item['charged_price']:,.2f}"
-                )
+                detail1, detail2, detail3 = st.columns(3)
+
+                with detail1:
+
+                    st.metric(
+                        "Charged",
+                        f"PKR {item['charged_price']:,.2f}"
+                    )
+
+                with detail2:
+
+                    st.metric(
+                        "Reference",
+                        f"PKR {item['reference_price']:,.2f}"
+                    )
+
+                with detail3:
+
+                    st.metric(
+                        "Difference",
+                        f"{item['percentage']:.1f}%"
+                    )
 
                 st.write(
-                    f"**Reference:** "
-                    f"PKR {item['reference_price']:,.2f}"
-                )
-
-                st.write(
-                    f"**Quantity:** "
-                    f"{item['quantity']}"
+                    f"**Quantity:** {item['quantity']}"
                 )
 
                 st.write(
@@ -1706,7 +2051,7 @@ if (
         )
 
     # ========================================================
-    # MOST SUSPICIOUS ITEM
+    # MOST SIGNIFICANT DIFFERENCE
     # ========================================================
 
     st.subheader(
@@ -1738,12 +2083,13 @@ if (
 
     st.divider()
 
-    st.subheader(
-        "💬 Ask PriceProof AI"
+    st.markdown(
+        '<div class="section-label">💬 Ask PriceProof AI</div>',
+        unsafe_allow_html=True
     )
 
     st.write(
-        "Ask any question about your receipt."
+        "Ask any question about your analyzed receipt."
     )
 
     for chat in st.session_state.chat_history:
@@ -1808,8 +2154,14 @@ if (
 
     st.divider()
 
-    st.subheader(
-        "✍️ Manual Price Verification"
+    st.markdown(
+        '<div class="section-label">✍️ Manual Price Verification</div>',
+        unsafe_allow_html=True
+    )
+
+    st.write(
+        "Use this tool when you want to manually compare "
+        "a charged price with a reference price."
     )
 
     manual_col1, manual_col2, manual_col3 = st.columns(3)
@@ -1900,8 +2252,9 @@ if (
 
     st.divider()
 
-    st.subheader(
-        "📥 Download Results"
+    st.markdown(
+        '<div class="section-label">📥 Download Results</div>',
+        unsafe_allow_html=True
     )
 
     report = generate_consumer_report(
@@ -1913,8 +2266,6 @@ if (
     )
 
     download_col1, download_col2, download_col3 = st.columns(3)
-
-    # CSV
 
     with download_col1:
 
@@ -1934,8 +2285,6 @@ if (
             use_container_width=True
         )
 
-    # JSON
-
     with download_col2:
 
         json_data = json.dumps(
@@ -1952,8 +2301,6 @@ if (
             use_container_width=True
         )
 
-    # REPORT
-
     with download_col3:
 
         st.download_button(
@@ -1965,15 +2312,33 @@ if (
         )
 
     # ========================================================
-    # DISCLAIMER
+    # FINAL DISCLAIMER
     # ========================================================
 
     st.divider()
 
-    st.caption(
-        "⚠️ Disclaimer: PriceProof AI uses benchmark/reference "
-        "prices for comparison. Reference prices may differ from "
-        "actual market prices, promotions, taxes, package sizes, "
-        "or store-specific pricing. A price difference does not "
-        "automatically establish illegal overcharging."
+    st.markdown(
+        """
+        <div class="disclaimer">
+
+        <strong>⚠️ Important Disclaimer</strong><br><br>
+
+        PriceProof AI uses benchmark/reference prices for comparison.
+        Reference prices may differ from actual market prices,
+        promotions, taxes, package sizes, or store-specific pricing.
+
+        A price difference does <strong>not automatically establish
+        illegal overcharging</strong>.
+
+        PriceProof AI is designed as a consumer-awareness and
+        price-verification tool.
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        "<br><center><small>💰 PriceProof AI • AI-powered consumer price verification</small></center>",
+        unsafe_allow_html=True
     )
