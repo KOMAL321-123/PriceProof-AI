@@ -1192,8 +1192,178 @@ if uploaded_file:
 
 
         # =================================================
+        # STEP 23 — PROFESSIONAL VERIFICATION SUMMARY
+        # =================================================
+
+        items_checked = len(
+            verification_results
+        )
+
+        matched_items = sum(
+            1
+            for item in verification_results
+            if item["match_confidence"] >= 60
+        )
+
+        within_reference = sum(
+            1
+            for item in verification_results
+            if item["status"]
+            == "Within Reference Range"
+        )
+
+        above_reference = sum(
+            1
+            for item in verification_results
+            if item["status"]
+            == "Above Reference Price"
+        )
+
+        potentially_overpriced = sum(
+            1
+            for item in verification_results
+            if item["status"]
+            == "Potentially Overpriced"
+        )
+
+        not_matched = sum(
+            1
+            for item in verification_results
+            if item["status"]
+            == "No Confident Match"
+        )
+
+        potential_extra = sum(
+            max(
+                0,
+                item["difference"]
+            )
+            for item in verification_results
+        )
+
+        st.header(
+            "🏆 Price Verification Summary"
+        )
+
+        # -------------------------------------------------
+        # OVERALL RESULT
+        # -------------------------------------------------
+
+        if potentially_overpriced > 0:
+
+            st.error(
+                f"🚨 Potential Overpricing Detected — "
+                f"{potentially_overpriced} item(s) are "
+                f"potentially overpriced based on the "
+                f"current reference benchmark."
+            )
+
+        elif above_reference > 0:
+
+            st.warning(
+                f"🟡 Some Prices Are Above Reference — "
+                f"{above_reference} item(s) are above the "
+                f"current reference benchmark."
+            )
+
+        elif not_matched == items_checked:
+
+            st.info(
+                "❓ Price Verification Inconclusive — "
+                "the receipt items could not be confidently "
+                "matched with the reference database."
+            )
+
+        else:
+
+            st.success(
+                "✅ No Potential Overpricing Detected — "
+                "the matched items are within the current "
+                "reference benchmark."
+            )
+
+        st.caption(
+            "This is a benchmark-based assessment. "
+            "A flagged item does not by itself prove illegal "
+            "overcharging."
+        )
+
+        # -------------------------------------------------
+        # SUMMARY METRICS
+        # -------------------------------------------------
+
+        summary1, summary2, summary3 = st.columns(3)
+
+        with summary1:
+
+            st.metric(
+                "🧾 Items Checked",
+                items_checked
+            )
+
+        with summary2:
+
+            st.metric(
+                "🔗 Matched",
+                matched_items
+            )
+
+        with summary3:
+
+            st.metric(
+                "❓ Not Matched",
+                not_matched
+            )
+
+        summary4, summary5, summary6 = st.columns(3)
+
+        with summary4:
+
+            st.metric(
+                "✅ Within Reference",
+                within_reference
+            )
+
+        with summary5:
+
+            st.metric(
+                "🟡 Above Reference",
+                above_reference
+            )
+
+        with summary6:
+
+            st.metric(
+                "🚨 Potentially Overpriced",
+                potentially_overpriced
+            )
+
+        # -------------------------------------------------
+        # FINANCIAL IMPACT
+        # -------------------------------------------------
+
+        if potential_extra > 0:
+
+            st.info(
+                f"💰 **Potential positive price difference:** "
+                f"Rs. {round(potential_extra, 2)}"
+            )
+
+        else:
+
+            st.info(
+                "💰 No positive price difference was detected "
+                "among the verified items."
+            )
+
+
+        # =================================================
         # VERIFICATION TABLE
         # =================================================
+
+        st.subheader(
+            "📋 Detailed Verification"
+        )
 
         verification_df = pd.DataFrame(
             verification_results
@@ -1249,51 +1419,9 @@ if uploaded_file:
             "📊 Smart Price Dashboard"
         )
 
-        items_checked = len(
-            verification_results
-        )
-
-        matched_items = sum(
-
-            1
-            for item in verification_results
-            if item["match_confidence"] >= 60
-
-        )
-
-        above_reference = sum(
-
-            1
-            for item in verification_results
-            if item["percentage_difference"] > 0
-
-        )
-
-        potentially_overpriced = sum(
-
-            1
-            for item in verification_results
-            if item["status"]
-            == "Potentially Overpriced"
-
-        )
-
-        potential_extra = sum(
-
-            max(
-                0,
-                item["difference"]
-            )
-
-            for item in verification_results
-
-        )
-
-
         metric1, metric2, metric3, metric4, metric5 = (
             st.columns(5)
         )
-
 
         with metric1:
 
@@ -1302,14 +1430,12 @@ if uploaded_file:
                 items_checked
             )
 
-
         with metric2:
 
             st.metric(
                 "Matched",
                 matched_items
             )
-
 
         with metric3:
 
@@ -1318,14 +1444,12 @@ if uploaded_file:
                 above_reference
             )
 
-
         with metric4:
 
             st.metric(
                 "Potentially Overpriced",
                 potentially_overpriced
             )
-
 
         with metric5:
 
