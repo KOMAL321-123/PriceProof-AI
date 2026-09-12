@@ -22,12 +22,14 @@ st.set_page_config(
 
 
 # =========================================================
-# CUSTOM CSS — PROFESSIONAL UX
+# CUSTOM CSS
 # =========================================================
 
 st.markdown(
     """
     <style>
+
+    /* ---------- General ---------- */
 
     .stApp {
         background: #f7f9fc;
@@ -39,7 +41,8 @@ st.markdown(
         max-width: 1450px;
     }
 
-    /* ---------- HERO ---------- */
+
+    /* ---------- Hero ---------- */
 
     .hero {
         padding: 2.2rem 2.4rem;
@@ -77,7 +80,8 @@ st.markdown(
         line-height: 1.6;
     }
 
-    /* ---------- SECTION TITLES ---------- */
+
+    /* ---------- Section Titles ---------- */
 
     .section-title {
         font-size: 1.45rem;
@@ -93,7 +97,8 @@ st.markdown(
         margin-bottom: 1rem;
     }
 
-    /* ---------- FEATURE CARDS ---------- */
+
+    /* ---------- Cards ---------- */
 
     .feature-card {
         background: white;
@@ -121,8 +126,6 @@ st.markdown(
         line-height: 1.45;
         margin-top: 0.35rem;
     }
-
-    /* ---------- SUMMARY CARDS ---------- */
 
     .summary-card {
         background: white;
@@ -153,7 +156,8 @@ st.markdown(
         margin-top: 0.15rem;
     }
 
-    /* ---------- STATUS ---------- */
+
+    /* ---------- Status ---------- */
 
     .status-box {
         padding: 0.85rem 1rem;
@@ -186,14 +190,33 @@ st.markdown(
         color: #1e40af;
     }
 
-    /* ---------- UPLOAD ---------- */
+
+    /* ---------- Confidence ---------- */
+
+    .confidence-bar {
+        width: 100%;
+        height: 8px;
+        background: #e5e7eb;
+        border-radius: 20px;
+        overflow: hidden;
+        margin-top: 0.4rem;
+    }
+
+    .confidence-fill {
+        height: 100%;
+        border-radius: 20px;
+    }
+
+
+    /* ---------- Upload ---------- */
 
     [data-testid="stFileUploader"] {
         background: white;
         border-radius: 16px;
     }
 
-    /* ---------- BUTTONS ---------- */
+
+    /* ---------- Buttons ---------- */
 
     .stButton > button {
         border-radius: 10px;
@@ -205,20 +228,23 @@ st.markdown(
         font-weight: 650;
     }
 
-    /* ---------- TABLE ---------- */
+
+    /* ---------- Tables ---------- */
 
     [data-testid="stDataFrame"] {
         border-radius: 12px;
         overflow: hidden;
     }
 
-    /* ---------- SIDEBAR ---------- */
+
+    /* ---------- Sidebar ---------- */
 
     [data-testid="stSidebar"] {
         background: #ffffff;
     }
 
-    /* ---------- FOOTER ---------- */
+
+    /* ---------- Footer ---------- */
 
     .footer {
         text-align: center;
@@ -228,7 +254,8 @@ st.markdown(
         margin-top: 2rem;
     }
 
-    /* ---------- MOBILE ---------- */
+
+    /* ---------- Mobile ---------- */
 
     @media (max-width: 768px) {
 
@@ -254,33 +281,35 @@ st.markdown(
 
 
 # =========================================================
-# HERO
+# HIDDEN / OPTIONAL ABOUT SECTION
 # =========================================================
 
-st.markdown(
-    """
-    <div class="hero">
+with st.expander("ℹ️ About PriceProof AI"):
 
-        <div>
-            <span class="hero-badge">🤖 AI-POWERED</span>
-            <span class="hero-badge">🧾 RECEIPT ANALYSIS</span>
-            <span class="hero-badge">📊 PRICE VERIFICATION</span>
+    st.markdown(
+        """
+        <div class="hero">
+
+            <div>
+                <span class="hero-badge">🤖 AI-POWERED</span>
+                <span class="hero-badge">🧾 RECEIPT ANALYSIS</span>
+                <span class="hero-badge">📊 PRICE VERIFICATION</span>
+            </div>
+
+            <div class="hero-title">
+                PriceProof AI
+            </div>
+
+            <div class="hero-subtitle">
+                Upload a receipt, let AI understand the products and prices,
+                and instantly review how the charged prices compare with
+                benchmark data.
+            </div>
+
         </div>
-
-        <div class="hero-title">
-            PriceProof AI
-        </div>
-
-        <div class="hero-subtitle">
-            Upload a receipt, let AI understand the products and prices,
-            and instantly review how the charged prices compare with
-            benchmark data.
-        </div>
-
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+        """,
+        unsafe_allow_html=True
+    )
 
 
 # =========================================================
@@ -293,7 +322,9 @@ st.markdown(
 )
 
 st.markdown(
-    '<div class="section-description">A simple workflow from receipt upload to price verification.</div>',
+    '<div class="section-description">'
+    'A simple workflow from receipt upload to price verification.'
+    '</div>',
     unsafe_allow_html=True
 )
 
@@ -331,9 +362,19 @@ for col, feature in zip(feature_cols, features):
         st.markdown(
             f"""
             <div class="feature-card">
-                <div class="feature-icon">{icon}</div>
-                <div class="feature-title">{title}</div>
-                <div class="feature-text">{text}</div>
+
+                <div class="feature-icon">
+                    {icon}
+                </div>
+
+                <div class="feature-title">
+                    {title}
+                </div>
+
+                <div class="feature-text">
+                    {text}
+                </div>
+
             </div>
             """,
             unsafe_allow_html=True
@@ -490,19 +531,14 @@ def prepare_image(image):
 
     if max(image.size) > max_size:
 
-        ratio = (
-            max_size /
-            max(image.size)
-        )
+        ratio = max_size / max(image.size)
 
         new_size = (
             int(image.width * ratio),
             int(image.height * ratio)
         )
 
-        image = image.resize(
-            new_size
-        )
+        image = image.resize(new_size)
 
     return image
 
@@ -534,8 +570,7 @@ def extract_receipt(image):
     if groq_client is None:
 
         return {
-            "error":
-            "Groq API key is not configured."
+            "error": "Groq API key is not configured."
         }
 
     image = prepare_image(image)
@@ -585,18 +620,21 @@ Rules:
                 {
                     "role": "user",
                     "content": [
+
                         {
                             "type": "text",
                             "text": prompt
                         },
+
                         {
                             "type": "image_url",
                             "image_url": {
                                 "url":
-                                "data:image/jpeg;base64,"
-                                + image_base64
+                                    "data:image/jpeg;base64,"
+                                    + image_base64
                             }
                         }
+
                     ]
                 }
             ],
@@ -617,9 +655,7 @@ Rules:
             .content
         )
 
-        return json.loads(
-            content
-        )
+        return json.loads(content)
 
     except Exception as e:
 
@@ -687,7 +723,7 @@ def match_product(product_name):
 
 
 # =========================================================
-# REFERENCE PRICE EXTRACTION
+# REFERENCE PRICE
 # =========================================================
 
 def get_reference_price(reference_row):
@@ -764,16 +800,12 @@ def process_items(receipt_data):
             )
         )
 
-        reference_row, confidence = (
-            match_product(
-                product_name
-            )
+        reference_row, confidence = match_product(
+            product_name
         )
 
-        reference_price = (
-            get_reference_price(
-                reference_row
-            )
+        reference_price = get_reference_price(
+            reference_row
         )
 
         difference = (
@@ -843,8 +875,8 @@ def explain_price(item):
     if groq_client is None:
 
         return (
-            "AI explanation is unavailable "
-            "because the Groq API key is not configured."
+            "AI explanation is unavailable because "
+            "the Groq API key is not configured."
         )
 
     prompt = f"""
@@ -891,9 +923,7 @@ Do not make legal accusations.
 
     except Exception as e:
 
-        return (
-            f"AI explanation unavailable: {e}"
-        )
+        return f"AI explanation unavailable: {e}"
 
 
 # =========================================================
@@ -977,9 +1007,7 @@ Rules:
 
     except Exception as e:
 
-        return (
-            f"AI response unavailable: {e}"
-        )
+        return f"AI response unavailable: {e}"
 
 
 # =========================================================
@@ -1028,9 +1056,7 @@ def calculate_health_score(items):
 
             item_score = 25
 
-        scores.append(
-            item_score
-        )
+        scores.append(item_score)
 
     return round(
         sum(scores) /
@@ -1156,29 +1182,22 @@ def generate_report():
     report.append("")
 
     report.append(
-        f"Store: "
-        f"{receipt.get('store', 'Unknown')}"
+        f"Store: {receipt.get('store', 'Unknown')}"
     )
 
     report.append(
-        f"Date: "
-        f"{receipt.get('date', 'Unknown')}"
+        f"Date: {receipt.get('date', 'Unknown')}"
     )
 
     report.append(
         f"Receipt Total: "
-        f"{receipt.get('receipt_total', 0):,.2f}"
+        f"{safe_float(receipt.get('receipt_total', 0)):,.2f}"
     )
 
     report.append("")
 
-    report.append(
-        "PRICE HEALTH"
-    )
-
-    report.append(
-        "-" * 30
-    )
+    report.append("PRICE HEALTH")
+    report.append("-" * 30)
 
     report.append(
         f"Score: {score}/100"
@@ -1190,13 +1209,8 @@ def generate_report():
 
     report.append("")
 
-    report.append(
-        "PRODUCT ANALYSIS"
-    )
-
-    report.append(
-        "-" * 30
-    )
+    report.append("PRODUCT ANALYSIS")
+    report.append("-" * 30)
 
     for item in items:
 
@@ -1230,9 +1244,7 @@ def generate_report():
         "RECEIPT TOTAL CHECK"
     )
 
-    report.append(
-        "-" * 30
-    )
+    report.append("-" * 30)
 
     report.append(
         f"Receipt total: "
@@ -1257,9 +1269,7 @@ def generate_report():
         "overcharging."
     )
 
-    return "\n".join(
-        report
-    )
+    return "\n".join(report)
 
 
 # =========================================================
@@ -1347,7 +1357,9 @@ with st.sidebar:
 # =========================================================
 
 st.markdown(
-    '<div class="section-title">📷 Upload Your Receipt</div>',
+    '<div class="section-title">'
+    '📷 Upload Your Receipt'
+    '</div>',
     unsafe_allow_html=True
 )
 
@@ -1382,9 +1394,7 @@ if uploaded_file is not None:
             uploaded_file
         )
 
-        st.session_state.uploaded_image = (
-            image
-        )
+        st.session_state.uploaded_image = image
 
         preview_col, action_col = st.columns(
             [1, 1.5]
@@ -1425,10 +1435,8 @@ if uploaded_file is not None:
                     "AI is reading and analyzing your receipt..."
                 ):
 
-                    receipt_data = (
-                        extract_receipt(
-                            image
-                        )
+                    receipt_data = extract_receipt(
+                        image
                     )
 
                 if "error" in receipt_data:
@@ -1441,16 +1449,12 @@ if uploaded_file is not None:
                         receipt_data["error"]
                     )
 
-                    st.session_state.analysis_complete = (
-                        False
-                    )
+                    st.session_state.analysis_complete = False
 
                 else:
 
-                    processed_items = (
-                        process_items(
-                            receipt_data
-                        )
+                    processed_items = process_items(
+                        receipt_data
                     )
 
                     st.session_state.receipt_data = (
@@ -1463,9 +1467,7 @@ if uploaded_file is not None:
 
                     st.session_state.chat_history = []
 
-                    st.session_state.analysis_complete = (
-                        True
-                    )
+                    st.session_state.analysis_complete = True
 
                     st.success(
                         "Analysis completed successfully!"
@@ -1545,13 +1547,19 @@ if st.session_state.analysis_complete:
         st.markdown(
             f"""
             <div class="summary-card">
-                <div class="summary-label">Store</div>
+
+                <div class="summary-label">
+                    Store
+                </div>
+
                 <div class="summary-value">
                     {receipt.get("store", "Unknown")}
                 </div>
+
                 <div class="summary-small">
                     Receipt merchant
                 </div>
+
             </div>
             """,
             unsafe_allow_html=True
@@ -1562,13 +1570,19 @@ if st.session_state.analysis_complete:
         st.markdown(
             f"""
             <div class="summary-card">
-                <div class="summary-label">Date</div>
+
+                <div class="summary-label">
+                    Date
+                </div>
+
                 <div class="summary-value">
                     {receipt.get("date", "Unknown")}
                 </div>
+
                 <div class="summary-small">
                     Receipt date
                 </div>
+
             </div>
             """,
             unsafe_allow_html=True
@@ -1579,13 +1593,19 @@ if st.session_state.analysis_complete:
         st.markdown(
             f"""
             <div class="summary-card">
-                <div class="summary-label">Items</div>
+
+                <div class="summary-label">
+                    Items
+                </div>
+
                 <div class="summary-value">
                     {len(items)}
                 </div>
+
                 <div class="summary-small">
                     Products detected
                 </div>
+
             </div>
             """,
             unsafe_allow_html=True
@@ -1603,13 +1623,19 @@ if st.session_state.analysis_complete:
         st.markdown(
             f"""
             <div class="summary-card">
-                <div class="summary-label">Receipt Total</div>
+
+                <div class="summary-label">
+                    Receipt Total
+                </div>
+
                 <div class="summary-value">
                     Rs. {receipt_total:,.2f}
                 </div>
+
                 <div class="summary-small">
                     Total shown on receipt
                 </div>
+
             </div>
             """,
             unsafe_allow_html=True
@@ -1711,10 +1737,10 @@ if st.session_state.analysis_complete:
     if score >= 75:
 
         st.markdown(
-            f"""
+            """
             <div class="status-box status-success">
-                ✅ Overall price pattern looks reasonable
-                based on the available benchmark data.
+                ✅ Overall price pattern looks reasonable based on
+                the available benchmark data.
             </div>
             """,
             unsafe_allow_html=True
@@ -1749,8 +1775,8 @@ if st.session_state.analysis_complete:
         st.markdown(
             """
             <div class="status-box status-info">
-                ℹ️ There is not enough reference data to
-                calculate a meaningful price health score.
+                ℹ️ There is not enough reference data to calculate
+                a meaningful price health score.
             </div>
             """,
             unsafe_allow_html=True
@@ -1804,8 +1830,8 @@ if st.session_state.analysis_complete:
         st.markdown(
             """
             <div class="status-box status-success">
-                ✅ The receipt total is consistent with
-                the detected item totals within a small tolerance.
+                ✅ The receipt total is consistent with the detected
+                item totals within a small tolerance.
             </div>
             """,
             unsafe_allow_html=True
@@ -1816,8 +1842,8 @@ if st.session_state.analysis_complete:
         st.markdown(
             """
             <div class="status-box status-warning">
-                ⚠️ The receipt total differs from the
-                calculated item total. Review the receipt details.
+                ⚠️ The receipt total differs from the calculated
+                item total. Review the receipt details.
             </div>
             """,
             unsafe_allow_html=True
@@ -2019,9 +2045,13 @@ if st.session_state.analysis_complete:
             review_items
         ):
 
-            difference_percent = (
-                item["Difference %"]
-            )
+            difference = item[
+                "Difference"
+            ]
+
+            difference_percent = item[
+                "Difference %"
+            ]
 
             with st.container(
                 border=True
@@ -2060,9 +2090,9 @@ if st.session_state.analysis_complete:
 
                 if item["Reference Price"] > 0:
 
-                    confidence = (
-                        item["Match Confidence"]
-                    )
+                    confidence = item[
+                        "Match Confidence"
+                    ]
 
                     st.caption(
                         f"Reference: Rs. "
@@ -2072,15 +2102,7 @@ if st.session_state.analysis_complete:
                     )
 
                     explanation_key = (
-                        "explain_"
-                        + str(index)
-                        + "_"
-                        + normalize_text(
-                            item["Product"]
-                        ).replace(
-                            " ",
-                            "_"
-                        )
+                        f"explain_difference_{index}"
                     )
 
                     if st.button(
@@ -2092,10 +2114,8 @@ if st.session_state.analysis_complete:
                             "AI is explaining..."
                         ):
 
-                            explanation = (
-                                explain_price(
-                                    item
-                                )
+                            explanation = explain_price(
+                                item
                             )
 
                         st.info(
@@ -2140,9 +2160,7 @@ if st.session_state.analysis_complete:
             unsafe_allow_html=True
         )
 
-        significant_cols = st.columns(
-            3
-        )
+        significant_cols = st.columns(3)
 
         with significant_cols[0]:
 
@@ -2189,15 +2207,11 @@ if st.session_state.analysis_complete:
 
     if st.session_state.chat_history:
 
-        for message in (
-            st.session_state.chat_history
-        ):
+        for message in st.session_state.chat_history:
 
             if message["role"] == "user":
 
-                with st.chat_message(
-                    "user"
-                ):
+                with st.chat_message("user"):
 
                     st.write(
                         message["content"]
@@ -2205,9 +2219,7 @@ if st.session_state.analysis_complete:
 
             else:
 
-                with st.chat_message(
-                    "assistant"
-                ):
+                with st.chat_message("assistant"):
 
                     st.write(
                         message["content"]
@@ -2226,17 +2238,13 @@ if st.session_state.analysis_complete:
             }
         )
 
-        with st.chat_message(
-            "user"
-        ):
+        with st.chat_message("user"):
 
             st.write(
                 user_question
             )
 
-        with st.chat_message(
-            "assistant"
-        ):
+        with st.chat_message("assistant"):
 
             with st.spinner(
                 "Thinking..."
@@ -2304,16 +2312,12 @@ if st.session_state.analysis_complete:
 
         if manual_product.strip():
 
-            reference_row, confidence = (
-                match_product(
-                    manual_product
-                )
+            reference_row, confidence = match_product(
+                manual_product
             )
 
-            reference_price = (
-                get_reference_price(
-                    reference_row
-                )
+            reference_price = get_reference_price(
+                reference_row
             )
 
             if reference_price > 0:
@@ -2377,8 +2381,8 @@ if st.session_state.analysis_complete:
         unsafe_allow_html=True
     )
 
-    download_col1, download_col2, download_col3 = (
-        st.columns(3)
+    download_col1, download_col2, download_col3 = st.columns(
+        3
     )
 
     results_df = pd.DataFrame(
@@ -2389,10 +2393,8 @@ if st.session_state.analysis_complete:
 
         if not results_df.empty:
 
-            csv_data = (
-                results_df.to_csv(
-                    index=False
-                )
+            csv_data = results_df.to_csv(
+                index=False
             )
 
             st.download_button(
