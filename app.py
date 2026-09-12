@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 st.set_page_config(
     page_title="PriceProof AI",
@@ -10,21 +11,25 @@ st.title("🧾 PriceProof AI")
 st.subheader("Smart Receipt-Based Price Verification")
 
 st.write(
-    "Upload your shopping receipt and use AI-powered tools "
-    "to analyze prices and identify potentially suspicious overcharging."
+    "Analyze shopping receipts, compare prices with reference market data, "
+    "and identify potentially suspicious price differences."
 )
-
-st.info("🚧 PriceProof AI is currently under development.")
 
 st.divider()
 
-st.header("📤 Upload Your Receipt")
+# Load reference price dataset
+@st.cache_data
+def load_price_data():
+    return pd.read_csv("products.csv")
 
-uploaded_file = st.file_uploader(
-    "Choose a receipt image",
-    type=["jpg", "jpeg", "png"]
+price_data = load_price_data()
+
+st.success("Reference price database loaded successfully.")
+
+st.write(f"📦 Products available: **{len(price_data)}**")
+
+st.dataframe(
+    price_data,
+    width="stretch",
+    hide_index=True
 )
-
-if uploaded_file is not None:
-    st.success("Receipt uploaded successfully!")
-    st.image(uploaded_file, caption="Uploaded Receipt", width="stretch")
