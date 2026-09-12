@@ -6,9 +6,10 @@ import base64
 import json
 
 
-# -----------------------------
-# Page Configuration
-# -----------------------------
+# =========================================================
+# PAGE CONFIGURATION
+# =========================================================
+
 st.set_page_config(
     page_title="PriceProof AI",
     page_icon="🧾",
@@ -16,9 +17,39 @@ st.set_page_config(
 )
 
 
-# -----------------------------
-# Groq Configuration
-# -----------------------------
+# =========================================================
+# HEADER
+# =========================================================
+
+st.title("🧾 PriceProof AI")
+st.subheader("Detect overpricing. Verify the price. Know your rights.")
+
+st.write(
+    "Upload a shopping receipt and let AI extract the receipt information. "
+    "You can then verify prices against our prototype reference database."
+)
+
+st.info(
+    "⚠️ Reference prices are prototype market benchmarks, not official government prices. "
+    "Actual prices may vary by city, shop, brand, package size, date, and promotions."
+)
+
+
+# =========================================================
+# LOAD REFERENCE PRICE DATABASE
+# =========================================================
+
+try:
+    price_data = pd.read_csv("products.csv")
+except Exception as e:
+    st.error(f"Could not load products.csv: {e}")
+    st.stop()
+
+
+# =========================================================
+# GROQ CLIENT
+# =========================================================
+
 groq_api_key = st.secrets.get("GROQ_API_KEY")
 
 if groq_api_key:
@@ -27,20 +58,46 @@ else:
     groq_client = None
 
 
-# -----------------------------
-# Load Reference Price Dataset
-# -----------------------------
-@st.cache_data
-def load_price_data():
-    return pd.read_csv("products.csv")
+# =========================================================
+# AI STATUS
+# =========================================================
+
+if groq_client:
+    st.success("🟢 AI system is connected")
+else:
+    st.warning(
+        "🟡 AI system is not connected. Please add GROQ_API_KEY in Streamlit Secrets."
+    )
 
 
-price_data = load_price_data()
+# =========================================================
+# RECEIPT UPLOAD
+# =========================================================
+
+st.header("📤 Upload Your Receipt")
+
+uploaded_file = st.file_uploader(
+    "Choose a receipt image",
+    type=["jpg", "jpeg", "png"],
+    help="Upload a clear photo or screenshot of your shopping receipt."
+)
 
 
-# -----------------------------
-# Groq Vision Receipt Reader
-# -----------------------------
+# =========================================================
+# REFERENCE DATABASE
+# =========================================================
+
+with st.expander("📊 View Prototype Reference Price Database"):
+    st.dataframe(
+        price_data,
+        use_container_width=True
+    )
+
+
+# =========================================================
+# AI RECEIPT EXTRACTION
+# =========================================================
+
 def extract_receipt_data(uploaded_file):
 
     if not groq_client:
@@ -48,15 +105,18 @@ def extract_receipt_data(uploaded_file):
 
     try:
 
+        # Read uploaded image
         image_bytes = uploaded_file.getvalue()
 
-        base64_image = base64.b64encode(
-            image_bytes
-        ).decode("utf-8")
+        # Convert image to base64
+        image_base64 = base64.b64encode(image_bytes).decode("utf-8")
 
+        # Get image type
         file_type = uploaded_file.type
 
+        # Vision request
         response = groq_client.chat.completions.create(
+
             model="qwen/qwen3.8-27b",
 
             messages=[
@@ -66,40 +126,38 @@ def extract_receipt_data(uploaded_file):
                         {
                             "type": "text",
                             "text": """
-Analyze this shopping receipt carefully.
+You are a receipt analysis assistant.
 
-Extract the receipt information into the required JSON structure.
+Carefully read the shopping receipt image.
 
-Important rules:
+Extract only the information that is clearly visible.
 
-1. Read product names exactly as clearly as possible.
-2. Extract the quantity for each item.
-3. Extract the charged unit price when visible.
-4. Extract the line total when visible.
-5. Extract the receipt total when visible.
-6. Extract store name and date when visible.
-7. Do not guess information.
-8. If information is not visible or cannot be read, use null.
-9. Keep numbers as numbers, not strings.
-10. Only include actual purchased items.
+Return the result using the required JSON structure.
+
+Rules:
+1. Do not invent information.
+2. If store name is not visible, use null.
+3. If date is not visible, use null.
+4. Extract every clearly visible purchased item.
+5. Extract product name exactly or as close as possible.
+6. Extract quantity when visible.
+7. Extract charged price for the item.
+8. Extract line total when visible.
+9. Extract the final receipt total when visible.
+10. Do not include currency symbols inside numeric fields.
+11. Use numbers for prices.
+12. If a value cannot be determined, use null.
 """
                         },
                         {
                             "type": "image_url",
                             "image_url": {
-                                "url": (
-                                    f"data:{file_type};base64,"
-                                    f"{base64_image}"
-                                )
+                                "url": f"data:{file_type};base64,{image_base64}"
                             }
                         }
                     ]
                 }
             ],
-
-            temperature=0.2,
-
-            max_completion_tokens=1500,
 
             response_format={
                 "type": "json_schema",
@@ -108,7 +166,6 @@ Important rules:
                     "strict": True,
                     "schema": {
                         "type": "object",
-
                         "properties": {
 
                             "store_name": {
@@ -127,10 +184,8 @@ Important rules:
 
                             "items": {
                                 "type": "array",
-
                                 "items": {
                                     "type": "object",
-
                                     "properties": {
 
                                         "product_name": {
@@ -157,15 +212,14 @@ Important rules:
                                                 "null"
                                             ]
                                         }
-                                    },
 
+                                    },
                                     "required": [
                                         "product_name",
                                         "quantity",
                                         "charged_price",
                                         "line_total"
                                     ],
-
                                     "additionalProperties": False
                                 }
                             },
@@ -176,6 +230,7 @@ Important rules:
                                     "null"
                                 ]
                             }
+
                         },
 
                         "required": [
@@ -188,58 +243,30 @@ Important rules:
                         "additionalProperties": False
                     }
                 }
-            }
+            },
+
+            temperature=0.2,
+
+            # FIXED: Groq output-token limit
+            max_completion_tokens=900
+
         )
 
-        content = response.choices[0].message.content
+        result_text = response.choices[0].message.content
 
-        receipt_data = json.loads(content)
+        result = json.loads(result_text)
 
-        return receipt_data, None
+        return result, None
 
-    except Exception as error:
+    except Exception as e:
 
-        return None, str(error)
-
-
-# -----------------------------
-# Price Comparison Function
-# -----------------------------
-def compare_price(charged_price, reference_price):
-
-    difference = charged_price - reference_price
-
-    percentage_difference = (
-        difference / reference_price
-    ) * 100
-
-    if percentage_difference >= 20:
-
-        status = "Potentially Overpriced"
-
-    elif percentage_difference > 0:
-
-        status = "Above Reference Price"
-
-    else:
-
-        status = "Within Reference Range"
-
-    return {
-        "difference": round(difference, 2),
-
-        "percentage_difference": round(
-            percentage_difference,
-            2
-        ),
-
-        "status": status
-    }
+        return None, str(e)
 
 
-# -----------------------------
-# AI Price Analysis Function
-# -----------------------------
+# =========================================================
+# AI PRICE EXPLANATION
+# =========================================================
+
 def analyze_with_ai(
     product_name,
     charged_price,
@@ -250,49 +277,38 @@ def analyze_with_ai(
 ):
 
     if not groq_client:
-        return "Groq API key is not configured."
+        return "AI analysis is unavailable because the Groq API key is not configured."
 
-    prompt = f"""
-You are PriceProof AI, a careful consumer
-price analysis assistant.
+    try:
+
+        prompt = f"""
+You are PriceProof AI, a consumer price analysis assistant.
 
 Analyze this price comparison:
 
 Product: {product_name}
-Charged price: PKR {charged_price:.2f}
-Reference price: PKR {reference_price:.2f}
-Difference: PKR {difference:.2f}
-Percentage difference: {percentage_difference:.2f}%
-System status: {status}
+Charged price: {charged_price}
+Reference price: {reference_price}
+Difference: {difference}
+Percentage difference: {percentage_difference}%
+Status: {status}
 
-Give a short and clear explanation for the consumer.
+Give a short, clear explanation for the consumer.
 
-Rules:
-
-- Do not claim that the price is legally illegal.
-- Do not invent market information.
-- The reference price is only a comparison benchmark.
-- Prices can vary by shop, location, brand,
-  quantity, date, and promotions.
-- If the charged price is significantly higher,
-  explain that the consumer may want to verify it.
-- Keep the answer concise and useful.
+Requirements:
+- Explain whether the charged price is above or within the reference benchmark.
+- Do not claim that the shop has committed a crime.
+- Do not give legal advice.
+- Mention that the reference price is only a benchmark.
+- Prices can vary because of location, shop, brand, package size, date, discounts, and promotions.
+- Keep the answer concise.
 """
 
-    try:
-
         response = groq_client.chat.completions.create(
+
             model="openai/gpt-oss-20b",
 
             messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are a careful consumer "
-                        "price verification assistant."
-                    )
-                },
-
                 {
                     "role": "user",
                     "content": prompt
@@ -301,302 +317,363 @@ Rules:
 
             temperature=0.2,
 
-            max_completion_tokens=500,
+            max_completion_tokens=500
 
-            include_reasoning=False
         )
 
         return response.choices[0].message.content
 
-    except Exception as error:
+    except Exception as e:
 
-        return (
-            f"AI analysis could not be completed: {error}"
+        return f"AI analysis could not be completed: {e}"
+
+
+# =========================================================
+# DISPLAY RECEIPT
+# =========================================================
+
+if uploaded_file:
+
+    st.header("🧾 Receipt")
+
+    try:
+
+        image = Image.open(uploaded_file)
+
+        st.image(
+            image,
+            caption="Uploaded Receipt",
+            use_container_width=True
+        )
+
+    except Exception as e:
+
+        st.error(f"Could not display the receipt image: {e}")
+        st.stop()
+
+
+    # =====================================================
+    # EXTRACT RECEIPT DATA
+    # =====================================================
+
+    st.header("🤖 AI Receipt Analysis")
+
+    with st.spinner("AI is reading your receipt..."):
+
+        receipt_data, error_message = extract_receipt_data(
+            uploaded_file
         )
 
 
-# -----------------------------
-# App Header
-# -----------------------------
-st.title("🧾 PriceProof AI")
+    # =====================================================
+    # EXTRACTION ERROR
+    # =====================================================
 
-st.subheader(
-    "Smart Receipt-Based Price Verification"
-)
+    if error_message:
 
-st.write(
-    "Upload your shopping receipt to analyze product "
-    "prices, compare them with reference market prices, "
-    "and identify potentially suspicious price differences."
-)
+        st.error("Receipt analysis failed.")
 
-st.divider()
+        st.code(error_message)
+
+        st.stop()
 
 
-# -----------------------------
-# Receipt Upload
-# -----------------------------
-st.header("📤 Upload Your Receipt")
+    # =====================================================
+    # DISPLAY EXTRACTED INFORMATION
+    # =====================================================
 
-uploaded_file = st.file_uploader(
-    "Choose a receipt image",
-    type=[
-        "jpg",
-        "jpeg",
-        "png"
-    ],
-    help="Upload a clear image of your shopping receipt."
-)
+    if receipt_data:
 
+        st.success("✅ Receipt information extracted successfully!")
 
-if uploaded_file is not None:
+        # -------------------------------------------------
+        # STORE AND DATE
+        # -------------------------------------------------
 
-    st.success(
-        "Receipt uploaded successfully!"
-    )
+        col1, col2 = st.columns(2)
 
-    image = Image.open(uploaded_file)
+        with col1:
 
-    st.image(
-        image,
-        caption="Uploaded Receipt",
-        width="stretch"
-    )
+            store_name = receipt_data.get("store_name")
 
-    st.divider()
-
-    if st.button(
-        "🔍 Analyze Receipt with AI",
-        type="primary"
-    ):
-
-        with st.spinner(
-            "AI is reading and understanding your receipt..."
-        ):
-
-            receipt_data, error_message = (
-                extract_receipt_data(
-                    uploaded_file
-                )
-            )
-
-        st.subheader(
-            "📄 AI Receipt Analysis"
-        )
-
-        if receipt_data:
-
-            # -----------------------------
-            # Receipt Summary
-            # -----------------------------
-            st.success(
-                "Receipt information extracted successfully!"
-            )
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-
-                st.write("**Store**")
-
-                st.write(
-                    receipt_data["store_name"]
-                    if receipt_data["store_name"]
-                    else "Not detected"
-                )
-
-            with col2:
-
-                st.write("**Date**")
-
-                st.write(
-                    receipt_data["date"]
-                    if receipt_data["date"]
-                    else "Not detected"
-                )
-
-            st.divider()
-
-            # -----------------------------
-            # Extracted Items
-            # -----------------------------
-            st.write("### 🛒 Purchased Items")
-
-            items = receipt_data["items"]
-
-            if items:
-
-                items_df = pd.DataFrame(items)
-
-                items_df = items_df.rename(
-                    columns={
-                        "product_name": "Product",
-                        "quantity": "Quantity",
-                        "charged_price": "Charged Price (PKR)",
-                        "line_total": "Line Total (PKR)"
-                    }
-                )
-
-                st.dataframe(
-                    items_df,
-                    width="stretch",
-                    hide_index=True
-                )
-
-            else:
-
-                st.warning(
-                    "No purchased items were detected."
-                )
-
-            # -----------------------------
-            # Total Amount
-            # -----------------------------
-            st.divider()
-
-            total_amount = (
-                receipt_data["total_amount"]
-            )
-
-            if total_amount is not None:
-
+            if store_name:
                 st.metric(
-                    "Receipt Total",
-                    f"PKR {total_amount:,.2f}"
+                    "🏪 Store",
+                    store_name
                 )
-
             else:
-
-                st.info(
-                    "Receipt total could not be detected."
+                st.metric(
+                    "🏪 Store",
+                    "Not detected"
                 )
+
+        with col2:
+
+            receipt_date = receipt_data.get("date")
+
+            if receipt_date:
+                st.metric(
+                    "📅 Date",
+                    receipt_date
+                )
+            else:
+                st.metric(
+                    "📅 Date",
+                    "Not detected"
+                )
+
+
+        # -------------------------------------------------
+        # PURCHASED ITEMS
+        # -------------------------------------------------
+
+        st.subheader("🛒 Purchased Items")
+
+        items = receipt_data.get("items", [])
+
+        if items:
+
+            items_df = pd.DataFrame(items)
+
+            st.dataframe(
+                items_df,
+                use_container_width=True
+            )
 
         else:
 
-            st.error(
-                "Receipt analysis failed."
-            )
-
-            st.caption(
-                f"Error: {error_message}"
+            st.warning(
+                "No purchased items could be detected from the receipt."
             )
 
 
-# -----------------------------
-# Price Comparison
-# -----------------------------
-st.divider()
+        # -------------------------------------------------
+        # RECEIPT TOTAL
+        # -------------------------------------------------
 
-st.header(
-    "💰 Price Comparison Engine"
-)
+        total_amount = receipt_data.get("total_amount")
 
-st.write(
-    "Test how PriceProof compares a charged price "
-    "with a reference market price."
-)
+        if total_amount is not None:
 
-selected_product = st.selectbox(
-    "Select a product",
-    price_data["product_name"].unique()
-)
-
-product_row = price_data[
-    price_data["product_name"] == selected_product
-].iloc[0]
-
-reference_price = float(
-    product_row["reference_price"]
-)
-
-charged_price = st.number_input(
-    "Enter charged price (PKR)",
-    min_value=0.0,
-    value=reference_price,
-    step=10.0
-)
+            st.metric(
+                "💰 Receipt Total",
+                f"{total_amount:,.2f}"
+            )
 
 
-if st.button(
-    "⚖️ Compare Price"
-):
+        # =================================================
+        # PRICE VERIFICATION
+        # =================================================
 
-    result = compare_price(
-        charged_price,
-        reference_price
-    )
+        st.header("🔎 Price Verification")
 
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-
-        st.metric(
-            "Reference Price",
-            f"PKR {reference_price:,.0f}"
+        st.write(
+            "Select a product from the reference database and enter "
+            "the price charged on your receipt."
         )
 
-    with col2:
+        # -------------------------------------------------
+        # PRODUCT SELECTION
+        # -------------------------------------------------
 
-        st.metric(
-            "Charged Price",
-            f"PKR {charged_price:,.0f}"
+        product_options = price_data["product_name"].tolist()
+
+        selected_product = st.selectbox(
+            "Select Product",
+            product_options
         )
 
-    with col3:
+        # Get selected product information
+        selected_rows = price_data[
+            price_data["product_name"] == selected_product
+        ]
 
-        st.metric(
-            "Difference",
-            f"{result['percentage_difference']:+.1f}%"
+        # Handle products with multiple brands
+        if len(selected_rows) > 1:
+
+            brand_options = selected_rows["brand"].tolist()
+
+            selected_brand = st.selectbox(
+                "Select Brand",
+                brand_options
+            )
+
+            selected_row = selected_rows[
+                selected_rows["brand"] == selected_brand
+            ].iloc[0]
+
+        else:
+
+            selected_row = selected_rows.iloc[0]
+
+
+        reference_price = float(
+            selected_row["reference_price"]
         )
 
-    if result["status"] == "Potentially Overpriced":
-
-        st.error(
-            f"⚠️ {result['status']}"
+        st.info(
+            f"Reference price for {selected_product}: "
+            f"**{reference_price:,.2f}**"
         )
 
-    elif result["status"] == "Above Reference Price":
 
-        st.warning(
-            f"⚠️ {result['status']}"
+        # -------------------------------------------------
+        # CHARGED PRICE
+        # -------------------------------------------------
+
+        charged_price = st.number_input(
+            "Enter Charged Price",
+            min_value=0.0,
+            value=reference_price,
+            step=1.0
         )
 
-    else:
 
-        st.success(
-            f"✅ {result['status']}"
-        )
+        # =================================================
+        # PRICE COMPARISON
+        # =================================================
 
-# -----------------------------
-# Generative AI Analysis
-# -----------------------------
-st.divider()
-
-st.subheader(
-    "🤖 AI Price Analysis"
-)
-
-if groq_client:
-
-    with st.spinner(
-        "AI is analyzing the price difference..."
-    ):
-
-        ai_analysis = analyze_with_ai(
-            selected_product,
+        def compare_price(
             charged_price,
-            reference_price,
-            result["difference"],
-            result["percentage_difference"],
-            result["status"]
+            reference_price
+        ):
+
+            difference = (
+                charged_price -
+                reference_price
+            )
+
+            percentage_difference = (
+                difference /
+                reference_price
+            ) * 100
+
+            if percentage_difference >= 20:
+
+                status = "Potentially Overpriced"
+
+            elif percentage_difference > 0:
+
+                status = "Above Reference Price"
+
+            else:
+
+                status = "Within Reference Range"
+
+            return {
+
+                "difference": round(
+                    difference,
+                    2
+                ),
+
+                "percentage_difference": round(
+                    percentage_difference,
+                    2
+                ),
+
+                "status": status
+            }
+
+
+        # Run comparison
+        result = compare_price(
+            charged_price,
+            reference_price
         )
 
-    st.info(
-        ai_analysis
-    )
 
-else:
+        # =================================================
+        # DISPLAY RESULTS
+        # =================================================
 
-    st.warning(
-        "Groq API key is not configured yet."
-    )
+        st.subheader("📊 Price Comparison")
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+
+            st.metric(
+                "Charged Price",
+                f"{charged_price:,.2f}"
+            )
+
+        with col2:
+
+            st.metric(
+                "Reference Price",
+                f"{reference_price:,.2f}"
+            )
+
+        with col3:
+
+            st.metric(
+                "Difference",
+                f"{result['difference']:,.2f}"
+            )
+
+
+        # -------------------------------------------------
+        # STATUS
+        # -------------------------------------------------
+
+        if result["status"] == "Potentially Overpriced":
+
+            st.error(
+                f"⚠️ {result['status']} "
+                f"({result['percentage_difference']}% above reference)"
+            )
+
+        elif result["status"] == "Above Reference Price":
+
+            st.warning(
+                f"⚠️ {result['status']} "
+                f"({result['percentage_difference']}% above reference)"
+            )
+
+        else:
+
+            st.success(
+                f"✅ {result['status']} "
+                f"({result['percentage_difference']}% difference)"
+            )
+
+
+        # =================================================
+        # AI EXPLANATION
+        # =================================================
+
+        st.subheader("🤖 AI Consumer Explanation")
+
+        with st.spinner(
+            "AI is analyzing the price difference..."
+        ):
+
+            ai_analysis = analyze_with_ai(
+
+                selected_product,
+
+                charged_price,
+
+                reference_price,
+
+                result["difference"],
+
+                result["percentage_difference"],
+
+                result["status"]
+            )
+
+        st.info(ai_analysis)
+
+
+# =========================================================
+# FOOTER
+# =========================================================
+
+st.divider()
+
+st.caption(
+    "PriceProof AI • GenAI-powered consumer price verification "
+    "prototype • Reference prices are for demonstration purposes."
+)
