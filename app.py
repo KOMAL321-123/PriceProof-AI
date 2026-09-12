@@ -1,5 +1,8 @@
 import streamlit as st
 import pandas as pd
+import pytesseract
+from PIL import Image
+
 
 st.set_page_config(
     page_title="PriceProof AI",
@@ -47,23 +50,46 @@ uploaded_file = st.file_uploader(
 
 
 # -----------------------------
-# Display Uploaded Receipt
+# Receipt OCR
 # -----------------------------
 if uploaded_file is not None:
 
     st.success("Receipt uploaded successfully!")
 
+    image = Image.open(uploaded_file)
+
     st.image(
-        uploaded_file,
+        image,
         caption="Uploaded Receipt",
         width="stretch"
     )
 
     st.divider()
 
-    st.info(
-        "✅ Receipt received. PriceProof AI is ready to analyze it."
-    )
+    if st.button("🔍 Extract Receipt Text", type="primary"):
+
+        with st.spinner("Reading your receipt..."):
+
+            extracted_text = pytesseract.image_to_string(image)
+
+        st.subheader("📄 Extracted Receipt Text")
+
+        if extracted_text.strip():
+
+            st.text_area(
+                "Receipt content",
+                extracted_text,
+                height=250
+            )
+
+            st.success("Receipt text extracted successfully!")
+
+        else:
+
+            st.warning(
+                "No readable text was detected. "
+                "Please upload a clearer receipt image."
+            )
 
 
 # -----------------------------
