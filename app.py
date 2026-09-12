@@ -32,7 +32,38 @@ st.write(
     "Upload a shopping receipt and let AI extract the products, "
     "compare prices with reference market data, and explain possible price differences."
 )
+# =========================================================
+# HOW PRICEPROOF AI WORKS
+# =========================================================
 
+with st.expander("🚀 How PriceProof AI Works", expanded=True):
+
+    step1, step2, step3, step4, step5 = st.columns(5)
+
+    with step1:
+        st.markdown("### 1️⃣")
+        st.markdown("**Upload Receipt**")
+        st.caption("Upload your shopping receipt.")
+
+    with step2:
+        st.markdown("### 2️⃣")
+        st.markdown("**AI Reads It**")
+        st.caption("AI extracts products and prices.")
+
+    with step3:
+        st.markdown("### 3️⃣")
+        st.markdown("**Verify Prices**")
+        st.caption("Prices are compared with reference data.")
+
+    with step4:
+        st.markdown("### 4️⃣")
+        st.markdown("**AI Explains**")
+        st.caption("AI explains suspicious differences.")
+
+    with step5:
+        st.markdown("### 5️⃣")
+        st.markdown("**Generate Report**")
+        st.caption("Create a consumer verification report.")
 
 # =========================================================
 # LOAD REFERENCE DATABASE
