@@ -567,17 +567,36 @@ if st.button(
             f"✅ {result['status']}"
         )
 
-    # -----------------------------
-    # Generative AI Analysis
-    # -----------------------------
-    st.divider()
+# -----------------------------
+# Generative AI Analysis
+# -----------------------------
+st.divider()
 
-    st.subheader(
-        "🤖 AI Price Analysis"
+st.subheader(
+    "🤖 AI Price Analysis"
+)
+
+if groq_client:
+
+    with st.spinner(
+        "AI is analyzing the price difference..."
+    ):
+
+        ai_analysis = analyze_with_ai(
+            selected_product,
+            charged_price,
+            reference_price,
+            result["difference"],
+            result["percentage_difference"],
+            result["status"]
+        )
+
+    st.info(
+        ai_analysis
     )
 
-    if groq_client:
+else:
 
-        with st.spinner(
-            "AI is analyzing
-)
+    st.warning(
+        "Groq API key is not configured yet."
+    )
