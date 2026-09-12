@@ -11,7 +11,7 @@ import plotly.express as px
 
 
 # =========================================================
-# PAGE CONFIGURATION
+# PAGE CONFIG
 # =========================================================
 
 st.set_page_config(
@@ -32,21 +32,13 @@ st.markdown("""
 .main-title {
     font-size: 42px;
     font-weight: 800;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 .subtitle {
     font-size: 18px;
     color: #666;
-    margin-top: 0px;
-}
-
-.metric-card {
-    padding: 18px;
-    border-radius: 14px;
-    border: 1px solid #ddd;
-    text-align: center;
-    background-color: rgba(128,128,128,0.05);
+    margin-top: 0;
 }
 
 .section-title {
@@ -55,16 +47,16 @@ st.markdown("""
     margin-top: 20px;
 }
 
-.small-note {
-    font-size: 13px;
-    color: #777;
-}
-
 .verdict-box {
     padding: 20px;
     border-radius: 15px;
-    margin: 10px 0px;
     border: 1px solid #ddd;
+    margin: 10px 0;
+}
+
+.small-note {
+    font-size: 13px;
+    color: #777;
 }
 
 </style>
@@ -147,13 +139,14 @@ with st.expander("🔎 How PriceProof AI Works", expanded=False):
 
 
 # =========================================================
-# LOAD REFERENCE DATABASE
+# LOAD PRODUCTS DATABASE
 # =========================================================
 
 @st.cache_data
 def load_products():
 
     try:
+
         df = pd.read_csv("products.csv")
 
         df.columns = [
@@ -167,7 +160,7 @@ def load_products():
 
         st.error(
             "Could not load products.csv. "
-            "Make sure products.csv is uploaded to the same GitHub repository."
+            "Make sure products.csv is in the same GitHub repository."
         )
 
         st.error(str(e))
@@ -182,7 +175,7 @@ if products_df.empty:
 
 
 # =========================================================
-# API CONNECTION
+# GROQ CONNECTION
 # =========================================================
 
 api_key = st.secrets.get("GROQ_API_KEY", "")
@@ -193,18 +186,22 @@ if api_key:
 
     try:
 
-        groq_client = Groq(api_key=api_key)
+        groq_client = Groq(
+            api_key=api_key
+        )
 
     except Exception as e:
 
-        st.warning("Groq API connection could not be initialized.")
+        st.warning(
+            "Groq API connection could not be initialized."
+        )
+
         st.caption(str(e))
 
 else:
 
     st.warning(
-        "⚠️ GROQ_API_KEY is not configured. "
-        "Receipt AI features will not work until the key is added to Streamlit Secrets."
+        "⚠️ GROQ_API_KEY is not configured."
     )
 
 
@@ -232,19 +229,20 @@ with st.sidebar:
     st.write("📊 Price Health Score")
     st.write("💬 AI Consumer Chat")
     st.write("📄 Consumer Report")
-    st.write("📥 Data Export")
+    st.write("📥 CSV / JSON Export")
+    st.write("⚡ Manual Verification")
 
     st.divider()
 
     st.caption(
-        "PriceProof AI is a prototype benchmark tool. "
-        "Reference prices may vary by store, location, date, "
-        "brand, quantity, and market conditions."
+        "PriceProof AI is a benchmark-based prototype. "
+        "Reference prices may vary by location, date, "
+        "retailer, brand and quantity."
     )
 
 
 # =========================================================
-# TEXT NORMALIZATION
+# HELPER FUNCTIONS
 # =========================================================
 
 def normalize_text(text):
@@ -254,16 +252,20 @@ def normalize_text(text):
 
     text = str(text).lower()
 
-    text = re.sub(r"[^a-z0-9\s]", " ", text)
+    text = re.sub(
+        r"[^a-z0-9\s]",
+        " ",
+        text
+    )
 
-    text = re.sub(r"\s+", " ", text).strip()
+    text = re.sub(
+        r"\s+",
+        " ",
+        text
+    )
 
-    return text
+    return text.strip()
 
-
-# =========================================================
-# SIMILARITY
-# =========================================================
 
 def calculate_similarity(text1, text2):
 
@@ -273,12 +275,12 @@ def calculate_similarity(text1, text2):
     if not text1 or not text2:
         return 0
 
-    return SequenceMatcher(None, text1, text2).ratio()
+    return SequenceMatcher(
+        None,
+        text1,
+        text2
+    ).ratio()
 
-
-# =========================================================
-# SAFE NUMBER
-# =========================================================
 
 def safe_number(value, default=0):
 
@@ -290,7 +292,12 @@ def safe_number(value, default=0):
         if isinstance(value, str):
 
             value = value.replace(",", "")
-            value = re.sub(r"[^\d.\-]", "", value)
+
+            value = re.sub(
+                r"[^\d.\-]",
+                "",
+                value
+            )
 
         return float(value)
 
@@ -298,10 +305,6 @@ def safe_number(value, default=0):
 
         return default
 
-
-# =========================================================
-# FIND COLUMN
-# =========================================================
 
 def find_column(df, possible_names):
 
@@ -314,7 +317,7 @@ def find_column(df, possible_names):
 
 
 # =========================================================
-# REFERENCE DATABASE COLUMNS
+# DATABASE COLUMNS
 # =========================================================
 
 product_name_column = find_column(
@@ -354,7 +357,7 @@ if not product_name_column or not price_column:
     )
 
     st.info(
-        "Example columns: product_name, brand, reference_price"
+        "Example: product_name, brand, reference_price"
     )
 
     st.stop()
@@ -364,14 +367,20 @@ if not product_name_column or not price_column:
 # PRODUCT MATCHING
 # =========================================================
 
-def find_best_match(product_name, brand=""):
+def find_best_match(
+    product_name,
+    brand=""
+):
 
     best_row = None
     best_score = 0
 
     for _, row in products_df.iterrows():
 
-        reference_name = row.get(product_name_column, "")
+        reference_name = row.get(
+            product_name_column,
+            ""
+        )
 
         name_score = calculate_similarity(
             product_name,
@@ -381,7 +390,11 @@ def find_best_match(product_name, brand=""):
         reference_brand = ""
 
         if brand_column:
-            reference_brand = row.get(brand_column, "")
+
+            reference_brand = row.get(
+                brand_column,
+                ""
+            )
 
         brand_score = 0
 
@@ -393,7 +406,8 @@ def find_best_match(product_name, brand=""):
             )
 
             total_score = (
-                name_score * 0.70 +
+                name_score * 0.70
+                +
                 brand_score * 0.30
             )
 
@@ -407,19 +421,31 @@ def find_best_match(product_name, brand=""):
             best_row = row
 
     if best_row is None:
+
         return None, 0
 
-    return best_row, round(best_score * 100, 2)
+    return (
+        best_row,
+        round(best_score * 100, 2)
+    )
 
 
 # =========================================================
 # PRICE COMPARISON
 # =========================================================
 
-def compare_price(charged_price, reference_price):
+def compare_price(
+    charged_price,
+    reference_price
+):
 
-    charged_price = safe_number(charged_price)
-    reference_price = safe_number(reference_price)
+    charged_price = safe_number(
+        charged_price
+    )
+
+    reference_price = safe_number(
+        reference_price
+    )
 
     if reference_price <= 0:
 
@@ -429,10 +455,16 @@ def compare_price(charged_price, reference_price):
             "status": "Unable to Verify"
         }
 
-    difference = charged_price - reference_price
+    difference = (
+        charged_price
+        -
+        reference_price
+    )
 
     percentage = (
-        difference / reference_price
+        difference
+        /
+        reference_price
     ) * 100
 
     if percentage >= 20:
@@ -448,8 +480,14 @@ def compare_price(charged_price, reference_price):
         status = "Within Reference Range"
 
     return {
-        "difference": round(difference, 2),
-        "percentage": round(percentage, 2),
+        "difference": round(
+            difference,
+            2
+        ),
+        "percentage": round(
+            percentage,
+            2
+        ),
         "status": status
     }
 
@@ -458,20 +496,35 @@ def compare_price(charged_price, reference_price):
 # RECEIPT AI EXTRACTION
 # =========================================================
 
-def extract_receipt_data(uploaded_file):
+def extract_receipt_data(
+    uploaded_file
+):
 
     if not groq_client:
-        raise Exception("Groq API is not connected.")
 
-    image = Image.open(uploaded_file)
+        raise Exception(
+            "Groq API is not connected."
+        )
 
-    image_format = image.format or "PNG"
-
-    mime_type = (
-        "image/jpeg"
-        if image_format.upper() in ["JPG", "JPEG"]
-        else "image/png"
+    image = Image.open(
+        uploaded_file
     )
+
+    image_format = (
+        image.format
+        or "PNG"
+    )
+
+    if image_format.upper() in [
+        "JPG",
+        "JPEG"
+    ]:
+
+        mime_type = "image/jpeg"
+
+    else:
+
+        mime_type = "image/png"
 
     uploaded_file.seek(0)
 
@@ -484,11 +537,11 @@ def extract_receipt_data(uploaded_file):
     prompt = """
 You are a receipt extraction AI.
 
-Read the shopping receipt image carefully.
+Carefully read the shopping receipt image.
 
-Return ONLY valid JSON.
+Return ONLY a valid JSON object.
 
-Use this exact structure:
+Use exactly this structure:
 
 {
   "store_name": "",
@@ -507,19 +560,21 @@ Use this exact structure:
 
 Rules:
 
-1. Extract every visible purchasable item.
+1. Extract every visible purchased product.
 2. Preserve product names as accurately as possible.
-3. Extract quantity when visible.
-4. Extract the charged unit price when possible.
-5. Extract line total when possible.
-6. Do not invent missing information.
-7. Use 0 when a numeric value cannot be identified.
-8. Return JSON only.
+3. Extract brand when visible.
+4. Extract quantity when visible.
+5. Extract charged unit price when possible.
+6. Extract line total when possible.
+7. Extract the final receipt total.
+8. Never invent information.
+9. If information is unavailable, use an empty string or 0.
+10. Return JSON only.
 """
 
     response = groq_client.chat.completions.create(
 
-        model="meta-llama/llama-4-scout-17b-16e-instruct",
+        model="qwen/qwen3.6-27b",
 
         messages=[
 
@@ -531,10 +586,15 @@ Rules:
             {
                 "role": "user",
                 "content": [
+
                     {
                         "type": "text",
-                        "text": "Extract the receipt data from this image."
+                        "text": (
+                            "Extract all receipt information "
+                            "from this image."
+                        )
                     },
+
                     {
                         "type": "image_url",
                         "image_url": {
@@ -544,15 +604,28 @@ Rules:
                             )
                         }
                     }
+
                 ]
             }
+
         ],
 
-        temperature=0
+        temperature=0,
+
+        response_format={
+            "type": "json_object"
+        },
+
+        reasoning_effort="none"
 
     )
 
-    content = response.choices[0].message.content
+    content = (
+        response
+        .choices[0]
+        .message
+        .content
+    )
 
     content = content.strip()
 
@@ -574,11 +647,11 @@ Rules:
 
     if start != -1 and end != -1:
 
-        content = content[start:end + 1]
+        content = content[
+            start:end + 1
+        ]
 
-    data = json.loads(content)
-
-    return data
+    return json.loads(content)
 
 
 # =========================================================
@@ -595,26 +668,30 @@ def analyze_with_ai(
 ):
 
     if not groq_client:
-        return "AI explanation is unavailable because Groq is not connected."
+
+        return (
+            "AI explanation is unavailable "
+            "because Groq is not connected."
+        )
 
     prompt = f"""
 You are a consumer price verification assistant.
 
-Explain this price comparison in simple language.
+Explain this price comparison simply and briefly.
 
 Product: {product_name}
 Brand: {brand}
 Charged price: {charged_price}
 Reference price: {reference_price}
-Difference percentage: {percentage}%
+Difference: {percentage}%
 Status: {status}
 
-Give a short explanation.
+Give a short consumer-friendly explanation.
 
 Do not make legal claims.
 Do not say the store definitely committed an offense.
-Explain that reference prices can vary.
-Suggest a reasonable consumer action if appropriate.
+Explain that benchmark prices can vary.
+Suggest a reasonable next step if appropriate.
 """
 
     response = groq_client.chat.completions.create(
@@ -622,21 +699,26 @@ Suggest a reasonable consumer action if appropriate.
         model="openai/gpt-oss-20b",
 
         messages=[
-            {
-                "role": "system",
-                "content": "You are a concise and helpful consumer assistant."
-            },
+
             {
                 "role": "user",
                 "content": prompt
             }
+
         ],
 
-        temperature=0.2
+        temperature=0.2,
+
+        reasoning_effort="none"
 
     )
 
-    return response.choices[0].message.content
+    return (
+        response
+        .choices[0]
+        .message
+        .content
+    )
 
 
 # =========================================================
@@ -652,8 +734,8 @@ def ask_receipt_ai(
     if not groq_client:
 
         return (
-            "AI chat is unavailable because the Groq API key "
-            "is not connected."
+            "AI chat is unavailable because "
+            "Groq is not connected."
         )
 
     context = {
@@ -667,23 +749,22 @@ def ask_receipt_ai(
     prompt = f"""
 You are PriceProof AI, a consumer price verification assistant.
 
-Answer the user's question using ONLY the supplied receipt
+Answer the user's question using ONLY the provided receipt
 and verification information.
 
 User question:
 {question}
 
-Data:
+Receipt and verification data:
 {json.dumps(context, indent=2, default=str)}
 
 Rules:
 
 - Be concise.
-- Be clear.
 - Use simple language.
 - Do not invent information.
 - Do not make legal claims.
-- If the data does not contain the answer, say so.
+- If information is unavailable, say so.
 - Explain uncertainty when necessary.
 """
 
@@ -694,38 +775,48 @@ Rules:
         messages=[
 
             {
-                "role": "system",
-                "content": "You are a careful consumer assistant."
-            },
-
-            {
                 "role": "user",
                 "content": prompt
             }
 
         ],
 
-        temperature=0.2
+        temperature=0.2,
+
+        reasoning_effort="none"
 
     )
 
-    return response.choices[0].message.content
+    return (
+        response
+        .choices[0]
+        .message
+        .content
+    )
 
 
 # =========================================================
 # RECEIPT TOTAL CHECK
 # =========================================================
 
-def calculate_total_check(receipt_data):
+def calculate_total_check(
+    receipt_data
+):
 
-    items = receipt_data.get("items", [])
+    items = receipt_data.get(
+        "items",
+        []
+    )
 
     calculated_total = 0
 
     for item in items:
 
         line_total = safe_number(
-            item.get("line_total", 0)
+            item.get(
+                "line_total",
+                0
+            )
         )
 
         if line_total > 0:
@@ -735,23 +826,38 @@ def calculate_total_check(receipt_data):
         else:
 
             quantity = safe_number(
-                item.get("quantity", 1),
+                item.get(
+                    "quantity",
+                    1
+                ),
                 1
             )
 
             charged_price = safe_number(
-                item.get("charged_price", 0)
+                item.get(
+                    "charged_price",
+                    0
+                )
             )
 
             calculated_total += (
-                quantity * charged_price
+                quantity
+                *
+                charged_price
             )
 
     receipt_total = safe_number(
-        receipt_data.get("total_amount", 0)
+        receipt_data.get(
+            "total_amount",
+            0
+        )
     )
 
-    difference = receipt_total - calculated_total
+    difference = (
+        receipt_total
+        -
+        calculated_total
+    )
 
     return (
         round(calculated_total, 2),
@@ -761,10 +867,12 @@ def calculate_total_check(receipt_data):
 
 
 # =========================================================
-# PRICE HEALTH SCORE
+# HEALTH SCORE
 # =========================================================
 
-def calculate_health_score(results):
+def calculate_health_score(
+    results
+):
 
     if not results:
         return 0
@@ -781,12 +889,16 @@ def calculate_health_score(results):
 
             matched += 1
 
-            percentage = result["percentage"]
+            percentage = (
+                result["percentage"]
+            )
 
             if percentage > 0:
+
                 above += 1
 
             if percentage >= 20:
+
                 suspicious += 1
 
         else:
@@ -795,22 +907,40 @@ def calculate_health_score(results):
 
     if matched > 0:
 
-        above_ratio = above / matched
-        suspicious_ratio = suspicious / matched
+        above_ratio = (
+            above / matched
+        )
 
-        score -= above_ratio * 20
-        score -= suspicious_ratio * 35
+        suspicious_ratio = (
+            suspicious / matched
+        )
 
-    score = max(0, min(100, score))
+        score -= (
+            above_ratio * 20
+        )
+
+        score -= (
+            suspicious_ratio * 35
+        )
+
+    score = max(
+        0,
+        min(
+            100,
+            score
+        )
+    )
 
     return round(score)
 
 
 # =========================================================
-# RECEIPT VERDICT
+# VERDICT
 # =========================================================
 
-def get_verdict(score):
+def get_verdict(
+    score
+):
 
     if score >= 85:
 
@@ -865,7 +995,7 @@ def generate_consumer_report(
         )
     )
 
-    verdict, verdict_description = get_verdict(
+    verdict, description = get_verdict(
         health_score
     )
 
@@ -882,7 +1012,7 @@ def generate_consumer_report(
         and r["confidence"] >= 60
     ]
 
-    above_reference = [
+    above = [
         r
         for r in verification_results
         if r["percentage"] > 0
@@ -890,85 +1020,105 @@ def generate_consumer_report(
     ]
 
     potential_extra = sum(
-        max(0, r["difference"])
+        max(
+            0,
+            r["difference"]
+        )
         for r in verification_results
         if r["confidence"] >= 60
     )
 
-    lines = []
+    report = []
 
-    lines.append(
+    report.append(
         "PRICEPROOF AI - CONSUMER VERIFICATION REPORT"
     )
 
-    lines.append("=" * 55)
+    report.append(
+        "=" * 55
+    )
 
-    lines.append(
+    report.append(
         f"Generated: {now}"
     )
 
-    lines.append(
+    report.append(
         f"Store: {store}"
     )
 
-    lines.append(
+    report.append(
         f"Receipt Date: {date}"
     )
 
-    lines.append(
+    report.append(
         f"Receipt Total: {total:.2f}"
     )
 
-    lines.append("")
+    report.append("")
 
-    lines.append("OVERALL ASSESSMENT")
-    lines.append("-" * 30)
+    report.append(
+        "OVERALL ASSESSMENT"
+    )
 
-    lines.append(
+    report.append(
+        "-" * 30
+    )
+
+    report.append(
         f"Price Health Score: {health_score}/100"
     )
 
-    lines.append(
+    report.append(
         f"Verdict: {verdict}"
     )
 
-    lines.append(
-        f"Summary: {verdict_description}"
+    report.append(
+        f"Summary: {description}"
     )
 
-    lines.append("")
+    report.append("")
 
-    lines.append("SUMMARY")
-    lines.append("-" * 30)
+    report.append(
+        "SUMMARY"
+    )
 
-    lines.append(
+    report.append(
+        "-" * 30
+    )
+
+    report.append(
         f"Items checked: {len(verification_results)}"
     )
 
-    lines.append(
+    report.append(
         f"Matched items: {matched}"
     )
 
-    lines.append(
-        f"Items above reference: {len(above_reference)}"
+    report.append(
+        f"Items above reference: {len(above)}"
     )
 
-    lines.append(
+    report.append(
         f"Potentially overpriced items: {len(suspicious)}"
     )
 
-    lines.append(
+    report.append(
         f"Potential extra paid: {potential_extra:.2f}"
     )
 
-    lines.append("")
+    report.append("")
 
-    lines.append("ITEM VERIFICATION")
-    lines.append("-" * 30)
+    report.append(
+        "ITEM VERIFICATION"
+    )
+
+    report.append(
+        "-" * 30
+    )
 
     for r in verification_results:
 
-        lines.append(
+        report.append(
             f"""
 Product: {r['product']}
 Brand: {r['brand']}
@@ -982,42 +1132,40 @@ Match Confidence: {r['confidence']:.2f}%
 """
         )
 
-    lines.append("")
+    report.append("")
 
-    lines.append("RECOMMENDED NEXT STEPS")
-    lines.append("-" * 30)
+    report.append(
+        "RECOMMENDED NEXT STEPS"
+    )
 
-    if suspicious:
+    report.append(
+        "-" * 30
+    )
 
-        lines.append(
-            "1. Recheck the receipt for the flagged items."
-        )
+    report.append(
+        "1. Recheck significant price differences."
+    )
 
-        lines.append(
-            "2. Compare the same product, brand and quantity "
-            "with other local prices."
-        )
+    report.append(
+        "2. Compare the same product, brand and quantity "
+        "with other local prices."
+    )
 
-        lines.append(
-            "3. Ask the retailer to clarify significant differences."
-        )
+    report.append(
+        "3. Ask the retailer to clarify significant differences."
+    )
 
-    else:
+    report.append("")
 
-        lines.append(
-            "1. Keep the receipt for your records."
-        )
+    report.append(
+        "IMPORTANT NOTICE"
+    )
 
-        lines.append(
-            "2. Recheck prices if market conditions change."
-        )
+    report.append(
+        "-" * 30
+    )
 
-    lines.append("")
-
-    lines.append("IMPORTANT NOTICE")
-    lines.append("-" * 30)
-
-    lines.append(
+    report.append(
         "PriceProof AI uses benchmark/reference data for analysis. "
         "Reference prices are not guaranteed official government prices "
         "and can vary by location, date, retailer, brand, quantity and "
@@ -1025,11 +1173,11 @@ Match Confidence: {r['confidence']:.2f}%
         "overcharging."
     )
 
-    return "\n".join(lines)
+    return "\n".join(report)
 
 
 # =========================================================
-# RECEIPT UPLOAD
+# UPLOAD RECEIPT
 # =========================================================
 
 st.markdown(
@@ -1039,7 +1187,11 @@ st.markdown(
 
 uploaded_file = st.file_uploader(
     "Choose a receipt image",
-    type=["jpg", "jpeg", "png"],
+    type=[
+        "jpg",
+        "jpeg",
+        "png"
+    ],
     help="Use a clear and readable receipt image."
 )
 
@@ -1048,7 +1200,9 @@ uploaded_file = st.file_uploader(
 # REFERENCE DATABASE
 # =========================================================
 
-with st.expander("📚 View Reference Price Database"):
+with st.expander(
+    "📚 View Reference Price Database"
+):
 
     st.dataframe(
         products_df,
@@ -1062,18 +1216,39 @@ with st.expander("📚 View Reference Price Database"):
 
 
 # =========================================================
-# MAIN RECEIPT PROCESSING
+# MAIN RECEIPT PROCESS
 # =========================================================
 
 if uploaded_file:
 
+    if (
+        st.session_state.uploaded_receipt_name
+        != uploaded_file.name
+    ):
+
+        st.session_state.receipt_data = None
+
+        st.session_state.verification_results = []
+
+        st.session_state.chat_history = []
+
+        st.session_state.report_text = ""
+
+        st.session_state.uploaded_receipt_name = (
+            uploaded_file.name
+        )
+
     st.divider()
 
-    left, right = st.columns([1, 2])
+    left, right = st.columns(
+        [1, 2]
+    )
 
     with left:
 
-        st.subheader("📷 Uploaded Receipt")
+        st.subheader(
+            "📷 Uploaded Receipt"
+        )
 
         st.image(
             uploaded_file,
@@ -1082,56 +1257,48 @@ if uploaded_file:
 
     with right:
 
-        if (
-            st.session_state.uploaded_receipt_name
-            != uploaded_file.name
-        ):
+        if not groq_client:
 
-            st.session_state.receipt_data = None
-            st.session_state.verification_results = []
-            st.session_state.chat_history = []
-            st.session_state.report_text = ""
-
-            st.session_state.uploaded_receipt_name = (
-                uploaded_file.name
+            st.warning(
+                "Add GROQ_API_KEY to Streamlit Secrets "
+                "to enable AI receipt analysis."
             )
 
-        if st.session_state.receipt_data is None:
+        elif st.session_state.receipt_data is None:
 
-            if not groq_client:
+            with st.spinner(
+                "🤖 AI is reading your receipt..."
+            ):
 
-                st.warning(
-                    "Add your GROQ_API_KEY to use AI receipt extraction."
-                )
+                try:
 
-            else:
-
-                with st.spinner(
-                    "🤖 AI is reading your receipt..."
-                ):
-
-                    try:
-
-                        receipt_data = extract_receipt_data(
+                    receipt_data = (
+                        extract_receipt_data(
                             uploaded_file
                         )
+                    )
 
-                        st.session_state.receipt_data = receipt_data
+                    st.session_state.receipt_data = (
+                        receipt_data
+                    )
 
-                        st.success(
-                            "✅ Receipt successfully analyzed."
-                        )
+                    st.success(
+                        "✅ Receipt successfully analyzed."
+                    )
 
-                    except Exception as e:
+                except Exception as e:
 
-                        st.error(
-                            "Could not analyze the receipt."
-                        )
+                    st.error(
+                        "❌ Could not analyze the receipt."
+                    )
 
-                        st.code(str(e))
+                    st.code(
+                        str(e)
+                    )
 
-        receipt_data = st.session_state.receipt_data
-
+    receipt_data = (
+        st.session_state.receipt_data
+    )
 
     # =====================================================
     # RECEIPT INFORMATION
@@ -1141,11 +1308,13 @@ if uploaded_file:
 
         st.divider()
 
-        st.subheader("📋 Receipt Information")
+        st.subheader(
+            "📋 Receipt Information"
+        )
 
-        info1, info2, info3 = st.columns(3)
+        c1, c2, c3 = st.columns(3)
 
-        with info1:
+        with c1:
 
             st.metric(
                 "🏪 Store",
@@ -1155,7 +1324,7 @@ if uploaded_file:
                 )
             )
 
-        with info2:
+        with c2:
 
             st.metric(
                 "📅 Date",
@@ -1165,7 +1334,7 @@ if uploaded_file:
                 )
             )
 
-        with info3:
+        with c3:
 
             st.metric(
                 "💵 Receipt Total",
@@ -1177,11 +1346,15 @@ if uploaded_file:
         # EXTRACTED ITEMS
         # =================================================
 
-        st.subheader("📦 Extracted Items")
+        st.subheader(
+            "📦 Extracted Items"
+        )
 
-        extracted_items = receipt_data.get(
-            "items",
-            []
+        extracted_items = (
+            receipt_data.get(
+                "items",
+                []
+            )
         )
 
         if extracted_items:
@@ -1203,10 +1376,12 @@ if uploaded_file:
 
 
         # =================================================
-        # VERIFY PRODUCTS
+        # VERIFICATION
         # =================================================
 
-        st.subheader("🔍 Price Verification")
+        st.subheader(
+            "🔍 Price Verification"
+        )
 
         if not st.session_state.verification_results:
 
@@ -1246,9 +1421,11 @@ if uploaded_file:
                     )
                 )
 
-                best_row, confidence = find_best_match(
-                    product_name,
-                    brand
+                best_row, confidence = (
+                    find_best_match(
+                        product_name,
+                        brand
+                    )
                 )
 
                 if (
@@ -1268,23 +1445,28 @@ if uploaded_file:
                         reference_price
                     )
 
-                    reference_product = best_row.get(
-                        product_name_column,
-                        ""
+                    reference_product = (
+                        best_row.get(
+                            product_name_column,
+                            ""
+                        )
                     )
 
                     reference_brand = ""
 
                     if brand_column:
 
-                        reference_brand = best_row.get(
-                            brand_column,
-                            ""
+                        reference_brand = (
+                            best_row.get(
+                                brand_column,
+                                ""
+                            )
                         )
 
                 else:
 
                     reference_price = 0
+
                     comparison = {
                         "difference": 0,
                         "percentage": 0,
@@ -1312,11 +1494,17 @@ if uploaded_file:
 
                     "reference_price": reference_price,
 
-                    "difference": comparison["difference"],
+                    "difference": comparison[
+                        "difference"
+                    ],
 
-                    "percentage": comparison["percentage"],
+                    "percentage": comparison[
+                        "percentage"
+                    ],
 
-                    "status": comparison["status"],
+                    "status": comparison[
+                        "status"
+                    ],
 
                     "confidence": confidence
 
@@ -1362,25 +1550,33 @@ if uploaded_file:
             ]
 
             st.dataframe(
-                verification_df[display_columns],
+                verification_df[
+                    display_columns
+                ],
                 use_container_width=True
             )
 
 
         # =================================================
-        # ADVANCED PRICE HEALTH
+        # PRICE HEALTH
         # =================================================
 
         st.divider()
 
-        st.subheader("📊 Price Health Dashboard")
-
-        health_score = calculate_health_score(
-            verification_results
+        st.subheader(
+            "📊 Price Health Dashboard"
         )
 
-        verdict, verdict_description = get_verdict(
-            health_score
+        health_score = (
+            calculate_health_score(
+                verification_results
+            )
+        )
+
+        verdict, verdict_description = (
+            get_verdict(
+                health_score
+            )
         )
 
         matched_items = [
@@ -1402,12 +1598,18 @@ if uploaded_file:
         ]
 
         potential_extra = sum(
-            max(0, r["difference"])
+            max(
+                0,
+                r["difference"]
+            )
             for r in matched_items
         )
 
         potential_savings = sum(
-            max(0, -r["difference"])
+            max(
+                0,
+                -r["difference"]
+            )
             for r in matched_items
         )
 
@@ -1422,21 +1624,21 @@ if uploaded_file:
 
 
         # =================================================
-        # SCORE
+        # VERDICT
         # =================================================
 
-        score_col1, score_col2 = st.columns(
+        score1, score2 = st.columns(
             [1, 2]
         )
 
-        with score_col1:
+        with score1:
 
             st.metric(
                 "🛡️ Price Health Score",
                 f"{health_score}/100"
             )
 
-        with score_col2:
+        with score2:
 
             st.markdown(
                 f"""
@@ -1450,7 +1652,7 @@ if uploaded_file:
 
 
         # =================================================
-        # DASHBOARD METRICS
+        # METRICS
         # =================================================
 
         m1, m2, m3, m4, m5 = st.columns(5)
@@ -1491,10 +1693,6 @@ if uploaded_file:
             )
 
 
-        # =================================================
-        # SAVINGS
-        # =================================================
-
         st.info(
             f"💰 Potential benchmark-based savings: "
             f"**{potential_savings:.2f}**"
@@ -1502,17 +1700,16 @@ if uploaded_file:
 
 
         # =================================================
-        # MOST SUSPICIOUS ITEM
+        # MOST SUSPICIOUS
         # =================================================
 
         if most_suspicious:
 
             st.warning(
-                f"""
-                🔎 **Item needing the most attention:**
-                {most_suspicious['product']} — 
-                {most_suspicious['percentage']:.2f}% above the reference price.
-                """
+                f"🔎 **Item needing the most attention:** "
+                f"{most_suspicious['product']} — "
+                f"{most_suspicious['percentage']:.2f}% "
+                f"above the reference price."
             )
 
 
@@ -1520,10 +1717,14 @@ if uploaded_file:
         # RECEIPT TOTAL CHECK
         # =================================================
 
-        st.subheader("🧮 Receipt Total Consistency Check")
+        st.subheader(
+            "🧮 Receipt Total Consistency Check"
+        )
 
         calculated_total, receipt_total, total_difference = (
-            calculate_total_check(receipt_data)
+            calculate_total_check(
+                receipt_data
+            )
         )
 
         t1, t2, t3 = st.columns(3)
@@ -1552,20 +1753,22 @@ if uploaded_file:
         if abs(total_difference) <= 1:
 
             st.success(
-                "✅ The extracted item totals are reasonably consistent with the receipt total."
+                "✅ Extracted item totals are reasonably "
+                "consistent with the receipt total."
             )
 
         else:
 
             st.warning(
-                "⚠️ The extracted item totals differ from the receipt total. "
-                "This may happen because of tax, discounts, missing items, "
-                "rounding, or OCR/AI extraction limitations."
+                "⚠️ Extracted item totals differ from the "
+                "receipt total. This can happen because of "
+                "taxes, discounts, missing items, rounding, "
+                "or AI extraction limitations."
             )
 
 
         # =================================================
-        # CHART
+        # PRICE CHART
         # =================================================
 
         chart_rows = []
@@ -1599,19 +1802,12 @@ if uploaded_file:
             )
 
             fig = px.bar(
-
                 chart_df,
-
                 x="Product",
-
                 y="Price",
-
                 color="Price Type",
-
                 barmode="group",
-
                 title="Charged Price vs Reference Price"
-
             )
 
             fig.update_layout(
@@ -1635,33 +1831,40 @@ if uploaded_file:
                 "🚨 Items Requiring Review"
             )
 
-            for item in suspicious_items:
+            for index, item in enumerate(
+                suspicious_items
+            ):
 
                 with st.expander(
-                    f"🔎 {item['product']} — {item['percentage']:.2f}% above reference"
+                    f"🔎 {item['product']} — "
+                    f"{item['percentage']:.2f}% above reference"
                 ):
 
                     st.write(
-                        f"**Charged price:** {item['charged_price']:.2f}"
+                        f"**Charged price:** "
+                        f"{item['charged_price']:.2f}"
                     )
 
                     st.write(
-                        f"**Reference price:** {item['reference_price']:.2f}"
+                        f"**Reference price:** "
+                        f"{item['reference_price']:.2f}"
                     )
 
                     st.write(
-                        f"**Difference:** {item['difference']:.2f}"
+                        f"**Difference:** "
+                        f"{item['difference']:.2f}"
                     )
 
                     st.write(
-                        f"**Match confidence:** {item['confidence']:.2f}%"
+                        f"**Match confidence:** "
+                        f"{item['confidence']:.2f}%"
                     )
 
                     if groq_client:
 
                         if st.button(
                             "🤖 Explain This Item",
-                            key=f"explain_{item['product']}"
+                            key=f"explain_item_{index}"
                         ):
 
                             with st.spinner(
@@ -1670,20 +1873,15 @@ if uploaded_file:
 
                                 try:
 
-                                    explanation = analyze_with_ai(
-
-                                        item["product"],
-
-                                        item["brand"],
-
-                                        item["charged_price"],
-
-                                        item["reference_price"],
-
-                                        item["percentage"],
-
-                                        item["status"]
-
+                                    explanation = (
+                                        analyze_with_ai(
+                                            item["product"],
+                                            item["brand"],
+                                            item["charged_price"],
+                                            item["reference_price"],
+                                            item["percentage"],
+                                            item["status"]
+                                        )
                                     )
 
                                     st.info(
@@ -1708,7 +1906,7 @@ if uploaded_file:
         )
 
         st.write(
-            "Ask any question about this receipt or its verification results."
+            "Ask any question about this receipt."
         )
 
         question = st.text_input(
@@ -1719,12 +1917,9 @@ if uploaded_file:
             key="receipt_question"
         )
 
-        ask_button = st.button(
-            "🤖 Ask AI",
-            use_container_width=False
-        )
-
-        if ask_button:
+        if st.button(
+            "🤖 Ask AI"
+        ):
 
             if not question.strip():
 
@@ -1747,13 +1942,9 @@ if uploaded_file:
                     try:
 
                         answer = ask_receipt_ai(
-
                             question,
-
                             receipt_data,
-
                             verification_results
-
                         )
 
                         st.session_state.chat_history.append({
@@ -1777,8 +1968,8 @@ if uploaded_file:
                 "💬 AI Conversation"
             )
 
-            for index, chat in enumerate(
-                reversed(st.session_state.chat_history)
+            for chat in reversed(
+                st.session_state.chat_history
             ):
 
                 st.markdown(
@@ -1789,15 +1980,9 @@ if uploaded_file:
                     chat["answer"]
                 )
 
-                if index < len(
-                    st.session_state.chat_history
-                ) - 1:
-
-                    st.divider()
-
 
         # =================================================
-        # CONSUMER REPORT
+        # REPORT
         # =================================================
 
         st.divider()
@@ -1813,13 +1998,9 @@ if uploaded_file:
 
             st.session_state.report_text = (
                 generate_consumer_report(
-
                     receipt_data,
-
                     verification_results,
-
                     health_score
-
                 )
             )
 
@@ -1832,22 +2013,16 @@ if uploaded_file:
             )
 
             st.download_button(
-
-                label="📥 Download Consumer Report",
-
+                "📥 Download Consumer Report",
                 data=st.session_state.report_text,
-
                 file_name="priceproof_consumer_report.txt",
-
                 mime="text/plain",
-
                 use_container_width=True
-
             )
 
 
         # =================================================
-        # DATA EXPORT
+        # CSV / JSON EXPORT
         # =================================================
 
         st.subheader(
@@ -1867,17 +2042,11 @@ if uploaded_file:
             )
 
             st.download_button(
-
-                label="📥 Download CSV",
-
+                "📥 Download CSV",
                 data=csv_data,
-
                 file_name="priceproof_verification.csv",
-
                 mime="text/csv",
-
                 use_container_width=True
-
             )
 
         with export2:
@@ -1894,17 +2063,11 @@ if uploaded_file:
             )
 
             st.download_button(
-
-                label="📥 Download JSON",
-
+                "📥 Download JSON",
                 data=json_data,
-
                 file_name="priceproof_receipt_data.json",
-
                 mime="application/json",
-
                 use_container_width=True
-
             )
 
 
@@ -1919,12 +2082,17 @@ st.subheader(
 )
 
 st.write(
-    "You can also verify a product manually without uploading a receipt."
+    "Verify a product manually without uploading a receipt."
 )
 
-product_options = products_df[
-    product_name_column
-].dropna().astype(str).tolist()
+product_options = (
+    products_df[
+        product_name_column
+    ]
+    .dropna()
+    .astype(str)
+    .tolist()
+)
 
 if product_options:
 
@@ -1934,18 +2102,24 @@ if product_options:
     )
 
     selected_row = products_df[
-        products_df[product_name_column].astype(str)
+        products_df[
+            product_name_column
+        ].astype(str)
         == selected_product
     ].iloc[0]
 
     manual_reference_price = safe_number(
-        selected_row[price_column]
+        selected_row[
+            price_column
+        ]
     )
 
     manual_charged_price = st.number_input(
         "Charged Price",
         min_value=0.0,
-        value=manual_reference_price,
+        value=float(
+            manual_reference_price
+        ),
         step=1.0
     )
 
@@ -1981,14 +2155,20 @@ if product_options:
                 f"{manual_result['difference']:.2f}"
             )
 
-        if manual_result["status"] == "Potentially Overpriced":
+        if (
+            manual_result["status"]
+            == "Potentially Overpriced"
+        ):
 
             st.error(
                 f"🚨 {manual_result['status']} — "
                 f"{manual_result['percentage']:.2f}% above reference."
             )
 
-        elif manual_result["status"] == "Above Reference Price":
+        elif (
+            manual_result["status"]
+            == "Above Reference Price"
+        ):
 
             st.warning(
                 f"⚠️ {manual_result['status']} — "
@@ -2010,19 +2190,12 @@ if product_options:
                 try:
 
                     explanation = analyze_with_ai(
-
                         selected_product,
-
                         "",
-
                         manual_charged_price,
-
                         manual_reference_price,
-
                         manual_result["percentage"],
-
                         manual_result["status"]
-
                     )
 
                     st.info(
