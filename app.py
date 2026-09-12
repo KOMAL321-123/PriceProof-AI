@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from PIL import Image
 from groq import Groq
-
+import base64
 
 # -----------------------------
 # Page Configuration
@@ -34,7 +34,70 @@ def load_price_data():
 
 
 price_data = load_price_data()
+# -----------------------------
+# Groq Vision Receipt Reader
+# -----------------------------
+def extract_receipt_text_with_ai(image):
 
+    if not groq_client:
+        return None, "Groq API key is not configured."
+
+    try:
+        image_bytes = uploaded_file.getvalue()
+
+        base64_image = base64.b64encode(
+            image_bytes
+        ).decode("utf-8")
+
+        response = groq_client.chat.completions.create(
+            model="qwen/qwen3.8-27b",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": """
+Read this shopping receipt carefully.
+
+Extract all visible receipt information, especially:
+- product names
+- quantities
+- charged prices
+- total amount
+
+Return the information as clear plain text.
+
+Do not guess missing or unreadable information.
+If something cannot be read, say "Unreadable".
+""",
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": (
+                                    f"data:image/jpeg;base64,"
+                                    f"{base64_image}"
+                                )
+                            },
+                        },
+                    ],
+                }
+            ],
+            temperature=0.2,
+            max_completion_tokens=1000,
+            reasoning_effort="none"
+        )
+
+        extracted_text = (
+            response.choices[0].message.content
+        )
+
+        return extracted_text, None
+
+    except Exception as error:
+
+        return None, f"Receipt analysis failed: {error}"
 
 # -----------------------------
 # Price Comparison Function
