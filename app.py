@@ -775,4 +775,341 @@ if uploaded_file:
                             "Charged Price":
                                 "Not detected",
 
-                            "
+                            "Reference Price":
+                                reference_price,
+
+                            "Difference":
+                                "-",
+
+                            "Difference %":
+                                "-",
+
+                            "Status":
+                                "Price not detected",
+
+                            "Match Confidence":
+                                round(
+                                    match_score * 100,
+                                    1
+                                )
+
+                        })
+
+                else:
+
+                    verification_results.append({
+
+                        "Receipt Product":
+                            product_name,
+
+                        "Brand":
+                            brand
+                            if brand
+                            else "Not detected",
+
+                        "Charged Price":
+                            charged_price
+                            if charged_price is not None
+                            else "Not detected",
+
+                        "Reference Price":
+                            "No match",
+
+                        "Difference":
+                            "-",
+
+                        "Difference %":
+                            "-",
+
+                        "Status":
+                            "No Reference Match",
+
+                        "Match Confidence":
+                            round(
+                                match_score * 100,
+                                1
+                            )
+
+                    })
+
+
+            # =================================================
+            # DISPLAY VERIFICATION TABLE
+            # =================================================
+
+            verification_df = pd.DataFrame(
+                verification_results
+            )
+
+            st.dataframe(
+                verification_df,
+                use_container_width=True
+            )
+
+
+            # =================================================
+            # SUMMARY
+            # =================================================
+
+            st.subheader(
+                "📊 Verification Summary"
+            )
+
+            potentially_overpriced = sum(
+                1
+                for result in verification_results
+                if result["Status"]
+                == "Potentially Overpriced"
+            )
+
+            above_reference = sum(
+                1
+                for result in verification_results
+                if result["Status"]
+                == "Above Reference Price"
+            )
+
+            matched_items = sum(
+                1
+                for result in verification_results
+                if result["Reference Price"]
+                != "No match"
+            )
+
+            total_items = len(
+                verification_results
+            )
+
+            col1, col2, col3, col4 = st.columns(4)
+
+            with col1:
+
+                st.metric(
+                    "Items Checked",
+                    total_items
+                )
+
+            with col2:
+
+                st.metric(
+                    "Matched",
+                    matched_items
+                )
+
+            with col3:
+
+                st.metric(
+                    "Above Reference",
+                    above_reference
+                )
+
+            with col4:
+
+                st.metric(
+                    "Potentially Overpriced",
+                    potentially_overpriced
+                )
+
+
+            # =================================================
+            # IMPORTANT NOTICE
+            # =================================================
+
+            st.info(
+                "💡 A 'Potentially Overpriced' result means the "
+                "charged price is significantly higher than our "
+                "prototype reference benchmark. It does not by "
+                "itself prove illegal overcharging."
+            )
+
+
+        # =====================================================
+        # MANUAL PRICE VERIFICATION
+        # =====================================================
+
+        st.header(
+            "🧮 Manual Price Verification"
+        )
+
+        st.write(
+            "You can also manually check any product "
+            "against the reference database."
+        )
+
+        product_options = (
+            price_data[
+                "product_name"
+            ].tolist()
+        )
+
+        selected_product = st.selectbox(
+            "Select Product",
+            product_options
+        )
+
+        selected_rows = price_data[
+            price_data[
+                "product_name"
+            ]
+            == selected_product
+        ]
+
+        if len(selected_rows) > 1:
+
+            brand_options = (
+                selected_rows[
+                    "brand"
+                ].tolist()
+            )
+
+            selected_brand = st.selectbox(
+                "Select Brand",
+                brand_options
+            )
+
+            selected_row = selected_rows[
+                selected_rows[
+                    "brand"
+                ]
+                == selected_brand
+            ].iloc[0]
+
+        else:
+
+            selected_row = (
+                selected_rows.iloc[0]
+            )
+
+        reference_price = float(
+            selected_row[
+                "reference_price"
+            ]
+        )
+
+        st.info(
+            f"Reference price for "
+            f"{selected_product}: "
+            f"**{reference_price:,.2f}**"
+        )
+
+        charged_price = st.number_input(
+            "Enter Charged Price",
+            min_value=0.0,
+            value=reference_price,
+            step=1.0
+        )
+
+        result = compare_price(
+            charged_price,
+            reference_price
+        )
+
+
+        # =================================================
+        # MANUAL COMPARISON RESULTS
+        # =================================================
+
+        st.subheader(
+            "📊 Manual Comparison"
+        )
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+
+            st.metric(
+                "Charged Price",
+                f"{charged_price:,.2f}"
+            )
+
+        with col2:
+
+            st.metric(
+                "Reference Price",
+                f"{reference_price:,.2f}"
+            )
+
+        with col3:
+
+            st.metric(
+                "Difference",
+                f"{result['difference']:,.2f}"
+            )
+
+
+        if (
+            result["status"]
+            == "Potentially Overpriced"
+        ):
+
+            st.error(
+                f"⚠️ {result['status']} "
+                f"({result['percentage_difference']}% "
+                f"above reference)"
+            )
+
+        elif (
+            result["status"]
+            == "Above Reference Price"
+        ):
+
+            st.warning(
+                f"⚠️ {result['status']} "
+                f"({result['percentage_difference']}% "
+                f"above reference)"
+            )
+
+        else:
+
+            st.success(
+                f"✅ {result['status']} "
+                f"({result['percentage_difference']}% "
+                f"difference)"
+            )
+
+
+        # =================================================
+        # AI EXPLANATION
+        # =================================================
+
+        st.subheader(
+            "🤖 AI Consumer Explanation"
+        )
+
+        with st.spinner(
+            "AI is analyzing the price difference..."
+        ):
+
+            ai_analysis = analyze_with_ai(
+
+                selected_product,
+
+                charged_price,
+
+                reference_price,
+
+                result["difference"],
+
+                result[
+                    "percentage_difference"
+                ],
+
+                result["status"]
+            )
+
+        st.info(
+            ai_analysis
+        )
+
+
+# =========================================================
+# FOOTER
+# =========================================================
+
+st.divider()
+
+st.caption(
+    "PriceProof AI • GenAI-powered consumer price "
+    "verification prototype • Reference prices are "
+    "for demonstration purposes."
+)
