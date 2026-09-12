@@ -30,12 +30,11 @@ st.markdown(
     """
     <style>
 
-    /* Main page */
     .main {
         padding-top: 1rem;
     }
 
-    /* Hero */
+    /* HERO */
     .hero {
         padding: 34px 32px;
         border-radius: 22px;
@@ -67,7 +66,7 @@ st.markdown(
         line-height: 1.6;
     }
 
-    /* Feature cards */
+    /* FEATURE CARDS */
     .feature-card {
         padding: 20px;
         border-radius: 17px;
@@ -93,7 +92,42 @@ st.markdown(
         line-height: 1.5;
     }
 
-    /* Metric cards */
+    /* DEMO CARDS */
+    .demo-card {
+        padding: 22px;
+        border-radius: 18px;
+        border: 1px solid rgba(128,128,128,0.20);
+        min-height: 190px;
+        margin-bottom: 12px;
+    }
+
+    .demo-icon {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    .demo-title {
+        font-size: 19px;
+        font-weight: 750;
+        margin-bottom: 7px;
+    }
+
+    .demo-text {
+        font-size: 14px;
+        opacity: 0.78;
+        line-height: 1.55;
+    }
+
+    /* IMPACT CARD */
+    .impact-card {
+        padding: 25px;
+        border-radius: 18px;
+        border: 1px solid rgba(128,128,128,0.20);
+        margin: 8px 0;
+        line-height: 1.65;
+    }
+
+    /* METRIC CARDS */
     .metric-card {
         padding: 20px;
         border-radius: 17px;
@@ -113,7 +147,7 @@ st.markdown(
         font-weight: 750;
     }
 
-    /* Section labels */
+    /* SECTION LABEL */
     .section-label {
         font-size: 24px;
         font-weight: 750;
@@ -121,7 +155,7 @@ st.markdown(
         margin-bottom: 10px;
     }
 
-    /* Status box */
+    /* STATUS BOX */
     .status-box {
         padding: 18px;
         border-radius: 16px;
@@ -129,7 +163,7 @@ st.markdown(
         margin: 8px 0 18px 0;
     }
 
-    /* Small badge */
+    /* BADGE */
     .badge {
         display: inline-block;
         padding: 6px 12px;
@@ -140,7 +174,7 @@ st.markdown(
         margin-right: 5px;
     }
 
-    /* Disclaimer */
+    /* DISCLAIMER */
     .disclaimer {
         padding: 18px;
         border-radius: 15px;
@@ -150,18 +184,18 @@ st.markdown(
         font-size: 14px;
     }
 
-    /* Sidebar */
+    /* SIDEBAR */
     section[data-testid="stSidebar"] {
         border-right: 1px solid rgba(128,128,128,0.15);
     }
 
-    /* Buttons */
+    /* BUTTONS */
     .stButton > button {
         border-radius: 10px;
         font-weight: 650;
     }
 
-    /* File uploader */
+    /* FILE UPLOADER */
     [data-testid="stFileUploader"] {
         border-radius: 14px;
     }
@@ -202,6 +236,190 @@ st.markdown(
     </div>
     """,
     unsafe_allow_html=True
+)
+
+
+# ============================================================
+# HACKATHON DEMO MODE
+# ============================================================
+
+st.markdown(
+    '<div class="section-label">🎯 Hackathon Demo</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    """
+    <div class="impact-card">
+
+        <h3>💡 The Problem</h3>
+
+        Consumers often receive a receipt but have no quick,
+        simple way to understand whether the prices they paid
+        are reasonable compared with available reference prices.
+
+        <br><br>
+
+        <h3>🚀 The Solution</h3>
+
+        <strong>PriceProof AI</strong> uses AI to read a receipt,
+        identify products and prices, compare them with benchmark
+        data, highlight important differences, and explain the
+        results in consumer-friendly language.
+
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
+demo1, demo2, demo3 = st.columns(3)
+
+with demo1:
+
+    st.markdown(
+        """
+        <div class="demo-card">
+
+            <div class="demo-icon">🧾</div>
+
+            <div class="demo-title">
+                1. Upload Receipt
+            </div>
+
+            <div class="demo-text">
+                Upload a receipt image. AI reads the visible
+                store, date, products, quantities and prices.
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with demo2:
+
+    st.markdown(
+        """
+        <div class="demo-card">
+
+            <div class="demo-icon">🤖</div>
+
+            <div class="demo-title">
+                2. AI Verification
+            </div>
+
+            <div class="demo-text">
+                Extracted products are matched against the
+                reference database and price differences
+                are calculated automatically.
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with demo3:
+
+    st.markdown(
+        """
+        <div class="demo-card">
+
+            <div class="demo-icon">📊</div>
+
+            <div class="demo-title">
+                3. Understand Results
+            </div>
+
+            <div class="demo-text">
+                View scores, suspicious items, charts,
+                explanations, AI answers and downloadable
+                verification reports.
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+demo4, demo5, demo6 = st.columns(3)
+
+with demo4:
+
+    st.markdown(
+        """
+        <div class="demo-card">
+
+            <div class="demo-icon">⚡</div>
+
+            <div class="demo-title">
+                Instant Comparison
+            </div>
+
+            <div class="demo-text">
+                Quickly compare charged prices with benchmark
+                prices and identify products that deserve review.
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with demo5:
+
+    st.markdown(
+        """
+        <div class="demo-card">
+
+            <div class="demo-icon">💬</div>
+
+            <div class="demo-title">
+                Ask Your Own Questions
+            </div>
+
+            <div class="demo-text">
+                Ask PriceProof AI anything about the analyzed
+                receipt and receive concise, understandable answers.
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with demo6:
+
+    st.markdown(
+        """
+        <div class="demo-card">
+
+            <div class="demo-icon">📄</div>
+
+            <div class="demo-title">
+                Consumer Report
+            </div>
+
+            <div class="demo-text">
+                Download analysis results as CSV, JSON or
+                a consumer-friendly verification report.
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+st.info(
+    "🏆 Demo message: PriceProof AI turns a simple receipt "
+    "into actionable consumer price intelligence."
 )
 
 
@@ -279,6 +497,57 @@ with feature4:
         """,
         unsafe_allow_html=True
     )
+
+
+# ============================================================
+# IMPACT
+# ============================================================
+
+with st.expander("🏆 Why PriceProof AI Matters"):
+
+    impact1, impact2, impact3 = st.columns(3)
+
+    with impact1:
+
+        st.markdown(
+            """
+            ### 👤 For Consumers
+
+            - Understand receipt prices
+            - Find products worth reviewing
+            - Compare against reference data
+            - Ask questions in natural language
+            - Get a simple verification report
+            """
+        )
+
+    with impact2:
+
+        st.markdown(
+            """
+            ### 🤖 For AI Innovation
+
+            - Multimodal receipt understanding
+            - AI-powered information extraction
+            - Intelligent product matching
+            - Natural-language receipt analysis
+            - Automated consumer insights
+            """
+        )
+
+    with impact3:
+
+        st.markdown(
+            """
+            ### 🚀 Future Potential
+
+            - Larger price databases
+            - Real-time market prices
+            - More stores and retailers
+            - Historical price tracking
+            - Mobile consumer application
+            """
+        )
 
 
 # ============================================================
@@ -1413,6 +1682,25 @@ with st.sidebar:
     st.divider()
 
     st.markdown(
+        "### 🏆 Hackathon Demo"
+    )
+
+    st.markdown(
+        """
+        **Problem:**  
+        Consumers need a simple way to understand receipt prices.
+
+        **Solution:**  
+        AI reads receipts and compares prices with benchmark data.
+
+        **Impact:**  
+        Faster price awareness and easier consumer verification.
+        """
+    )
+
+    st.divider()
+
+    st.markdown(
         "### 🧠 AI Features"
     )
 
@@ -1637,6 +1925,15 @@ if (
     st.markdown(
         '<div class="section-label">📊 Verification Dashboard</div>',
         unsafe_allow_html=True
+    )
+
+    # ========================================================
+    # DEMO RESULT SUMMARY
+    # ========================================================
+
+    st.success(
+        "🎉 Demo result: Your receipt has been transformed "
+        "into an AI-powered price verification analysis."
     )
 
     # ========================================================
@@ -2339,6 +2636,6 @@ if (
     )
 
     st.markdown(
-        "<br><center><small>💰 PriceProof AI • AI-powered consumer price verification</small></center>",
+        "<br><center><small>💰 PriceProof AI • AI-powered consumer price verification • Hackathon Demo</small></center>",
         unsafe_allow_html=True
     )
