@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import pytesseract
 from PIL import Image
+from groq import Groq
 
 
 st.set_page_config(
@@ -9,6 +10,17 @@ st.set_page_config(
     page_icon="🧾",
     layout="wide"
 )
+
+
+# -----------------------------
+# Groq Configuration
+# -----------------------------
+groq_api_key = st.secrets.get("GROQ_API_KEY")
+
+if groq_api_key:
+    groq_client = Groq(api_key=groq_api_key)
+else:
+    groq_client = None
 
 
 # -----------------------------
@@ -90,6 +102,21 @@ if uploaded_file is not None:
                 "No readable text was detected. "
                 "Please upload a clearer receipt image."
             )
+
+
+# -----------------------------
+# AI Status
+# -----------------------------
+st.divider()
+st.subheader("🤖 Generative AI")
+
+if groq_client:
+    st.success("Groq AI is connected and ready.")
+else:
+    st.warning(
+        "Groq API key is not configured yet. "
+        "We will configure it securely before deployment."
+    )
 
 
 # -----------------------------
