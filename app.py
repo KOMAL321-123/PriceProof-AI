@@ -1,3 +1,4 @@
+```python
 import streamlit as st
 import pandas as pd
 from PIL import Image
@@ -9,277 +10,241 @@ import difflib
 import plotly.express as px
 
 
-# =========================================================
-# PAGE CONFIGURATION
-# =========================================================
+# ============================================================
+# PAGE CONFIG
+# ============================================================
 
 st.set_page_config(
     page_title="PriceProof AI",
-    page_icon="💰",
+    page_icon="🧾",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 
-# =========================================================
-# CUSTOM CSS
-# =========================================================
+# ============================================================
+# PROFESSIONAL UI
+# ============================================================
 
 st.markdown(
     """
     <style>
+        .stApp {
+            background: #f7f9fc;
+        }
 
-    .stApp {
-        background: #f7f9fc;
-    }
+        .block-container {
+            padding-top: 1.5rem;
+            padding-bottom: 2rem;
+            max-width: 1400px;
+        }
 
-    .block-container {
-        padding-top: 1.5rem;
-        padding-bottom: 3rem;
-        max-width: 1450px;
-    }
+        h1, h2, h3 {
+            letter-spacing: -0.3px;
+        }
 
-    .hero {
-        padding: 2rem;
-        border-radius: 20px;
-        background: linear-gradient(
-            135deg,
-            #111827,
-            #1f2937
-        );
-        margin-bottom: 1rem;
-    }
+        .hero {
+            background: linear-gradient(
+                135deg,
+                #ffffff 0%,
+                #f1f5ff 100%
+            );
+            border: 1px solid #e4e9f2;
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 20px;
+        }
 
-    .hero-badge {
-        display: inline-block;
-        padding: 0.35rem 0.75rem;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.12);
-        color: white;
-        font-size: 0.78rem;
-        font-weight: 700;
-        margin-right: 0.4rem;
-        margin-bottom: 0.6rem;
-    }
+        .hero-title {
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
 
-    .hero-title {
-        color: white;
-        font-size: 2.8rem;
-        font-weight: 800;
-        margin-top: 0.3rem;
-    }
+        .hero-subtitle {
+            font-size: 1.05rem;
+            color: #5f6b7a;
+            line-height: 1.6;
+        }
 
-    .hero-subtitle {
-        color: #d1d5db;
-        font-size: 1.05rem;
-        line-height: 1.6;
-        max-width: 850px;
-    }
+        .section-title {
+            font-size: 1.35rem;
+            font-weight: 750;
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
 
-    .section-title {
-        font-size: 1.4rem;
-        font-weight: 800;
-        color: #111827;
-        margin-top: 1.2rem;
-        margin-bottom: 0.3rem;
-    }
+        .status-card {
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid #e5e9f0;
+            background: white;
+            min-height: 105px;
+        }
 
-    .section-description {
-        color: #6b7280;
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
-    }
+        .status-label {
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
 
-    .summary-card {
-        background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 15px;
-        padding: 1rem;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-    }
+        .status-value {
+            font-size: 1.35rem;
+            font-weight: 750;
+        }
 
-    .summary-label {
-        color: #6b7280;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
+        .info-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 18px;
+            margin: 10px 0;
+        }
 
-    .summary-value {
-        color: #111827;
-        font-size: 1.5rem;
-        font-weight: 800;
-        margin-top: 0.25rem;
-    }
+        .success-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 14px;
+            padding: 16px;
+        }
 
-    .summary-small {
-        color: #6b7280;
-        font-size: 0.75rem;
-        margin-top: 0.15rem;
-    }
+        .warning-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 14px;
+            padding: 16px;
+        }
 
-    .status-box {
-        padding: 0.9rem 1rem;
-        border-radius: 12px;
-        margin: 0.7rem 0;
-        font-weight: 600;
-    }
+        .danger-box {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 14px;
+            padding: 16px;
+        }
 
-    .status-success {
-        background: #ecfdf5;
-        border: 1px solid #a7f3d0;
-        color: #065f46;
-    }
+        .metric-note {
+            color: #6b7280;
+            font-size: 0.8rem;
+            margin-top: 3px;
+        }
 
-    .status-warning {
-        background: #fffbeb;
-        border: 1px solid #fde68a;
-        color: #92400e;
-    }
+        .small-muted {
+            color: #6b7280;
+            font-size: 0.88rem;
+        }
 
-    .status-danger {
-        background: #fef2f2;
-        border: 1px solid #fecaca;
-        color: #991b1b;
-    }
+        .footer {
+            text-align: center;
+            color: #7b8491;
+            font-size: 0.82rem;
+            padding-top: 28px;
+            padding-bottom: 10px;
+        }
 
-    .status-info {
-        background: #eff6ff;
-        border: 1px solid #bfdbfe;
-        color: #1e40af;
-    }
+        [data-testid="stMetric"] {
+            background: white;
+            border: 1px solid #e5e9f0;
+            border-radius: 14px;
+            padding: 12px;
+        }
 
-    [data-testid="stFileUploader"] {
-        background: white;
-        border-radius: 15px;
-    }
+        [data-testid="stFileUploader"] {
+            background: white;
+            border-radius: 14px;
+            padding: 8px;
+        }
 
-    .stButton > button {
-        border-radius: 10px;
-        font-weight: 650;
-    }
+        .stButton > button {
+            border-radius: 10px;
+            font-weight: 600;
+        }
 
-    .stDownloadButton > button {
-        border-radius: 10px;
-        font-weight: 650;
-    }
-
-    [data-testid="stDataFrame"] {
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    [data-testid="stSidebar"] {
-        background: white;
-    }
-
-    .footer {
-        text-align: center;
-        color: #9ca3af;
-        font-size: 0.78rem;
-        padding-top: 2rem;
-        margin-top: 2rem;
-    }
-
+        div[data-testid="stExpander"] {
+            border-radius: 12px;
+        }
     </style>
     """,
     unsafe_allow_html=True
 )
 
 
-# =========================================================
-# OPTIONAL ABOUT SECTION
-# HIDDEN BY DEFAULT
-# =========================================================
+# ============================================================
+# OPTIONAL INTRODUCTION
+# ============================================================
 
 with st.expander("ℹ️ About PriceProof AI"):
-
     st.markdown(
         """
-        <div class="hero">
+        ### PriceProof AI
 
-            <div>
-                <span class="hero-badge">🤖 AI-POWERED</span>
-                <span class="hero-badge">🧾 RECEIPT ANALYSIS</span>
-                <span class="hero-badge">📊 PRICE VERIFICATION</span>
-            </div>
+        **PriceProof AI** is an AI-powered receipt verification assistant.
 
-            <div class="hero-title">
-                PriceProof AI
-            </div>
+        Upload a receipt and the system can:
 
-            <div class="hero-subtitle">
-                Upload a receipt, let AI understand the products and
-                prices, and review how the charged prices compare
-                with benchmark data.
-            </div>
+        - 🧾 Extract receipt information
+        - 🔎 Identify products
+        - 💰 Compare charged prices with benchmark prices
+        - 📊 Calculate price differences
+        - 🧠 Explain unusual price differences
+        - 💬 Answer questions about the receipt
+        - 📥 Generate downloadable verification reports
 
-        </div>
-        """,
-        unsafe_allow_html=True
+        **Important:** Benchmark prices are reference values and may not represent
+        official market prices.
+        """
     )
 
 
-# =========================================================
-# OPTIONAL HOW IT WORKS
-# HIDDEN BY DEFAULT
-# =========================================================
-
 with st.expander("⚡ How PriceProof AI Works"):
+    st.markdown(
+        """
+        **1. Upload Receipt** → Add a receipt image.
 
-    step_col1, step_col2 = st.columns(2)
+        **2. AI Extraction** → The vision model reads important receipt information.
 
-    with step_col1:
+        **3. Product Matching** → Extracted products are matched with the reference database.
 
-        st.markdown("### 1️⃣ Upload Receipt")
+        **4. Price Comparison** → Charged prices are compared with benchmark prices.
 
-        st.write(
-            "Upload a clear image of your receipt."
-        )
+        **5. Verification** → The system calculates differences and a price-health score.
 
-        st.markdown("### 2️⃣ AI Reads Receipt")
+        **6. AI Explanation** → AI can explain significant price differences.
 
-        st.write(
-            "AI extracts the store, date, products, quantities "
-            "and prices."
-        )
+        **7. Ask Questions** → Ask your own questions about the receipt.
 
-        st.markdown("### 3️⃣ Match Products")
+        **8. Manual Verification** → You can manually verify a product price.
 
-        st.write(
-            "Products are matched against the reference database."
-        )
-
-    with step_col2:
-
-        st.markdown("### 4️⃣ Compare Prices")
-
-        st.write(
-            "Charged prices are compared with benchmark prices."
-        )
-
-        st.markdown("### 5️⃣ Review Results")
-
-        st.write(
-            "The dashboard highlights important price differences."
-        )
-
-        st.markdown("### 6️⃣ Ask AI")
-
-        st.write(
-            "You can ask questions about the analyzed receipt."
-        )
+        **9. Download Results** → Export CSV, JSON, or a consumer report.
+        """
+    )
 
 
-# =========================================================
+# ============================================================
+# HEADER
+# ============================================================
+
+st.markdown(
+    """
+    <div class="hero">
+        <div class="hero-title">🧾 PriceProof AI</div>
+        <div class="hero-subtitle">
+            AI-powered consumer price verification from receipt images.
+            Upload a receipt, review extracted products, compare prices,
+            and understand the results.
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
+# ============================================================
 # LOAD REFERENCE DATABASE
-# =========================================================
+# ============================================================
 
 @st.cache_data
 def load_products():
-
     try:
-
         df = pd.read_csv("products.csv")
 
         df.columns = [
@@ -290,153 +255,136 @@ def load_products():
         return df
 
     except Exception:
-
         return pd.DataFrame()
 
 
 products_df = load_products()
 
 
-# =========================================================
+# ============================================================
 # GROQ CLIENT
-# =========================================================
+# ============================================================
 
 try:
-
     GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
-
-    groq_client = Groq(
-        api_key=GROQ_API_KEY
-    )
-
 except Exception:
+    GROQ_API_KEY = None
 
+
+if GROQ_API_KEY:
+    groq_client = Groq(api_key=GROQ_API_KEY)
+else:
     groq_client = None
 
 
-# =========================================================
+# ============================================================
 # SESSION STATE
-# =========================================================
+# ============================================================
 
-if "receipt_data" not in st.session_state:
-    st.session_state.receipt_data = None
+defaults = {
+    "analysis_complete": False,
+    "receipt_data": None,
+    "processed_items": [],
+    "receipt_image": None,
+    "chat_history": [],
+    "manual_results": {},
+    "last_report": "",
+    "last_error": None
+}
 
-if "processed_items" not in st.session_state:
-    st.session_state.processed_items = []
-
-if "uploaded_image" not in st.session_state:
-    st.session_state.uploaded_image = None
-
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-
-if "analysis_complete" not in st.session_state:
-    st.session_state.analysis_complete = False
+for key, value in defaults.items():
+    if key not in st.session_state:
+        st.session_state[key] = value
 
 
-# =========================================================
+# ============================================================
 # HELPER FUNCTIONS
-# =========================================================
+# ============================================================
+
+def safe_float(value, default=0.0):
+    try:
+        if value is None:
+            return default
+
+        if isinstance(value, str):
+            value = (
+                value.replace(",", "")
+                .replace("Rs.", "")
+                .replace("Rs", "")
+                .replace("PKR", "")
+                .strip()
+            )
+
+        return float(value)
+
+    except Exception:
+        return default
+
+
+def safe_int(value, default=1):
+    try:
+        if value is None:
+            return default
+
+        return max(1, int(float(value)))
+
+    except Exception:
+        return default
+
 
 def normalize_text(value):
-
     if value is None:
         return ""
 
     value = str(value).lower().strip()
 
-    value = re.sub(
-        r"[^a-z0-9\s]",
-        " ",
-        value
-    )
+    value = re.sub(r"[^a-z0-9\s]", " ", value)
+    value = re.sub(r"\s+", " ", value)
 
-    value = re.sub(
-        r"\s+",
-        " ",
-        value
-    )
-
-    return value
-
-
-def safe_float(value, default=0.0):
-
-    try:
-
-        if value is None:
-            return default
-
-        if isinstance(value, str):
-
-            value = value.replace(",", "")
-            value = value.replace("Rs.", "")
-            value = value.replace("PKR", "")
-            value = value.strip()
-
-        return float(value)
-
-    except Exception:
-
-        return default
-
-
-def safe_int(value, default=1):
-
-    try:
-
-        return max(
-            1,
-            int(float(value))
-        )
-
-    except Exception:
-
-        return default
+    return value.strip()
 
 
 def similarity_score(a, b):
-
     a = normalize_text(a)
     b = normalize_text(b)
 
     if not a or not b:
         return 0
 
-    return difflib.SequenceMatcher(
-        None,
-        a,
-        b
-    ).ratio()
+    return difflib.SequenceMatcher(None, a, b).ratio()
+
+
+def find_column(df, possible_names):
+    if df.empty:
+        return None
+
+    columns = list(df.columns)
+
+    for name in possible_names:
+        if name in columns:
+            return name
+
+    return None
 
 
 def prepare_image(image):
-
-    image = image.convert("RGB")
+    image = image.copy()
 
     max_size = 2200
 
-    if max(image.size) > max_size:
+    if image.width > max_size or image.height > max_size:
+        image.thumbnail((max_size, max_size))
 
-        ratio = max_size / max(image.size)
-
-        new_size = (
-            int(image.width * ratio),
-            int(image.height * ratio)
-        )
-
-        image = image.resize(
-            new_size
-        )
+    if image.mode != "RGB":
+        image = image.convert("RGB")
 
     return image
 
 
 def image_to_base64(image):
+    import io
 
-    from io import BytesIO
-
-    buffer = BytesIO()
+    buffer = io.BytesIO()
 
     image.save(
         buffer,
@@ -445,161 +393,37 @@ def image_to_base64(image):
         optimize=True
     )
 
-    return base64.b64encode(
-        buffer.getvalue()
-    ).decode("utf-8")
+    return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
 
-# =========================================================
-# RECEIPT EXTRACTION
-# =========================================================
+# ============================================================
+# REFERENCE MATCHING
+# ============================================================
 
-def extract_receipt(image):
-
-    if groq_client is None:
-
-        return {
-            "error": (
-                "Groq API key is not configured."
-            )
-        }
-
-    image = prepare_image(
-        image
-    )
-
-    image_base64 = image_to_base64(
-        image
-    )
-
-    prompt = """
-Analyze this receipt image carefully.
-
-Return ONLY valid JSON.
-
-Use exactly this structure:
-
-{
-  "store": "",
-  "date": "",
-  "receipt_total": 0,
-  "items": [
-    {
-      "product": "",
-      "brand": "",
-      "quantity": 1,
-      "charged_price": 0,
-      "line_total": 0
-    }
-  ]
-}
-
-Rules:
-
-- Extract only information visible on the receipt.
-- If a value is unknown, use an empty string or 0.
-- charged_price should represent the unit price when possible.
-- line_total should represent the total charged for the item.
-- Do not add explanations outside JSON.
-"""
-
-    try:
-
-        response = groq_client.chat.completions.create(
-
-            model="qwen/qwen3.6-27b",
-
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-
-                        {
-                            "type": "text",
-                            "text": prompt
-                        },
-
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": (
-                                    "data:image/jpeg;base64,"
-                                    + image_base64
-                                )
-                            }
-                        }
-
-                    ]
-                }
-            ],
-
-            temperature=0,
-
-            max_completion_tokens=800,
-
-            response_format={
-                "type": "json_object"
-            }
-        )
-
-        content = (
-            response
-            .choices[0]
-            .message
-            .content
-        )
-
-        return json.loads(
-            content
-        )
-
-    except Exception as e:
-
-        return {
-            "error": str(e)
-        }
-
-
-# =========================================================
-# PRODUCT MATCHING
-# =========================================================
-
-def match_product(product_name):
-
-    if products_df.empty:
+def match_product(product_name, df):
+    if df.empty:
         return None, 0
 
-    possible_name_columns = [
-        "product",
-        "product_name",
-        "name",
-        "item",
-        "item_name"
-    ]
+    product_col = find_column(
+        df,
+        [
+            "product",
+            "product_name",
+            "name",
+            "item",
+            "item_name"
+        ]
+    )
 
-    name_column = None
-
-    for col in possible_name_columns:
-
-        if col in products_df.columns:
-
-            name_column = col
-
-            break
-
-    if name_column is None:
-
+    if not product_col:
         return None, 0
 
-    best_index = None
+    best_match = None
     best_score = 0
 
-    for index, row in products_df.iterrows():
+    for _, row in df.iterrows():
 
-        reference_name = row.get(
-            name_column,
-            ""
-        )
+        reference_name = str(row.get(product_col, ""))
 
         score = similarity_score(
             product_name,
@@ -607,688 +431,601 @@ def match_product(product_name):
         )
 
         if score > best_score:
-
             best_score = score
-            best_index = index
+            best_match = row
 
-    if best_index is None:
+    return best_match, best_score
 
-        return None, 0
 
-    return (
-        products_df.loc[best_index],
-        best_score
+def get_reference_price(row, df):
+    if row is None or df.empty:
+        return None
+
+    price_col = find_column(
+        df,
+        [
+            "price",
+            "reference_price",
+            "benchmark_price",
+            "unit_price",
+            "benchmark",
+            "avg_price",
+            "average_price"
+        ]
     )
 
+    if not price_col:
+        return None
 
-# =========================================================
-# GET REFERENCE PRICE
-# =========================================================
-
-def get_reference_price(reference_row):
-
-    if reference_row is None:
-
-        return 0
-
-    possible_price_columns = [
-        "reference_price",
-        "benchmark_price",
-        "price",
-        "unit_price",
-        "market_price",
-        "average_price"
-    ]
-
-    for col in possible_price_columns:
-
-        if col in reference_row.index:
-
-            value = safe_float(
-                reference_row[col]
-            )
-
-            if value > 0:
-
-                return value
-
-    return 0
+    return safe_float(row.get(price_col), None)
 
 
-# =========================================================
-# PROCESS ITEMS
-# =========================================================
+# ============================================================
+# RECEIPT EXTRACTION
+# ============================================================
 
-def process_items(receipt_data):
+def extract_receipt(image):
+
+    if not groq_client:
+        raise RuntimeError(
+            "GROQ_API_KEY is not configured in Streamlit secrets."
+        )
+
+    image_b64 = image_to_base64(image)
+
+    prompt = """
+Extract the receipt information from this image.
+
+Return ONLY valid JSON.
+
+Use this exact structure:
+
+{
+  "store": "",
+  "date": "",
+  "items": [
+    {
+      "product": "",
+      "brand": "",
+      "quantity": 1,
+      "unit_price": 0,
+      "line_total": 0
+    }
+  ],
+  "receipt_total": 0
+}
+
+Rules:
+- Use numbers for quantity, unit_price, line_total and receipt_total.
+- If a value is unavailable, use an empty string for text and 0 for numeric values.
+- Do not invent products.
+- Keep product names concise.
+"""
+
+    response = groq_client.chat.completions.create(
+        model="qwen/qwen3.6-27b",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a receipt extraction assistant. "
+                    "Return accurate structured JSON only."
+                )
+            },
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": prompt
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": (
+                                "data:image/jpeg;base64,"
+                                + image_b64
+                            )
+                        }
+                    }
+                ]
+            }
+        ],
+        temperature=0,
+        max_completion_tokens=800,
+        response_format={"type": "json_object"}
+    )
+
+    content = response.choices[0].message.content
+
+    return json.loads(content)
+
+
+# ============================================================
+# PROCESS RECEIPT ITEMS
+# ============================================================
+
+def process_items(receipt_data, df):
 
     processed = []
 
-    items = receipt_data.get(
-        "items",
-        []
-    )
-
-    if not isinstance(items, list):
-
-        return processed
+    items = receipt_data.get("items", [])
 
     for item in items:
 
-        if not isinstance(item, dict):
-
-            continue
-
-        product_name = item.get(
-            "product",
-            ""
-        )
-
-        brand = item.get(
-            "brand",
-            ""
-        )
+        product_name = str(
+            item.get("product", "")
+        ).strip()
 
         quantity = safe_int(
-            item.get(
-                "quantity",
-                1
-            )
+            item.get("quantity", 1)
         )
 
-        charged_price = safe_float(
-            item.get(
-                "charged_price",
-                0
-            )
+        unit_price = safe_float(
+            item.get("unit_price", 0)
         )
 
         line_total = safe_float(
-            item.get(
-                "line_total",
-                0
-            )
+            item.get("line_total", 0)
         )
 
-        reference_row, confidence = match_product(
-            product_name
+        if unit_price == 0 and line_total > 0:
+            unit_price = line_total / quantity
+
+        reference_row, match_score = match_product(
+            product_name,
+            df
         )
 
         reference_price = get_reference_price(
-            reference_row
+            reference_row,
+            df
         )
 
-        difference = (
-            charged_price -
-            reference_price
-        )
+        difference = None
+        difference_percent = None
 
-        difference_percent = 0
+        if reference_price is not None:
+            difference = unit_price - reference_price
 
-        if reference_price > 0:
+            if reference_price != 0:
+                difference_percent = (
+                    difference / reference_price
+                ) * 100
 
-            difference_percent = (
-                difference /
-                reference_price
-            ) * 100
+        if difference is not None:
 
-        total_difference = (
-            difference *
-            quantity
-        )
+            if difference > 0:
+                status = "Above benchmark"
 
-        status = "No Reference"
-
-        if reference_price > 0:
-
-            if difference_percent > 10:
-
-                status = "Review"
-
-            elif difference_percent > 0:
-
-                status = "Above Benchmark"
-
-            elif difference_percent < -10:
-
-                status = "Below Benchmark"
+            elif difference < 0:
+                status = "Below benchmark"
 
             else:
+                status = "At benchmark"
 
-                status = "Within Range"
+        else:
+            status = "No benchmark"
 
         processed.append(
             {
-                "Product": product_name,
-                "Brand": brand,
-                "Quantity": quantity,
-                "Charged Price": charged_price,
-                "Reference Price": reference_price,
-                "Difference": difference,
-                "Difference %": difference_percent,
-                "Total Difference": total_difference,
-                "Match Confidence": confidence,
-                "Status": status,
-                "Line Total": line_total
+                "product": product_name,
+                "brand": str(
+                    item.get("brand", "")
+                ),
+                "quantity": quantity,
+                "charged_unit_price": unit_price,
+                "line_total": line_total,
+                "reference_price": reference_price,
+                "difference": difference,
+                "difference_percent": difference_percent,
+                "match_score": match_score,
+                "status": status
             }
         )
 
     return processed
 
 
-# =========================================================
+# ============================================================
 # AI PRICE EXPLANATION
-# =========================================================
+# ============================================================
 
-def explain_price(item):
+def explain_price_difference(item):
 
-    if groq_client is None:
+    if not groq_client:
+        return "AI explanation is unavailable because the Groq API key is not configured."
 
-        return (
-            "AI explanation is unavailable because "
-            "the Groq API key is not configured."
-        )
+    reference = item.get("reference_price")
+    charged = item.get("charged_unit_price")
+    difference = item.get("difference")
+    percentage = item.get("difference_percent")
 
     prompt = f"""
-Explain this product price comparison in simple language.
+Explain this receipt price difference briefly and clearly.
 
-Product: {item.get("Product")}
-Charged price: {item.get("Charged Price")}
-Reference price: {item.get("Reference Price")}
-Difference: {item.get("Difference")}
-Difference percentage: {item.get("Difference %")}
+Product: {item.get("product")}
+Charged price: {charged}
+Reference price: {reference}
+Difference: {difference}
+Difference percentage: {percentage}%
 
-Give a short explanation.
+Give:
+1. What the difference means.
+2. One or two possible reasons.
+3. A short consumer recommendation.
 
-Mention whether the charged price is higher,
-lower, or close to the benchmark.
-
-Do not make legal accusations.
+Do not claim illegal overcharging.
+Keep the answer concise.
 """
 
     try:
 
         response = groq_client.chat.completions.create(
-
             model="openai/gpt-oss-20b",
-
             messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a helpful consumer price "
+                        "verification assistant."
+                    )
+                },
                 {
                     "role": "user",
                     "content": prompt
                 }
             ],
-
             temperature=0.2,
-
             max_completion_tokens=300
         )
 
-        return (
-            response
-            .choices[0]
-            .message
-            .content
-            .strip()
-        )
+        return response.choices[0].message.content.strip()
 
     except Exception as e:
-
-        return (
-            f"AI explanation unavailable: {e}"
-        )
+        return f"AI explanation unavailable: {str(e)}"
 
 
-# =========================================================
+# ============================================================
 # AI RECEIPT CHAT
-# =========================================================
+# ============================================================
 
-def ask_receipt_ai(question):
+def ask_receipt_question(question):
 
-    if groq_client is None:
-
+    if not groq_client:
         return (
-            "AI chat is unavailable because "
-            "the Groq API key is not configured."
+            "AI chat is unavailable because the Groq API key "
+            "is not configured."
         )
 
-    receipt_data = (
-        st.session_state.receipt_data
-    )
-
-    processed_items = (
-        st.session_state.processed_items
-    )
+    receipt_data = st.session_state.receipt_data
+    processed = st.session_state.processed_items
 
     context = {
         "receipt": receipt_data,
-        "analysis": processed_items
+        "analysis": processed
     }
 
     prompt = f"""
-You are PriceProof AI,
-a receipt and price-analysis assistant.
+Answer the user's question using only the receipt information below.
 
-Answer the user's question using the receipt
-information below.
-
-Receipt and analysis:
-
-{json.dumps(
-    context,
-    indent=2,
-    default=str
-)}
+Receipt information:
+{json.dumps(context, indent=2, default=str)}
 
 User question:
-
 {question}
 
-Rules:
-
-- Answer directly.
-- Be complete but concise.
-- Avoid unnecessary information.
-- If the receipt does not contain the answer, say so.
-- Do not invent facts.
-- Do not claim that a price difference proves illegal overcharging.
+Instructions:
+- Be accurate.
+- Be concise.
+- Give the important information first.
+- Do not invent missing information.
+- If the receipt does not contain the answer, clearly say so.
 """
 
     try:
 
         response = groq_client.chat.completions.create(
-
             model="openai/gpt-oss-20b",
-
             messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a concise receipt analysis assistant."
+                    )
+                },
                 {
                     "role": "user",
                     "content": prompt
                 }
             ],
-
             temperature=0.2,
-
             max_completion_tokens=500
         )
 
-        return (
-            response
-            .choices[0]
-            .message
-            .content
-            .strip()
-        )
+        return response.choices[0].message.content.strip()
 
     except Exception as e:
-
-        return (
-            f"AI response unavailable: {e}"
-        )
+        return f"AI answer unavailable: {str(e)}"
 
 
-# =========================================================
+# ============================================================
 # PRICE HEALTH SCORE
-# =========================================================
+# ============================================================
 
 def calculate_health_score(items):
 
-    if not items:
-
-        return 0
-
-    referenced_items = [
+    benchmark_items = [
         item
         for item in items
-        if item["Reference Price"] > 0
+        if item.get("reference_price") is not None
     ]
 
-    if not referenced_items:
+    if not benchmark_items:
+        return None
 
-        return 0
-
-    scores = []
-
-    for item in referenced_items:
-
-        difference_percent = abs(
-            item["Difference %"]
-        )
-
-        if difference_percent <= 5:
-
-            item_score = 100
-
-        elif difference_percent <= 10:
-
-            item_score = 85
-
-        elif difference_percent <= 20:
-
-            item_score = 65
-
-        elif difference_percent <= 30:
-
-            item_score = 45
-
-        else:
-
-            item_score = 25
-
-        scores.append(
-            item_score
-        )
-
-    return round(
-        sum(scores) /
-        len(scores)
+    above_count = sum(
+        1
+        for item in benchmark_items
+        if safe_float(item.get("difference")) > 0
     )
+
+    total = len(benchmark_items)
+
+    score = 100 - (
+        above_count / total * 100
+    )
+
+    return round(max(0, min(100, score)))
 
 
 def get_verdict(score):
 
-    if score >= 90:
+    if score is None:
+        return "Insufficient benchmark data"
 
-        return "Excellent"
+    if score >= 85:
+        return "Looks healthy"
 
-    if score >= 75:
+    if score >= 65:
+        return "Mostly reasonable"
 
-        return "Good"
+    if score >= 45:
+        return "Review recommended"
 
-    if score >= 60:
-
-        return "Needs Review"
-
-    if score > 0:
-
-        return "High Review Needed"
-
-    return "Insufficient Data"
+    return "Multiple price differences"
 
 
-# =========================================================
+# ============================================================
 # RECEIPT TOTAL CHECK
-# =========================================================
+# ============================================================
 
-def check_receipt_total(
-    receipt_data,
-    items
-):
+def check_receipt_total(receipt_data, items):
 
     receipt_total = safe_float(
-        receipt_data.get(
-            "receipt_total",
-            0
-        )
+        receipt_data.get("receipt_total", 0)
     )
 
     calculated_total = sum(
-        safe_float(
-            item.get(
-                "Line Total",
-                0
-            )
-        )
+        safe_float(item.get("line_total", 0))
         for item in items
     )
 
-    if receipt_total <= 0:
+    difference = receipt_total - calculated_total
 
+    if receipt_total == 0:
         return {
+            "available": False,
             "receipt_total": receipt_total,
             "calculated_total": calculated_total,
-            "difference": 0,
-            "status": "Unavailable"
+            "difference": difference
         }
 
-    difference = (
-        receipt_total -
-        calculated_total
-    )
+    tolerance = max(1.0, receipt_total * 0.02)
 
-    tolerance = max(
-        2,
-        receipt_total * 0.01
-    )
-
-    if abs(difference) <= tolerance:
-
-        status = "Consistent"
-
-    else:
-
-        status = "Review"
+    consistent = abs(difference) <= tolerance
 
     return {
+        "available": True,
         "receipt_total": receipt_total,
         "calculated_total": calculated_total,
         "difference": difference,
-        "status": status
+        "consistent": consistent
     }
 
 
-# =========================================================
+# ============================================================
 # CONSUMER REPORT
-# =========================================================
+# ============================================================
 
-def generate_report():
+def create_report():
 
-    receipt = (
-        st.session_state.receipt_data
-    )
+    receipt = st.session_state.receipt_data
+    items = st.session_state.processed_items
 
-    items = (
-        st.session_state.processed_items
-    )
-
-    score = calculate_health_score(
-        items
-    )
-
-    verdict = get_verdict(
-        score
-    )
+    score = calculate_health_score(items)
+    verdict = get_verdict(score)
 
     total_check = check_receipt_total(
         receipt,
         items
     )
 
-    report = []
+    lines = []
 
-    report.append(
-        "PRICEPROOF AI — CONSUMER VERIFICATION REPORT"
-    )
+    lines.append("PRICEPROOF AI - CONSUMER VERIFICATION REPORT")
+    lines.append("=" * 55)
+    lines.append("")
 
-    report.append(
-        "=" * 55
-    )
-
-    report.append("")
-
-    report.append(
+    lines.append(
         f"Store: {receipt.get('store', 'Unknown')}"
     )
 
-    report.append(
+    lines.append(
         f"Date: {receipt.get('date', 'Unknown')}"
     )
 
-    report.append(
+    lines.append("")
+
+    lines.append(
         f"Receipt Total: "
-        f"{safe_float(receipt.get('receipt_total', 0)):,.2f}"
+        f"{safe_float(receipt.get('receipt_total', 0)):.2f}"
     )
 
-    report.append("")
+    if score is not None:
+        lines.append(
+            f"Price Health Score: {score}/100"
+        )
 
-    report.append("PRICE HEALTH")
-    report.append("-" * 30)
-
-    report.append(
-        f"Score: {score}/100"
-    )
-
-    report.append(
+    lines.append(
         f"Verdict: {verdict}"
     )
 
-    report.append("")
+    lines.append("")
 
-    report.append("PRODUCT ANALYSIS")
-    report.append("-" * 30)
+    lines.append("PRODUCT ANALYSIS")
+    lines.append("-" * 55)
 
     for item in items:
 
-        report.append(
-            f"Product: {item['Product']}"
+        lines.append(
+            f"Product: {item.get('product')}"
         )
 
-        report.append(
-            f"Charged: "
-            f"{item['Charged Price']:,.2f}"
+        lines.append(
+            f"Quantity: {item.get('quantity')}"
         )
 
-        report.append(
-            f"Reference: "
-            f"{item['Reference Price']:,.2f}"
+        lines.append(
+            f"Charged Unit Price: "
+            f"{safe_float(item.get('charged_unit_price')):.2f}"
         )
 
-        report.append(
+        reference = item.get("reference_price")
+
+        if reference is not None:
+
+            lines.append(
+                f"Reference Price: "
+                f"{safe_float(reference):.2f}"
+            )
+
+            lines.append(
+                f"Difference: "
+                f"{safe_float(item.get('difference')):.2f}"
+            )
+
+        else:
+            lines.append(
+                "Reference Price: Not available"
+            )
+
+        lines.append(
+            f"Status: {item.get('status')}"
+        )
+
+        lines.append("")
+
+    if total_check.get("available"):
+
+        lines.append("RECEIPT TOTAL CHECK")
+        lines.append("-" * 55)
+
+        lines.append(
+            f"Receipt total: "
+            f"{total_check['receipt_total']:.2f}"
+        )
+
+        lines.append(
+            f"Calculated item total: "
+            f"{total_check['calculated_total']:.2f}"
+        )
+
+        lines.append(
             f"Difference: "
-            f"{item['Difference']:,.2f} "
-            f"({item['Difference %']:.1f}%)"
+            f"{total_check['difference']:.2f}"
         )
 
-        report.append(
-            f"Status: {item['Status']}"
+        lines.append(
+            "Status: "
+            + (
+                "Consistent"
+                if total_check["consistent"]
+                else "Review recommended"
+            )
         )
 
-        report.append("")
+        lines.append("")
 
-    report.append(
-        "RECEIPT TOTAL CHECK"
+    lines.append(
+        "DISCLAIMER: Benchmark prices are reference values and "
+        "may not represent official market prices. A price "
+        "difference does not by itself prove illegal overcharging."
     )
 
-    report.append(
-        "-" * 30
-    )
-
-    report.append(
-        f"Receipt total: "
-        f"{total_check['receipt_total']:,.2f}"
-    )
-
-    report.append(
-        f"Calculated item total: "
-        f"{total_check['calculated_total']:,.2f}"
-    )
-
-    report.append(
-        f"Status: {total_check['status']}"
-    )
-
-    report.append("")
-
-    report.append(
-        "DISCLAIMER: Reference prices are benchmark data "
-        "and may not represent official market prices. "
-        "A price difference alone does not prove illegal "
-        "overcharging."
-    )
-
-    return "\n".join(
-        report
-    )
+    return "\n".join(lines)
 
 
-# =========================================================
+# ============================================================
 # SIDEBAR
-# =========================================================
+# ============================================================
 
 with st.sidebar:
 
-    st.markdown(
-        "## 💰 PriceProof AI"
-    )
+    st.markdown("## 🧾 PriceProof AI")
 
     st.caption(
-        "AI-powered consumer price verification"
+        "Consumer price verification assistant"
     )
 
     st.divider()
 
-    st.markdown(
-        "### 📋 Analysis"
-    )
+    st.markdown("### 📌 Analysis")
 
-    st.write(
-        "1. Upload receipt"
-    )
-
-    st.write(
-        "2. Extract receipt data"
-    )
-
-    st.write(
-        "3. Match products"
-    )
-
-    st.write(
-        "4. Compare prices"
-    )
-
-    st.write(
-        "5. Review results"
-    )
+    st.write("1. Upload receipt")
+    st.write("2. Extract receipt data")
+    st.write("3. Match products")
+    st.write("4. Compare prices")
+    st.write("5. Review results")
 
     st.divider()
 
-    st.markdown(
-        "### 🗂️ Reference Database"
-    )
+    st.markdown("### 🗃️ Reference Database")
 
     if products_df.empty:
-
-        st.warning(
-            "products.csv not found or empty."
-        )
-
+        st.error("products.csv not available")
     else:
-
         st.success(
-            f"{len(products_df)} "
-            "reference records loaded"
+            f"{len(products_df)} reference records loaded"
         )
 
     st.divider()
 
-    st.markdown(
-        "### 🤖 AI Models"
-    )
+    if st.session_state.analysis_complete:
 
-    st.caption(
-        "Receipt Vision: qwen/qwen3.6-27b"
-    )
+        st.markdown("### ✅ Current Status")
 
-    st.caption(
-        "Analysis AI: openai/gpt-oss-20b"
-    )
+        st.success(
+            "Receipt analysis complete"
+        )
+
+        if st.button(
+            "🔄 Start New Analysis",
+            use_container_width=True
+        ):
+
+            for key, value in defaults.items():
+                st.session_state[key] = value
+
+            st.rerun()
 
 
-# =========================================================
+# ============================================================
 # RECEIPT UPLOAD
-# =========================================================
+# ============================================================
 
 st.markdown(
-    '<div class="section-title">'
-    '📷 Upload Your Receipt'
-    '</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    '<div class="section-description">'
-    'Upload a clear receipt image for AI-powered analysis.'
-    '</div>',
+    '<div class="section-title">📤 Upload Receipt</div>',
     unsafe_allow_html=True
 )
 
@@ -1300,15 +1037,11 @@ uploaded_file = st.file_uploader(
         "png",
         "webp"
     ],
-    label_visibility="collapsed"
+    help="Upload a clear receipt image for best extraction accuracy."
 )
 
 
-# =========================================================
-# IMAGE PREVIEW + PROCESSING
-# =========================================================
-
-if uploaded_file is not None:
+if uploaded_file:
 
     try:
 
@@ -1316,85 +1049,104 @@ if uploaded_file is not None:
             uploaded_file
         )
 
-        st.session_state.uploaded_image = image
+        image = prepare_image(image)
 
-        preview_col, action_col = st.columns(
-            [1, 1.5]
+        st.session_state.receipt_image = image
+
+        left, right = st.columns(
+            [1, 1]
         )
 
-        with preview_col:
-
-            st.markdown(
-                "#### 🧾 Receipt Preview"
-            )
+        with left:
 
             st.image(
                 image,
+                caption="Uploaded receipt",
                 use_container_width=True
             )
 
-        with action_col:
+        with right:
 
             st.markdown(
-                "#### 🔍 Ready for Analysis"
+                """
+                <div class="info-box">
+                    <strong>Receipt ready for analysis</strong><br>
+                    The image has been prepared for AI extraction.
+                    Click the button below to begin.
+                </div>
+                """,
+                unsafe_allow_html=True
             )
 
-            st.info(
-                "Your receipt is ready. "
-                "Click the button below to analyze it."
-            )
-
-            analyze_button = st.button(
-                "🚀 Analyze Receipt",
+            analyze_clicked = st.button(
+                "🔍 Analyze Receipt",
                 type="primary",
-                use_container_width=True
+                use_container_width=True,
+                key="analyze_receipt_button"
             )
 
-            if analyze_button:
+            if analyze_clicked:
 
-                with st.spinner(
-                    "AI is reading and analyzing your receipt..."
-                ):
-
-                    receipt_data = extract_receipt(
-                        image
-                    )
-
-                if "error" in receipt_data:
+                if not groq_client:
 
                     st.error(
-                        "Receipt analysis failed."
+                        "GROQ_API_KEY is missing. "
+                        "Please add it to Streamlit Secrets."
                     )
 
-                    st.code(
-                        receipt_data["error"]
-                    )
+                elif products_df.empty:
 
-                    st.session_state.analysis_complete = False
+                    st.error(
+                        "products.csv could not be loaded. "
+                        "Please check that the file exists in your GitHub repository."
+                    )
 
                 else:
 
-                    processed_items = process_items(
-                        receipt_data
-                    )
+                    with st.spinner(
+                        "AI is reading and analyzing the receipt..."
+                    ):
 
-                    st.session_state.receipt_data = (
-                        receipt_data
-                    )
+                        try:
 
-                    st.session_state.processed_items = (
-                        processed_items
-                    )
+                            receipt_data = extract_receipt(
+                                image
+                            )
 
-                    st.session_state.chat_history = []
+                            processed_items = process_items(
+                                receipt_data,
+                                products_df
+                            )
 
-                    st.session_state.analysis_complete = True
+                            st.session_state.receipt_data = receipt_data
 
-                    st.success(
-                        "Analysis completed successfully!"
-                    )
+                            st.session_state.processed_items = processed_items
 
-                    st.rerun()
+                            st.session_state.analysis_complete = True
+
+                            st.session_state.chat_history = []
+
+                            st.session_state.manual_results = {}
+
+                            st.session_state.last_report = create_report()
+
+                            st.success(
+                                "Receipt analyzed successfully."
+                            )
+
+                            st.rerun()
+
+                        except Exception as e:
+
+                            st.session_state.analysis_complete = False
+
+                            st.error(
+                                "The receipt could not be analyzed."
+                            )
+
+                            st.code(
+                                str(e)
+                            )
 
     except Exception as e:
 
@@ -1407,172 +1159,172 @@ if uploaded_file is not None:
         )
 
 
-# =========================================================
-# REFERENCE DATABASE PREVIEW
-# =========================================================
+# ============================================================
+# DATABASE PREVIEW
+# ============================================================
 
 if not st.session_state.analysis_complete:
 
     if not products_df.empty:
 
         with st.expander(
-            "🗂️ Preview Reference Database"
+            "🗃️ Preview Reference Database"
         ):
 
+            st.caption(
+                "Reference data used for product matching and price comparison."
+            )
+
             st.dataframe(
-                products_df.head(10),
+                products_df.head(20),
                 use_container_width=True,
                 hide_index=True
             )
 
+    st.info(
+        "Upload a receipt above to start the analysis."
+    )
 
-# =========================================================
+
+# ============================================================
 # RESULTS
-# =========================================================
+# ============================================================
 
 if st.session_state.analysis_complete:
 
-    receipt = (
-        st.session_state.receipt_data
-    )
+    receipt = st.session_state.receipt_data
 
-    items = (
-        st.session_state.processed_items
-    )
+    items = st.session_state.processed_items
+
+    # --------------------------------------------------------
+    # RESULTS HEADER
+    # --------------------------------------------------------
 
     st.divider()
 
     st.markdown(
-        '<div class="section-title">'
-        '✅ Verification Complete'
-        '</div>',
+        '<div class="section-title">📊 Verification Dashboard</div>',
         unsafe_allow_html=True
     )
 
-    st.markdown(
-        '<div class="section-description">'
-        'Here is your receipt analysis at a glance.'
-        '</div>',
-        unsafe_allow_html=True
+    st.success(
+        "Analysis complete — review the verification results below."
     )
 
-
-    # =====================================================
+    # --------------------------------------------------------
     # RECEIPT INFORMATION
-    # =====================================================
+    # --------------------------------------------------------
 
-    info_cols = st.columns(4)
+    store = receipt.get(
+        "store",
+        "Unknown"
+    )
 
-    with info_cols[0]:
+    date = receipt.get(
+        "date",
+        "Unknown"
+    )
 
-        st.markdown(
-            f"""
-            <div class="summary-card">
+    receipt_total = safe_float(
+        receipt.get("receipt_total", 0)
+    )
 
-                <div class="summary-label">
-                    Store
-                </div>
+    col1, col2, col3 = st.columns(3)
 
-                <div class="summary-value">
-                    {receipt.get("store", "Unknown")}
-                </div>
-
-                <div class="summary-small">
-                    Receipt merchant
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True
+    with col1:
+        st.metric(
+            "🏪 Store",
+            store or "Unknown"
         )
 
-    with info_cols[1]:
-
-        st.markdown(
-            f"""
-            <div class="summary-card">
-
-                <div class="summary-label">
-                    Date
-                </div>
-
-                <div class="summary-value">
-                    {receipt.get("date", "Unknown")}
-                </div>
-
-                <div class="summary-small">
-                    Receipt date
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True
+    with col2:
+        st.metric(
+            "📅 Date",
+            date or "Unknown"
         )
 
-    with info_cols[2]:
-
-        st.markdown(
-            f"""
-            <div class="summary-card">
-
-                <div class="summary-label">
-                    Items
-                </div>
-
-                <div class="summary-value">
-                    {len(items)}
-                </div>
-
-                <div class="summary-small">
-                    Products detected
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True
+    with col3:
+        st.metric(
+            "🧾 Receipt Total",
+            f"{receipt_total:,.2f}"
         )
 
-    with info_cols[3]:
-
-        receipt_total = safe_float(
-            receipt.get(
-                "receipt_total",
-                0
-            )
-        )
-
-        st.markdown(
-            f"""
-            <div class="summary-card">
-
-                <div class="summary-label">
-                    Receipt Total
-                </div>
-
-                <div class="summary-value">
-                    Rs. {receipt_total:,.2f}
-                </div>
-
-                <div class="summary-small">
-                    Total shown on receipt
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-
-    # =====================================================
-    # PRICE HEALTH
-    # =====================================================
+    # --------------------------------------------------------
+    # QUICK SUMMARY
+    # --------------------------------------------------------
 
     st.markdown(
-        '<div class="section-title">'
-        '📊 Price Health Dashboard'
-        '</div>',
+        '<div class="section-title">⚡ Quick Summary</div>',
         unsafe_allow_html=True
     )
+
+    benchmarked = [
+        item
+        for item in items
+        if item.get("reference_price") is not None
+    ]
+
+    above = [
+        item
+        for item in benchmarked
+        if safe_float(item.get("difference")) > 0
+    ]
+
+    below = [
+        item
+        for item in benchmarked
+        if safe_float(item.get("difference")) < 0
+    ]
+
+    potential_extra = sum(
+        max(
+            0,
+            safe_float(item.get("difference"))
+        )
+        * safe_int(item.get("quantity", 1))
+        for item in items
+        if item.get("reference_price") is not None
+    )
+
+    potential_savings = sum(
+        max(
+            0,
+            -safe_float(item.get("difference"))
+        )
+        * safe_int(item.get("quantity", 1))
+        for item in items
+        if item.get("reference_price") is not None
+    )
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric(
+            "🛒 Products",
+            len(items)
+        )
+
+    with col2:
+        st.metric(
+            "🔎 Benchmarked",
+            len(benchmarked)
+        )
+
+    with col3:
+        st.metric(
+            "📈 Above Benchmark",
+            len(above)
+        )
+
+    with col4:
+        st.metric(
+            "📉 Below Benchmark",
+            len(below)
+        )
+
+    # --------------------------------------------------------
+    # SCORE
+    # --------------------------------------------------------
 
     score = calculate_health_score(
         items
@@ -1582,131 +1334,96 @@ if st.session_state.analysis_complete:
         score
     )
 
-    total_reference = sum(
-        item["Reference Price"] *
-        item["Quantity"]
-        for item in items
-        if item["Reference Price"] > 0
+    st.markdown(
+        '<div class="section-title">🩺 Price Health</div>',
+        unsafe_allow_html=True
     )
 
-    total_charged = sum(
-        item["Charged Price"] *
-        item["Quantity"]
-        for item in items
-        if item["Reference Price"] > 0
+    score_col, verdict_col = st.columns(
+        [1, 2]
     )
 
-    total_difference = (
-        total_charged -
-        total_reference
-    )
+    with score_col:
 
-    potential_extra = max(
-        0,
-        total_difference
-    )
+        if score is not None:
 
-    potential_savings = max(
-        0,
-        -total_difference
-    )
+            st.metric(
+                "Price Health Score",
+                f"{score}/100"
+            )
 
-    review_items = [
-        item
-        for item in items
-        if item["Status"] in [
-            "Review",
-            "Above Benchmark"
-        ]
-    ]
+            st.progress(
+                score / 100
+            )
 
-    score_cols = st.columns(4)
+        else:
 
-    with score_cols[0]:
+            st.metric(
+                "Price Health Score",
+                "N/A"
+            )
+
+    with verdict_col:
+
+        if score is None:
+
+            st.info(
+                "There is not enough benchmark data "
+                "to calculate a reliable score."
+            )
+
+        elif score >= 85:
+
+            st.success(
+                f"**{verdict}** — Most benchmarked items "
+                "are reasonably aligned with reference prices."
+            )
+
+        elif score >= 65:
+
+            st.warning(
+                f"**{verdict}** — Some items differ from "
+                "the reference prices."
+            )
+
+        else:
+
+            st.error(
+                f"**{verdict}** — Several benchmarked items "
+                "show price differences worth reviewing."
+            )
+
+    # --------------------------------------------------------
+    # EXTRA / SAVINGS
+    # --------------------------------------------------------
+
+    col1, col2 = st.columns(2)
+
+    with col1:
 
         st.metric(
-            "Price Health Score",
-            f"{score}/100"
+            "💰 Potential Extra",
+            f"{potential_extra:,.2f}"
         )
 
-    with score_cols[1]:
+        st.caption(
+            "Estimated amount above the available benchmark prices."
+        )
+
+    with col2:
 
         st.metric(
-            "Verdict",
-            verdict
+            "💵 Potential Savings",
+            f"{potential_savings:,.2f}"
         )
 
-    with score_cols[2]:
-
-        st.metric(
-            "Potential Extra",
-            f"Rs. {potential_extra:,.2f}"
+        st.caption(
+            "Estimated amount below the available benchmark prices."
         )
 
-    with score_cols[3]:
-
-        st.metric(
-            "Items to Review",
-            len(review_items)
-        )
-
-
-    # =====================================================
-    # SCORE STATUS
-    # =====================================================
-
-    if score >= 75:
-
-        st.markdown(
-            """
-            <div class="status-box status-success">
-                ✅ Overall price pattern looks reasonable based
-                on the available benchmark data.
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    elif score >= 60:
-
-        st.markdown(
-            f"""
-            <div class="status-box status-warning">
-                ⚠️ Some prices deserve a closer review.
-                The score is {score}/100.
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    elif score > 0:
-
-        st.markdown(
-            f"""
-            <div class="status-box status-danger">
-                🔎 Several price differences require attention.
-                The score is {score}/100.
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    else:
-
-        st.markdown(
-            """
-            <div class="status-box status-info">
-                ℹ️ There is not enough reference data to calculate
-                a meaningful price health score.
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-
-    # =====================================================
-    # RECEIPT TOTAL CHECK
-    # =====================================================
+    # --------------------------------------------------------
+    # RECEIPT TOTAL CONSISTENCY
+    # --------------------------------------------------------
 
     total_check = check_receipt_total(
         receipt,
@@ -1714,150 +1431,121 @@ if st.session_state.analysis_complete:
     )
 
     st.markdown(
-        '<div class="section-title">'
-        '🧮 Receipt Total Check'
-        '</div>',
+        '<div class="section-title">🧮 Receipt Total Check</div>',
         unsafe_allow_html=True
     )
 
-    total_cols = st.columns(3)
+    if total_check.get("available"):
 
-    with total_cols[0]:
+        col1, col2, col3 = st.columns(3)
 
-        st.metric(
-            "Receipt Total",
-            f"Rs. "
-            f"{total_check['receipt_total']:,.2f}"
-        )
+        with col1:
+            st.metric(
+                "Receipt Total",
+                f"{total_check['receipt_total']:,.2f}"
+            )
 
-    with total_cols[1]:
+        with col2:
+            st.metric(
+                "Calculated Total",
+                f"{total_check['calculated_total']:,.2f}"
+            )
 
-        st.metric(
-            "Calculated Item Total",
-            f"Rs. "
-            f"{total_check['calculated_total']:,.2f}"
-        )
+        with col3:
+            st.metric(
+                "Difference",
+                f"{total_check['difference']:,.2f}"
+            )
 
-    with total_cols[2]:
+        if total_check["consistent"]:
 
-        st.metric(
-            "Difference",
-            f"Rs. "
-            f"{total_check['difference']:,.2f}"
-        )
+            st.success(
+                "The receipt total is reasonably consistent "
+                "with the extracted line totals."
+            )
 
-    if total_check["status"] == "Consistent":
+        else:
 
-        st.markdown(
-            """
-            <div class="status-box status-success">
-                ✅ The receipt total is consistent with the
-                detected item totals.
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    elif total_check["status"] == "Review":
-
-        st.markdown(
-            """
-            <div class="status-box status-warning">
-                ⚠️ The receipt total differs from the calculated
-                item total. Review the receipt details.
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+            st.warning(
+                "The receipt total and extracted line totals "
+                "do not match closely. Review the receipt image."
+            )
 
     else:
 
         st.info(
-            "Receipt total could not be fully checked."
+            "A receipt total was not available for this check."
         )
 
-
-    # =====================================================
+    # --------------------------------------------------------
     # PRODUCT ANALYSIS
-    # =====================================================
+    # --------------------------------------------------------
 
     st.markdown(
-        '<div class="section-title">'
-        '🛒 Product-by-Product Analysis'
-        '</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="section-description">'
-        'Review each detected product, benchmark price, '
-        'difference, and matching confidence.'
-        '</div>',
+        '<div class="section-title">🛍️ Product Analysis</div>',
         unsafe_allow_html=True
     )
 
     if items:
 
-        display_df = pd.DataFrame(
-            items
-        )
+        table_rows = []
 
-        table_df = display_df[
-            [
-                "Product",
-                "Brand",
-                "Quantity",
-                "Charged Price",
-                "Reference Price",
-                "Difference",
-                "Difference %",
-                "Match Confidence",
-                "Status"
-            ]
-        ].copy()
+        for item in items:
 
-        table_df["Charged Price"] = (
-            table_df["Charged Price"]
-            .map(
-                lambda x:
-                f"Rs. {x:,.2f}"
+            reference = item.get(
+                "reference_price"
             )
-        )
 
-        table_df["Reference Price"] = (
-            table_df["Reference Price"]
-            .map(
-                lambda x:
-                (
-                    f"Rs. {x:,.2f}"
-                    if x > 0
-                    else "No reference"
-                )
+            difference = item.get(
+                "difference"
             )
-        )
 
-        table_df["Difference"] = (
-            table_df["Difference"]
-            .map(
-                lambda x:
-                f"Rs. {x:,.2f}"
+            percentage = item.get(
+                "difference_percent"
             )
-        )
 
-        table_df["Difference %"] = (
-            table_df["Difference %"]
-            .map(
-                lambda x:
-                f"{x:+.1f}%"
+            table_rows.append(
+                {
+                    "Product": item.get("product"),
+                    "Qty": item.get("quantity"),
+                    "Charged": round(
+                        safe_float(
+                            item.get("charged_unit_price")
+                        ),
+                        2
+                    ),
+                    "Reference": (
+                        round(
+                            safe_float(reference),
+                            2
+                        )
+                        if reference is not None
+                        else "N/A"
+                    ),
+                    "Difference": (
+                        round(
+                            safe_float(difference),
+                            2
+                        )
+                        if difference is not None
+                        else "N/A"
+                    ),
+                    "Difference %": (
+                        f"{safe_float(percentage):.1f}%"
+                        if percentage is not None
+                        else "N/A"
+                    ),
+                    "Match": (
+                        f"{safe_float(item.get('match_score')) * 100:.0f}%"
+                        if item.get("match_score") is not None
+                        else "N/A"
+                    ),
+                    "Status": item.get("status")
+                }
             )
-        )
 
-        table_df["Match Confidence"] = (
-            table_df["Match Confidence"]
-            .map(
-                lambda x:
-                f"{x * 100:.0f}%"
-            )
+        table_df = pd.DataFrame(
+            table_rows
         )
 
         st.dataframe(
@@ -1866,520 +1554,554 @@ if st.session_state.analysis_complete:
             hide_index=True
         )
 
+    else:
 
-    # =====================================================
-    # CHART
-    # =====================================================
-
-    if items:
-
-        chart_df = pd.DataFrame(
-            items
+        st.info(
+            "No products were extracted from the receipt."
         )
 
-        chart_df = chart_df[
-            chart_df["Reference Price"] > 0
-        ].copy()
+    # --------------------------------------------------------
+    # CHARGED VS REFERENCE CHART
+    # --------------------------------------------------------
 
-        if not chart_df.empty:
+    chart_data = []
 
-            st.markdown(
-                '<div class="section-title">'
-                '📈 Charged vs Reference Prices'
-                '</div>',
-                unsafe_allow_html=True
+    for item in items:
+
+        if item.get("reference_price") is not None:
+
+            chart_data.append(
+                {
+                    "Product": item.get("product"),
+                    "Charged Price": safe_float(
+                        item.get("charged_unit_price")
+                    ),
+                    "Reference Price": safe_float(
+                        item.get("reference_price")
+                    )
+                }
             )
 
-            chart_data = chart_df[
-                [
-                    "Product",
-                    "Charged Price",
-                    "Reference Price"
-                ]
-            ].copy()
+    if chart_data:
 
-            chart_data = chart_data.melt(
-                id_vars=["Product"],
-                value_vars=[
-                    "Charged Price",
-                    "Reference Price"
-                ],
-                var_name="Price Type",
-                value_name="Price"
-            )
+        st.markdown(
+            '<div class="section-title">📈 Charged vs Reference Prices</div>',
+            unsafe_allow_html=True
+        )
 
-            fig = px.bar(
-                chart_data,
-                x="Product",
-                y="Price",
-                color="Price Type",
-                barmode="group",
-                text_auto=".2f"
-            )
+        chart_df = pd.DataFrame(
+            chart_data
+        )
 
-            fig.update_layout(
-                height=480,
-                margin=dict(
-                    l=20,
-                    r=20,
-                    t=30,
-                    b=100
-                ),
-                xaxis_title="Product",
-                yaxis_title="Price",
-                legend_title="",
-                hovermode="x unified"
-            )
+        chart_long = chart_df.melt(
+            id_vars=["Product"],
+            value_vars=[
+                "Charged Price",
+                "Reference Price"
+            ],
+            var_name="Price Type",
+            value_name="Price"
+        )
 
-            fig.update_xaxes(
-                tickangle=-35
-            )
+        fig = px.bar(
+            chart_long,
+            x="Product",
+            y="Price",
+            color="Price Type",
+            barmode="group",
+            title="Price Comparison"
+        )
 
-            st.plotly_chart(
-                fig,
-                use_container_width=True
-            )
+        fig.update_layout(
+            margin=dict(
+                l=20,
+                r=20,
+                t=60,
+                b=20
+            ),
+            xaxis_title="Product",
+            yaxis_title="Price"
+        )
 
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
 
-    # =====================================================
-    # ITEMS WORTH REVIEWING
-    # =====================================================
+    # --------------------------------------------------------
+    # ITEMS TO REVIEW
+    # --------------------------------------------------------
 
     st.markdown(
-        '<div class="section-title">'
-        '🚨 Items Worth Reviewing'
-        '</div>',
+        '<div class="section-title">🚩 Items Worth Reviewing</div>',
         unsafe_allow_html=True
+    )
+
+    review_items = sorted(
+        [
+            item
+            for item in items
+            if item.get("reference_price") is not None
+        ],
+        key=lambda x: abs(
+            safe_float(x.get("difference_percent"))
+        ),
+        reverse=True
     )
 
     if review_items:
 
-        st.markdown(
-            '<div class="section-description">'
-            'These items show comparatively higher differences '
-            'from the available benchmark.'
-            '</div>',
-            unsafe_allow_html=True
-        )
+        top_items = review_items[:5]
 
-        for index, item in enumerate(
-            review_items
-        ):
+        for index, item in enumerate(top_items):
 
-            with st.container(
-                border=True
-            ):
+            difference = safe_float(
+                item.get("difference")
+            )
 
-                left, middle, right = st.columns(
-                    [2.2, 1, 1]
+            percentage = safe_float(
+                item.get("difference_percent")
+            )
+
+            if difference > 0:
+
+                icon = "🔴"
+
+                title = (
+                    f"{icon} {item.get('product')} — "
+                    f"{percentage:.1f}% above benchmark"
                 )
 
-                with left:
+            elif difference < 0:
 
-                    st.markdown(
-                        f"### {item['Product']}"
-                    )
+                icon = "🟢"
 
-                    if item["Brand"]:
+                title = (
+                    f"{icon} {item.get('product')} — "
+                    f"{abs(percentage):.1f}% below benchmark"
+                )
 
-                        st.caption(
-                            f"Brand: {item['Brand']}"
-                        )
+            else:
 
-                with middle:
+                title = (
+                    f"🟡 {item.get('product')} — "
+                    "At benchmark"
+                )
 
+            with st.expander(title):
+
+                col1, col2, col3 = st.columns(3)
+
+                with col1:
                     st.metric(
                         "Charged",
-                        f"Rs. "
-                        f"{item['Charged Price']:,.2f}"
+                        f"{safe_float(item.get('charged_unit_price')):,.2f}"
                     )
 
-                with right:
+                with col2:
+                    st.metric(
+                        "Reference",
+                        f"{safe_float(item.get('reference_price')):,.2f}"
+                    )
 
+                with col3:
                     st.metric(
                         "Difference",
-                        f"{item['Difference %']:+.1f}%"
+                        f"{difference:,.2f}"
                     )
 
-                if item["Reference Price"] > 0:
+                st.caption(
+                    f"Product match confidence: "
+                    f"{safe_float(item.get('match_score')) * 100:.0f}%"
+                )
 
-                    confidence = item[
-                        "Match Confidence"
-                    ]
+                if st.button(
+                    "🧠 Explain This Difference",
+                    key=f"explain_difference_{index}"
+                ):
 
-                    st.caption(
-                        f"Reference: Rs. "
-                        f"{item['Reference Price']:,.2f}"
-                        f" • Match confidence: "
-                        f"{confidence * 100:.0f}%"
-                    )
-
-                    explanation_key = (
-                        f"explain_difference_{index}"
-                    )
-
-                    if st.button(
-                        "🧠 Explain this difference",
-                        key=explanation_key
+                    with st.spinner(
+                        "Generating explanation..."
                     ):
 
-                        with st.spinner(
-                            "AI is explaining..."
-                        ):
-
-                            explanation = explain_price(
-                                item
-                            )
-
-                        st.info(
-                            explanation
+                        explanation = explain_price_difference(
+                            item
                         )
+
+                    st.info(
+                        explanation
+                    )
 
     else:
 
-        st.markdown(
-            """
-            <div class="status-box status-success">
-                ✅ No major items were automatically flagged
-                for review based on the available benchmark data.
-            </div>
-            """,
-            unsafe_allow_html=True
+        st.success(
+            "No benchmarked items require special review."
         )
 
-
-    # =====================================================
+    # --------------------------------------------------------
     # MOST SIGNIFICANT DIFFERENCE
-    # =====================================================
+    # --------------------------------------------------------
 
-    reference_items = [
-        item
-        for item in items
-        if item["Reference Price"] > 0
-    ]
+    if review_items:
 
-    if reference_items:
-
-        most_significant = max(
-            reference_items,
-            key=lambda x:
-            abs(x["Difference %"])
-        )
+        most_significant = review_items[0]
 
         st.markdown(
-            '<div class="section-title">'
-            '🎯 Most Significant Difference'
-            '</div>',
+            '<div class="section-title">🎯 Most Significant Difference</div>',
             unsafe_allow_html=True
         )
 
-        significant_cols = st.columns(3)
+        difference = safe_float(
+            most_significant.get("difference")
+        )
 
-        with significant_cols[0]:
+        percentage = safe_float(
+            most_significant.get("difference_percent")
+        )
 
-            st.metric(
-                "Product",
-                most_significant["Product"]
+        if difference > 0:
+
+            st.warning(
+                f"**{most_significant.get('product')}** has the "
+                f"largest benchmark difference: "
+                f"{difference:,.2f} "
+                f"({percentage:.1f}% above benchmark)."
             )
 
-        with significant_cols[1]:
+        elif difference < 0:
 
-            st.metric(
-                "Charged",
-                f"Rs. "
-                f"{most_significant['Charged Price']:,.2f}"
+            st.success(
+                f"**{most_significant.get('product')}** has the "
+                f"largest negative difference: "
+                f"{abs(difference):,.2f} "
+                f"({abs(percentage):.1f}% below benchmark)."
             )
 
-        with significant_cols[2]:
+        else:
 
-            st.metric(
-                "Difference",
-                f"{most_significant['Difference %']:+.1f}%"
+            st.info(
+                f"**{most_significant.get('product')}** "
+                "is at the benchmark price."
             )
 
-
-    # =====================================================
+    # --------------------------------------------------------
     # AI CHAT
-    # =====================================================
-
-    st.divider()
+    # --------------------------------------------------------
 
     st.markdown(
-        '<div class="section-title">'
-        '🤖 Ask PriceProof AI'
-        '</div>',
+        '<div class="section-title">💬 Ask About Your Receipt</div>',
         unsafe_allow_html=True
     )
 
-    st.markdown(
-        '<div class="section-description">'
-        'Ask questions about this receipt and its price analysis.'
-        '</div>',
-        unsafe_allow_html=True
+    st.caption(
+        "Ask any question about the uploaded receipt and its analysis."
     )
 
-    for message in st.session_state.chat_history:
+    if st.session_state.chat_history:
 
-        with st.chat_message(
-            message["role"]
-        ):
+        for message in st.session_state.chat_history:
 
-            st.write(
-                message["content"]
-            )
+            with st.chat_message(
+                message["role"]
+            ):
 
-    user_question = st.chat_input(
-        "Ask something about this receipt..."
+                st.write(
+                    message["content"]
+                )
+
+    question = st.chat_input(
+        "Example: Which product has the highest price difference?"
     )
 
-    if user_question:
+    if question:
 
         st.session_state.chat_history.append(
             {
                 "role": "user",
-                "content": user_question
+                "content": question
             }
         )
 
-        with st.chat_message(
-            "user"
-        ):
+        with st.chat_message("user"):
+            st.write(question)
 
-            st.write(
-                user_question
-            )
-
-        with st.chat_message(
-            "assistant"
-        ):
+        with st.chat_message("assistant"):
 
             with st.spinner(
-                "Thinking..."
+                "Analyzing your question..."
             ):
 
-                answer = ask_receipt_ai(
-                    user_question
+                answer = ask_receipt_question(
+                    question
                 )
 
-            st.write(
-                answer
-            )
+            st.write(answer)
 
         st.session_state.chat_history.append(
             {
                 "role": "assistant",
                 "content": answer
             }
+
         )
 
-
-    # =====================================================
-    # MANUAL PRICE VERIFICATION
-    # =====================================================
-
-    st.divider()
+    # --------------------------------------------------------
+    # MANUAL VERIFICATION
+    # --------------------------------------------------------
 
     st.markdown(
-        '<div class="section-title">'
-        '✍️ Manual Price Verification'
-        '</div>',
+        '<div class="section-title">✍️ Manual Price Verification</div>',
         unsafe_allow_html=True
     )
 
-    st.markdown(
-        '<div class="section-description">'
-        'Check a product manually against the reference database.'
-        '</div>',
-        unsafe_allow_html=True
+    st.caption(
+        "Enter a known/reference price to manually compare it with the charged price."
     )
 
-    manual_col1, manual_col2 = st.columns(
-        [2, 1]
-    )
+    if items:
 
-    with manual_col1:
+        product_options = [
+            item.get("product")
+            for item in items
+        ]
 
-        manual_product = st.text_input(
-            "Product name",
-            placeholder="e.g. Nestle Milk"
+        selected_product = st.selectbox(
+            "Select product",
+            product_options,
+            key="manual_product_select"
         )
 
-    with manual_col2:
-
-        manual_price = st.number_input(
-            "Charged price",
-            min_value=0.0,
-            step=10.0
+        selected_item = next(
+            (
+                item
+                for item in items
+                if item.get("product") == selected_product
+            ),
+            None
         )
 
-    if st.button(
-        "🔎 Verify Manual Price",
-        use_container_width=True
-    ):
+        if selected_item:
 
-        if manual_product.strip():
+            col1, col2 = st.columns(2)
 
-            reference_row, confidence = match_product(
-                manual_product
-            )
+            with col1:
 
-            reference_price = get_reference_price(
-                reference_row
-            )
+                charged_price = st.number_input(
+                    "Charged unit price",
+                    min_value=0.0,
+                    value=float(
+                        safe_float(
+                            selected_item.get(
+                                "charged_unit_price"
+                            )
+                        )
+                    ),
+                    step=1.0,
+                    key="manual_charged_price"
+                )
 
-            if reference_price > 0:
+            with col2:
+
+                manual_reference = st.number_input(
+                    "Reference price",
+                    min_value=0.0,
+                    value=float(
+                        safe_float(
+                            selected_item.get(
+                                "reference_price"
+                            )
+                        )
+                    ),
+                    step=1.0,
+                    key="manual_reference_price"
+                )
+
+            if st.button(
+                "🔎 Verify Manually",
+                key="manual_verify_button"
+            ):
 
                 difference = (
-                    manual_price -
-                    reference_price
+                    charged_price
+                    - manual_reference
                 )
 
-                difference_percent = (
-                    difference /
-                    reference_price
-                ) * 100
+                if manual_reference > 0:
 
-                st.success(
-                    f"Reference price: "
-                    f"Rs. {reference_price:,.2f}"
-                )
+                    percentage = (
+                        difference
+                        / manual_reference
+                    ) * 100
 
-                st.info(
-                    f"Difference: "
-                    f"Rs. {difference:,.2f} "
-                    f"({difference_percent:+.1f}%)"
-                )
+                else:
 
-                st.caption(
-                    f"Match confidence: "
-                    f"{confidence * 100:.0f}%"
-                )
+                    percentage = 0
 
-            else:
+                st.session_state.manual_results[
+                    selected_product
+                ] = {
+                    "difference": difference,
+                    "percentage": percentage
+                }
 
-                st.warning(
-                    "No suitable reference price was found."
-                )
-
-        else:
-
-            st.warning(
-                "Please enter a product name."
+            result = st.session_state.manual_results.get(
+                selected_product
             )
 
+            if result:
 
-    # =====================================================
+                difference = result["difference"]
+
+                percentage = result["percentage"]
+
+                if difference > 0:
+
+                    st.warning(
+                        f"Charged price is "
+                        f"{difference:,.2f} above the manual reference "
+                        f"({percentage:.1f}%)."
+                    )
+
+                elif difference < 0:
+
+                    st.success(
+                        f"Charged price is "
+                        f"{abs(difference):,.2f} below the manual reference "
+                        f"({abs(percentage):.1f}%)."
+                    )
+
+                else:
+
+                    st.info(
+                        "Charged price matches the manual reference."
+                    )
+
+    # --------------------------------------------------------
     # DOWNLOADS
-    # =====================================================
-
-    st.divider()
+    # --------------------------------------------------------
 
     st.markdown(
-        '<div class="section-title">'
-        '📥 Download Verification Results'
-        '</div>',
+        '<div class="section-title">📥 Download Results</div>',
         unsafe_allow_html=True
     )
 
-    st.markdown(
-        '<div class="section-description">'
-        'Save your analysis in the format you need.'
-        '</div>',
-        unsafe_allow_html=True
-    )
+    report = create_report()
 
-    download_col1, download_col2, download_col3 = st.columns(
-        3
-    )
+    st.session_state.last_report = report
 
-    results_df = pd.DataFrame(
-        items
-    )
+    export_rows = []
 
-    with download_col1:
+    for item in items:
 
-        if not results_df.empty:
-
-            csv_data = results_df.to_csv(
-                index=False
-            )
-
-            st.download_button(
-                "📊 Download CSV",
-                data=csv_data,
-                file_name="priceproof_analysis.csv",
-                mime="text/csv",
-                use_container_width=True
-            )
-
-    with download_col2:
-
-        json_data = json.dumps(
+        export_rows.append(
             {
-                "receipt": receipt,
-                "analysis": items
-            },
-            indent=2,
-            default=str
+                "Product": item.get("product"),
+                "Brand": item.get("brand"),
+                "Quantity": item.get("quantity"),
+                "Charged Unit Price": item.get(
+                    "charged_unit_price"
+                ),
+                "Line Total": item.get(
+                    "line_total"
+                ),
+                "Reference Price": item.get(
+                    "reference_price"
+                ),
+                "Difference": item.get(
+                    "difference"
+                ),
+                "Difference %": item.get(
+                    "difference_percent"
+                ),
+                "Match Confidence": item.get(
+                    "match_score"
+                ),
+                "Status": item.get(
+                    "status"
+                )
+            }
         )
 
+    export_df = pd.DataFrame(
+        export_rows
+    )
+
+    json_data = json.dumps(
+        {
+            "receipt": receipt,
+            "analysis": items,
+            "price_health_score": score,
+            "verdict": verdict,
+            "potential_extra": potential_extra,
+            "potential_savings": potential_savings
+        },
+        indent=2,
+        default=str
+    )
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
         st.download_button(
-            "📄 Download JSON",
+            "📊 Download CSV",
+            data=export_df.to_csv(
+                index=False
+            ),
+            file_name="priceproof_analysis.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+
+    with col2:
+
+        st.download_button(
+            "📦 Download JSON",
             data=json_data,
             file_name="priceproof_analysis.json",
             mime="application/json",
             use_container_width=True
         )
 
-    with download_col3:
-
-        report = generate_report()
+    with col3:
 
         st.download_button(
-            "📝 Download Report",
+            "📄 Consumer Report",
             data=report,
             file_name="priceproof_consumer_report.txt",
             mime="text/plain",
             use_container_width=True
         )
 
-
-    # =====================================================
+    # --------------------------------------------------------
     # DISCLAIMER
-    # =====================================================
-
-    st.divider()
+    # --------------------------------------------------------
 
     st.markdown(
         """
-        <div class="status-box status-info">
-
-        <strong>ℹ️ Important:</strong><br><br>
-
-        PriceProof AI uses benchmark/reference data to help
-        consumers review receipt prices. Reference prices may
-        differ from actual prices because of location, date,
-        promotions, taxes, store policies, or other factors.
-
-        A difference between a charged price and a benchmark
-        does <strong>not</strong> by itself prove illegal
-        overcharging or wrongdoing.
-
+        <div class="warning-box">
+            <strong>⚠️ Important Disclaimer</strong><br><br>
+            PriceProof AI uses benchmark/reference prices for comparison.
+            These values may not represent official market prices.
+            A difference between a charged price and a benchmark does not
+            by itself prove illegal overcharging. Always consider factors
+            such as location, promotions, taxes, timing, and product variation.
         </div>
         """,
         unsafe_allow_html=True
     )
 
 
-# =========================================================
+# ============================================================
 # FOOTER
-# =========================================================
+# ============================================================
 
 st.markdown(
     """
     <div class="footer">
-        PriceProof AI • AI-Powered Consumer Price Verification
+        PriceProof AI • AI-powered consumer price verification
     </div>
     """,
     unsafe_allow_html=True
 )
+```
