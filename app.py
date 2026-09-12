@@ -29,8 +29,6 @@ st.markdown(
     """
     <style>
 
-    /* ---------- General ---------- */
-
     .stApp {
         background: #f7f9fc;
     }
@@ -41,129 +39,90 @@ st.markdown(
         max-width: 1450px;
     }
 
-
-    /* ---------- Hero ---------- */
-
     .hero {
-        padding: 2.2rem 2.4rem;
-        border-radius: 22px;
-        background: linear-gradient(135deg, #111827, #1f2937);
-        margin-bottom: 1.5rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        padding: 2rem;
+        border-radius: 20px;
+        background: linear-gradient(
+            135deg,
+            #111827,
+            #1f2937
+        );
+        margin-bottom: 1rem;
     }
 
     .hero-badge {
         display: inline-block;
-        padding: 0.35rem 0.8rem;
+        padding: 0.35rem 0.75rem;
         border-radius: 999px;
         background: rgba(255,255,255,0.12);
-        color: #ffffff;
+        color: white;
         font-size: 0.78rem;
         font-weight: 700;
         margin-right: 0.4rem;
-        margin-bottom: 0.7rem;
+        margin-bottom: 0.6rem;
     }
 
     .hero-title {
         color: white;
-        font-size: 3rem;
+        font-size: 2.8rem;
         font-weight: 800;
-        line-height: 1.1;
-        margin: 0.3rem 0;
+        margin-top: 0.3rem;
     }
 
     .hero-subtitle {
         color: #d1d5db;
-        font-size: 1.15rem;
-        margin-top: 0.7rem;
-        max-width: 850px;
+        font-size: 1.05rem;
         line-height: 1.6;
+        max-width: 850px;
     }
 
-
-    /* ---------- Section Titles ---------- */
-
     .section-title {
-        font-size: 1.45rem;
+        font-size: 1.4rem;
         font-weight: 800;
         color: #111827;
-        margin-top: 1.4rem;
-        margin-bottom: 0.35rem;
+        margin-top: 1.2rem;
+        margin-bottom: 0.3rem;
     }
 
     .section-description {
         color: #6b7280;
-        font-size: 0.92rem;
+        font-size: 0.9rem;
         margin-bottom: 1rem;
-    }
-
-
-    /* ---------- Cards ---------- */
-
-    .feature-card {
-        background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 16px;
-        padding: 1.2rem;
-        min-height: 145px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.035);
-    }
-
-    .feature-icon {
-        font-size: 1.65rem;
-        margin-bottom: 0.35rem;
-    }
-
-    .feature-title {
-        font-weight: 750;
-        font-size: 1rem;
-        color: #111827;
-    }
-
-    .feature-text {
-        color: #6b7280;
-        font-size: 0.85rem;
-        line-height: 1.45;
-        margin-top: 0.35rem;
     }
 
     .summary-card {
         background: white;
         border: 1px solid #e5e7eb;
-        border-radius: 16px;
-        padding: 1.15rem;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.035);
+        border-radius: 15px;
+        padding: 1rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
     }
 
     .summary-label {
         color: #6b7280;
-        font-size: 0.78rem;
-        font-weight: 650;
+        font-size: 0.75rem;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
     }
 
     .summary-value {
         color: #111827;
-        font-size: 1.65rem;
+        font-size: 1.5rem;
         font-weight: 800;
         margin-top: 0.25rem;
     }
 
     .summary-small {
         color: #6b7280;
-        font-size: 0.78rem;
+        font-size: 0.75rem;
         margin-top: 0.15rem;
     }
 
-
-    /* ---------- Status ---------- */
-
     .status-box {
-        padding: 0.85rem 1rem;
+        padding: 0.9rem 1rem;
         border-radius: 12px;
-        margin: 0.6rem 0;
-        font-weight: 650;
+        margin: 0.7rem 0;
+        font-weight: 600;
     }
 
     .status-success {
@@ -190,33 +149,10 @@ st.markdown(
         color: #1e40af;
     }
 
-
-    /* ---------- Confidence ---------- */
-
-    .confidence-bar {
-        width: 100%;
-        height: 8px;
-        background: #e5e7eb;
-        border-radius: 20px;
-        overflow: hidden;
-        margin-top: 0.4rem;
-    }
-
-    .confidence-fill {
-        height: 100%;
-        border-radius: 20px;
-    }
-
-
-    /* ---------- Upload ---------- */
-
     [data-testid="stFileUploader"] {
         background: white;
-        border-radius: 16px;
+        border-radius: 15px;
     }
-
-
-    /* ---------- Buttons ---------- */
 
     .stButton > button {
         border-radius: 10px;
@@ -228,23 +164,14 @@ st.markdown(
         font-weight: 650;
     }
 
-
-    /* ---------- Tables ---------- */
-
     [data-testid="stDataFrame"] {
         border-radius: 12px;
         overflow: hidden;
     }
 
-
-    /* ---------- Sidebar ---------- */
-
     [data-testid="stSidebar"] {
-        background: #ffffff;
+        background: white;
     }
-
-
-    /* ---------- Footer ---------- */
 
     .footer {
         text-align: center;
@@ -254,26 +181,6 @@ st.markdown(
         margin-top: 2rem;
     }
 
-
-    /* ---------- Mobile ---------- */
-
-    @media (max-width: 768px) {
-
-        .hero-title {
-            font-size: 2.1rem;
-        }
-
-        .hero {
-            padding: 1.5rem;
-        }
-
-        .block-container {
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-
-    }
-
     </style>
     """,
     unsafe_allow_html=True
@@ -281,7 +188,8 @@ st.markdown(
 
 
 # =========================================================
-# HIDDEN / OPTIONAL ABOUT SECTION
+# OPTIONAL ABOUT SECTION
+# HIDDEN BY DEFAULT
 # =========================================================
 
 with st.expander("ℹ️ About PriceProof AI"):
@@ -301,9 +209,9 @@ with st.expander("ℹ️ About PriceProof AI"):
             </div>
 
             <div class="hero-subtitle">
-                Upload a receipt, let AI understand the products and prices,
-                and instantly review how the charged prices compare with
-                benchmark data.
+                Upload a receipt, let AI understand the products and
+                prices, and review how the charged prices compare
+                with benchmark data.
             </div>
 
         </div>
@@ -313,71 +221,53 @@ with st.expander("ℹ️ About PriceProof AI"):
 
 
 # =========================================================
-# HOW IT WORKS
+# OPTIONAL HOW IT WORKS
+# HIDDEN BY DEFAULT
 # =========================================================
 
-st.markdown(
-    '<div class="section-title">⚡ How PriceProof AI Works</div>',
-    unsafe_allow_html=True
-)
+with st.expander("⚡ How PriceProof AI Works"):
 
-st.markdown(
-    '<div class="section-description">'
-    'A simple workflow from receipt upload to price verification.'
-    '</div>',
-    unsafe_allow_html=True
-)
+    step_col1, step_col2 = st.columns(2)
 
-feature_cols = st.columns(4)
+    with step_col1:
 
-features = [
-    (
-        "📷",
-        "Read Receipt",
-        "AI reads the uploaded receipt and extracts important information."
-    ),
-    (
-        "🔎",
-        "Match Products",
-        "Extracted products are matched with the reference database."
-    ),
-    (
-        "💰",
-        "Compare Prices",
-        "Charged prices are compared against benchmark prices."
-    ),
-    (
-        "🧠",
-        "Understand Results",
-        "AI explains important differences in simple language."
-    )
-]
+        st.markdown("### 1️⃣ Upload Receipt")
 
-for col, feature in zip(feature_cols, features):
+        st.write(
+            "Upload a clear image of your receipt."
+        )
 
-    icon, title, text = feature
+        st.markdown("### 2️⃣ AI Reads Receipt")
 
-    with col:
+        st.write(
+            "AI extracts the store, date, products, quantities "
+            "and prices."
+        )
 
-        st.markdown(
-            f"""
-            <div class="feature-card">
+        st.markdown("### 3️⃣ Match Products")
 
-                <div class="feature-icon">
-                    {icon}
-                </div>
+        st.write(
+            "Products are matched against the reference database."
+        )
 
-                <div class="feature-title">
-                    {title}
-                </div>
+    with step_col2:
 
-                <div class="feature-text">
-                    {text}
-                </div>
+        st.markdown("### 4️⃣ Compare Prices")
 
-            </div>
-            """,
-            unsafe_allow_html=True
+        st.write(
+            "Charged prices are compared with benchmark prices."
+        )
+
+        st.markdown("### 5️⃣ Review Results")
+
+        st.write(
+            "The dashboard highlights important price differences."
+        )
+
+        st.markdown("### 6️⃣ Ask AI")
+
+        st.write(
+            "You can ask questions about the analyzed receipt."
         )
 
 
@@ -442,9 +332,6 @@ if "chat_history" not in st.session_state:
 
 if "analysis_complete" not in st.session_state:
     st.session_state.analysis_complete = False
-
-if "manual_results" not in st.session_state:
-    st.session_state.manual_results = []
 
 
 # =========================================================
@@ -538,7 +425,9 @@ def prepare_image(image):
             int(image.height * ratio)
         )
 
-        image = image.resize(new_size)
+        image = image.resize(
+            new_size
+        )
 
     return image
 
@@ -570,10 +459,14 @@ def extract_receipt(image):
     if groq_client is None:
 
         return {
-            "error": "Groq API key is not configured."
+            "error": (
+                "Groq API key is not configured."
+            )
         }
 
-    image = prepare_image(image)
+    image = prepare_image(
+        image
+    )
 
     image_base64 = image_to_base64(
         image
@@ -582,9 +475,9 @@ def extract_receipt(image):
     prompt = """
 Analyze this receipt image carefully.
 
-Extract the receipt information and return ONLY valid JSON.
+Return ONLY valid JSON.
 
-Use this structure:
+Use exactly this structure:
 
 {
   "store": "",
@@ -605,8 +498,8 @@ Rules:
 
 - Extract only information visible on the receipt.
 - If a value is unknown, use an empty string or 0.
-- charged_price means the price for one unit when possible.
-- line_total means the total charged for that item.
+- charged_price should represent the unit price when possible.
+- line_total should represent the total charged for the item.
 - Do not add explanations outside JSON.
 """
 
@@ -629,9 +522,10 @@ Rules:
                         {
                             "type": "image_url",
                             "image_url": {
-                                "url":
+                                "url": (
                                     "data:image/jpeg;base64,"
                                     + image_base64
+                                )
                             }
                         }
 
@@ -655,7 +549,9 @@ Rules:
             .content
         )
 
-        return json.loads(content)
+        return json.loads(
+            content
+        )
 
     except Exception as e:
 
@@ -688,9 +584,11 @@ def match_product(product_name):
         if col in products_df.columns:
 
             name_column = col
+
             break
 
     if name_column is None:
+
         return None, 0
 
     best_index = None
@@ -714,6 +612,7 @@ def match_product(product_name):
             best_index = index
 
     if best_index is None:
+
         return None, 0
 
     return (
@@ -723,12 +622,13 @@ def match_product(product_name):
 
 
 # =========================================================
-# REFERENCE PRICE
+# GET REFERENCE PRICE
 # =========================================================
 
 def get_reference_price(reference_row):
 
     if reference_row is None:
+
         return 0
 
     possible_price_columns = [
@@ -749,13 +649,14 @@ def get_reference_price(reference_row):
             )
 
             if value > 0:
+
                 return value
 
     return 0
 
 
 # =========================================================
-# PROCESS RECEIPT ITEMS
+# PROCESS ITEMS
 # =========================================================
 
 def process_items(receipt_data):
@@ -767,7 +668,15 @@ def process_items(receipt_data):
         []
     )
 
+    if not isinstance(items, list):
+
+        return processed
+
     for item in items:
+
+        if not isinstance(item, dict):
+
+            continue
 
         product_name = item.get(
             "product",
@@ -890,7 +799,8 @@ Difference percentage: {item.get("Difference %")}
 
 Give a short explanation.
 
-Mention if the price is higher, lower, or close to the benchmark.
+Mention whether the charged price is higher,
+lower, or close to the benchmark.
 
 Do not make legal accusations.
 """
@@ -923,7 +833,9 @@ Do not make legal accusations.
 
     except Exception as e:
 
-        return f"AI explanation unavailable: {e}"
+        return (
+            f"AI explanation unavailable: {e}"
+        )
 
 
 # =========================================================
@@ -953,9 +865,11 @@ def ask_receipt_ai(question):
     }
 
     prompt = f"""
-You are PriceProof AI, a receipt and price-analysis assistant.
+You are PriceProof AI,
+a receipt and price-analysis assistant.
 
-Answer the user's question using the receipt information below.
+Answer the user's question using the receipt
+information below.
 
 Receipt and analysis:
 
@@ -1007,7 +921,9 @@ Rules:
 
     except Exception as e:
 
-        return f"AI response unavailable: {e}"
+        return (
+            f"AI response unavailable: {e}"
+        )
 
 
 # =========================================================
@@ -1017,6 +933,7 @@ Rules:
 def calculate_health_score(items):
 
     if not items:
+
         return 0
 
     referenced_items = [
@@ -1026,6 +943,7 @@ def calculate_health_score(items):
     ]
 
     if not referenced_items:
+
         return 0
 
     scores = []
@@ -1056,7 +974,9 @@ def calculate_health_score(items):
 
             item_score = 25
 
-        scores.append(item_score)
+        scores.append(
+            item_score
+        )
 
     return round(
         sum(scores) /
@@ -1067,15 +987,19 @@ def calculate_health_score(items):
 def get_verdict(score):
 
     if score >= 90:
+
         return "Excellent"
 
     if score >= 75:
+
         return "Good"
 
     if score >= 60:
+
         return "Needs Review"
 
     if score > 0:
+
         return "High Review Needed"
 
     return "Insufficient Data"
@@ -1244,7 +1168,9 @@ def generate_report():
         "RECEIPT TOTAL CHECK"
     )
 
-    report.append("-" * 30)
+    report.append(
+        "-" * 30
+    )
 
     report.append(
         f"Receipt total: "
@@ -1269,7 +1195,9 @@ def generate_report():
         "overcharging."
     )
 
-    return "\n".join(report)
+    return "\n".join(
+        report
+    )
 
 
 # =========================================================
@@ -1345,12 +1273,6 @@ with st.sidebar:
         "Analysis AI: openai/gpt-oss-20b"
     )
 
-    st.divider()
-
-    st.caption(
-        "PriceProof AI • Consumer Intelligence"
-    )
-
 
 # =========================================================
 # RECEIPT UPLOAD
@@ -1419,8 +1341,7 @@ if uploaded_file is not None:
 
             st.info(
                 "Your receipt is ready. "
-                "Click the button below to extract "
-                "and verify its information."
+                "Click the button below to analyze it."
             )
 
             analyze_button = st.button(
@@ -1643,7 +1564,7 @@ if st.session_state.analysis_complete:
 
 
     # =====================================================
-    # PRICE HEALTH DASHBOARD
+    # PRICE HEALTH
     # =====================================================
 
     st.markdown(
@@ -1739,8 +1660,8 @@ if st.session_state.analysis_complete:
         st.markdown(
             """
             <div class="status-box status-success">
-                ✅ Overall price pattern looks reasonable based on
-                the available benchmark data.
+                ✅ Overall price pattern looks reasonable based
+                on the available benchmark data.
             </div>
             """,
             unsafe_allow_html=True
@@ -1784,7 +1705,7 @@ if st.session_state.analysis_complete:
 
 
     # =====================================================
-    # TOTAL CONSISTENCY
+    # RECEIPT TOTAL CHECK
     # =====================================================
 
     total_check = check_receipt_total(
@@ -1830,8 +1751,8 @@ if st.session_state.analysis_complete:
         st.markdown(
             """
             <div class="status-box status-success">
-                ✅ The receipt total is consistent with the detected
-                item totals within a small tolerance.
+                ✅ The receipt total is consistent with the
+                detected item totals.
             </div>
             """,
             unsafe_allow_html=True
@@ -2045,14 +1966,6 @@ if st.session_state.analysis_complete:
             review_items
         ):
 
-            difference = item[
-                "Difference"
-            ]
-
-            difference_percent = item[
-                "Difference %"
-            ]
-
             with st.container(
                 border=True
             ):
@@ -2085,7 +1998,7 @@ if st.session_state.analysis_complete:
 
                     st.metric(
                         "Difference",
-                        f"{difference_percent:+.1f}%"
+                        f"{item['Difference %']:+.1f}%"
                     )
 
                 if item["Reference Price"] > 0:
@@ -2205,25 +2118,15 @@ if st.session_state.analysis_complete:
         unsafe_allow_html=True
     )
 
-    if st.session_state.chat_history:
+    for message in st.session_state.chat_history:
 
-        for message in st.session_state.chat_history:
+        with st.chat_message(
+            message["role"]
+        ):
 
-            if message["role"] == "user":
-
-                with st.chat_message("user"):
-
-                    st.write(
-                        message["content"]
-                    )
-
-            else:
-
-                with st.chat_message("assistant"):
-
-                    st.write(
-                        message["content"]
-                    )
+            st.write(
+                message["content"]
+            )
 
     user_question = st.chat_input(
         "Ask something about this receipt..."
@@ -2238,13 +2141,17 @@ if st.session_state.analysis_complete:
             }
         )
 
-        with st.chat_message("user"):
+        with st.chat_message(
+            "user"
+        ):
 
             st.write(
                 user_question
             )
 
-        with st.chat_message("assistant"):
+        with st.chat_message(
+            "assistant"
+        ):
 
             with st.spinner(
                 "Thinking..."
