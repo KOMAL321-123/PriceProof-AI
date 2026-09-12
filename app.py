@@ -1672,11 +1672,11 @@ if uploaded_file is not None:
 )
         if analyze_button:
 
-    st.session_state.analysis_running = True
+            st.session_state.analysis_running = True
 
-    with st.spinner(
-        "AI is reading your receipt..."
-    ):
+             with st.spinner(
+                "AI is reading your receipt..."
+             ):
 
                 try:
 
