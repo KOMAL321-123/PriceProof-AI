@@ -5,6 +5,9 @@ from PIL import Image
 from groq import Groq
 
 
+# -----------------------------
+# Page Configuration
+# -----------------------------
 st.set_page_config(
     page_title="PriceProof AI",
     page_icon="🧾",
@@ -32,6 +35,30 @@ def load_price_data():
 
 
 price_data = load_price_data()
+
+
+# -----------------------------
+# Price Comparison Function
+# -----------------------------
+def compare_price(charged_price, reference_price):
+    difference = charged_price - reference_price
+
+    percentage_difference = (
+        difference / reference_price
+    ) * 100
+
+    if percentage_difference >= 20:
+        status = "Potentially Overpriced"
+    elif percentage_difference > 0:
+        status = "Above Reference Price"
+    else:
+        status = "Within Reference Range"
+
+    return {
+        "difference": round(difference, 2),
+        "percentage_difference": round(percentage_difference, 2),
+        "status": status
+    }
 
 
 # -----------------------------
@@ -105,9 +132,83 @@ if uploaded_file is not None:
 
 
 # -----------------------------
+# Price Comparison Demo
+# -----------------------------
+st.divider()
+
+st.header("💰 Price Comparison Engine")
+
+st.write(
+    "Test how PriceProof compares a charged price "
+    "with a reference market price."
+)
+
+selected_product = st.selectbox(
+    "Select a product",
+    price_data["product_name"].unique()
+)
+
+product_row = price_data[
+    price_data["product_name"] == selected_product
+].iloc[0]
+
+reference_price = float(product_row["reference_price"])
+
+charged_price = st.number_input(
+    "Enter charged price (PKR)",
+    min_value=0.0,
+    value=reference_price,
+    step=10.0
+)
+
+if st.button("⚖️ Compare Price"):
+
+    result = compare_price(
+        charged_price,
+        reference_price
+    )
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric(
+            "Reference Price",
+            f"PKR {reference_price:,.0f}"
+        )
+
+    with col2:
+        st.metric(
+            "Charged Price",
+            f"PKR {charged_price:,.0f}"
+        )
+
+    with col3:
+        st.metric(
+            "Difference",
+            f"{result['percentage_difference']:+.1f}%"
+        )
+
+    if result["status"] == "Potentially Overpriced":
+        st.error(
+            f"⚠️ {result['status']}"
+        )
+
+    elif result["status"] == "Above Reference Price":
+        st.warning(
+            f"⚠️ {result['status']}"
+        )
+
+    else:
+        st.success(
+            f"✅ {result['status']}"
+        )
+
+
+# -----------------------------
 # AI Status
 # -----------------------------
 st.divider()
+
 st.subheader("🤖 Generative AI")
 
 if groq_client:
@@ -125,9 +226,8 @@ else:
 with st.expander("📊 Reference Price Database"):
 
     st.write(
-        "PriceProof uses reference market-price data for "
-        "comparison. These prices are for prototype analysis "
-        "and should not be treated as official legal prices."
+        "These are prototype reference prices used for comparison. "
+        "They are not official legal prices."
     )
 
     st.dataframe(
