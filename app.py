@@ -580,3 +580,4 @@ if st.button(
 
         with st.spinner(
             "AI is analyzing
+)
