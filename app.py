@@ -6,6 +6,7 @@ import base64
 import json
 import re
 from difflib import SequenceMatcher
+import plotly.express as px
 
 
 # =========================================================
@@ -28,7 +29,7 @@ st.subheader("Detect overpricing. Verify the price. Know your rights.")
 
 st.write(
     "Upload a shopping receipt and let AI extract receipt information, "
-    "verify prices, and answer questions about your purchase."
+    "verify prices, visualize findings, and answer questions about your purchase."
 )
 
 st.info(
@@ -264,7 +265,6 @@ Rules:
             },
 
             temperature=0.2,
-
             max_completion_tokens=900
         )
 
@@ -504,7 +504,6 @@ Requirements:
             ],
 
             temperature=0.2,
-
             max_completion_tokens=500
         )
 
@@ -587,7 +586,6 @@ Rules:
             ],
 
             temperature=0.2,
-
             max_completion_tokens=600
         )
 
@@ -943,8 +941,12 @@ if uploaded_file:
 
 
             # =================================================
-            # DISPLAY VERIFICATION TABLE
+            # VERIFICATION TABLE
             # =================================================
+
+            st.subheader(
+                "📋 Verification Details"
+            )
 
             verification_df = pd.DataFrame(
                 verification_results
@@ -957,74 +959,206 @@ if uploaded_file:
 
 
             # =================================================
-            # SUMMARY
+            # SMART DASHBOARD
             # =================================================
 
-            st.subheader(
-                "📊 Verification Summary"
+            st.header(
+                "📊 PriceProof Dashboard"
             )
+
+            valid_results = [
+                result
+                for result in verification_results
+                if isinstance(
+                    result["Reference Price"],
+                    (int, float)
+                )
+                and isinstance(
+                    result["Charged Price"],
+                    (int, float)
+                )
+            ]
 
             potentially_overpriced = sum(
                 1
-                for result in verification_results
+                for result in valid_results
                 if result["Status"]
                 == "Potentially Overpriced"
             )
 
             above_reference = sum(
                 1
-                for result in verification_results
+                for result in valid_results
                 if result["Status"]
                 == "Above Reference Price"
             )
 
-            matched_items = sum(
-                1
-                for result in verification_results
-                if result["Reference Price"]
-                != "No match"
+            matched_items = len(
+                valid_results
             )
 
             total_items = len(
                 verification_results
             )
 
-            col1, col2, col3, col4 = st.columns(4)
+            total_extra_amount = sum(
+                max(
+                    0,
+                    float(
+                        result["Difference"]
+                    )
+                )
+                for result in valid_results
+            )
+
+            # -------------------------------------------------
+            # DASHBOARD METRICS
+            # -------------------------------------------------
+
+            col1, col2, col3, col4, col5 = st.columns(5)
 
             with col1:
 
                 st.metric(
-                    "Items Checked",
+                    "🛒 Items Checked",
                     total_items
                 )
 
             with col2:
 
                 st.metric(
-                    "Matched",
+                    "✅ Matched",
                     matched_items
                 )
 
             with col3:
 
                 st.metric(
-                    "Above Reference",
+                    "⚠️ Above Reference",
                     above_reference
                 )
 
             with col4:
 
                 st.metric(
-                    "Potentially Overpriced",
+                    "🚨 Potentially Overpriced",
                     potentially_overpriced
+                )
+
+            with col5:
+
+                st.metric(
+                    "💸 Potential Extra",
+                    f"{total_extra_amount:,.2f}"
+                )
+
+
+            # =================================================
+            # PRICE COMPARISON CHART
+            # =================================================
+
+            if valid_results:
+
+                st.subheader(
+                    "📈 Charged Price vs Reference Price"
+                )
+
+                chart_data = []
+
+                for result in valid_results:
+
+                    chart_data.append({
+
+                        "Product":
+                            result[
+                                "Receipt Product"
+                            ],
+
+                        "Price Type":
+                            "Charged Price",
+
+                        "Price":
+                            float(
+                                result[
+                                    "Charged Price"
+                                ]
+                            )
+                    })
+
+                    chart_data.append({
+
+                        "Product":
+                            result[
+                                "Receipt Product"
+                            ],
+
+                        "Price Type":
+                            "Reference Price",
+
+                        "Price":
+                            float(
+                                result[
+                                    "Reference Price"
+                                ]
+                            )
+                    })
+
+                chart_df = pd.DataFrame(
+                    chart_data
+                )
+
+                fig = px.bar(
+                    chart_df,
+                    x="Product",
+                    y="Price",
+                    color="Price Type",
+                    barmode="group",
+                    title="Receipt Price Comparison"
+                )
+
+                fig.update_layout(
+                    xaxis_title="Product",
+                    yaxis_title="Price",
+                    legend_title="Price Type"
+                )
+
+                st.plotly_chart(
+                    fig,
+                    use_container_width=True
+                )
+
+
+            # =================================================
+            # OVERPRICING INSIGHT
+            # =================================================
+
+            if potentially_overpriced > 0:
+
+                st.error(
+                    f"🚨 {potentially_overpriced} item(s) "
+                    "are significantly above the reference benchmark."
+                )
+
+            elif above_reference > 0:
+
+                st.warning(
+                    f"⚠️ {above_reference} item(s) "
+                    "are above the reference benchmark."
+                )
+
+            else:
+
+                st.success(
+                    "✅ No significantly overpriced matched "
+                    "items were detected."
                 )
 
 
             st.info(
-                "💡 A 'Potentially Overpriced' result means the "
-                "charged price is significantly higher than our "
-                "prototype reference benchmark. It does not by "
-                "itself prove illegal overcharging."
+                "💡 'Potential Extra' is the sum of positive "
+                "differences between charged prices and reference "
+                "benchmarks. It is an estimate, not proof of illegal "
+                "overcharging."
             )
 
 
@@ -1032,7 +1166,9 @@ if uploaded_file:
         # AI CONSUMER CHAT
         # =====================================================
 
-        st.header("💬 Ask PriceProof AI")
+        st.header(
+            "💬 Ask PriceProof AI"
+        )
 
         st.write(
             "Ask questions about your receipt and its "
@@ -1040,8 +1176,7 @@ if uploaded_file:
         )
 
         st.caption(
-            "Examples: "
-            "Which item is most overpriced? • "
+            "Examples: Which item is most overpriced? • "
             "How much extra did I pay? • "
             "Explain this receipt in simple words."
         )
@@ -1052,8 +1187,7 @@ if uploaded_file:
         )
 
         if st.button(
-            "🤖 Ask AI",
-            use_container_width=False
+            "🤖 Ask AI"
         ):
 
             if not user_question.strip():
