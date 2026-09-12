@@ -3,6 +3,7 @@ import pandas as pd
 from PIL import Image
 from groq import Groq
 import base64
+import json
 
 
 # -----------------------------
@@ -40,7 +41,7 @@ price_data = load_price_data()
 # -----------------------------
 # Groq Vision Receipt Reader
 # -----------------------------
-def extract_receipt_text_with_ai(uploaded_file):
+def extract_receipt_data(uploaded_file):
 
     if not groq_client:
         return None, "Groq API key is not configured."
@@ -57,6 +58,7 @@ def extract_receipt_text_with_ai(uploaded_file):
 
         response = groq_client.chat.completions.create(
             model="qwen/qwen3.8-27b",
+
             messages=[
                 {
                     "role": "user",
@@ -64,27 +66,22 @@ def extract_receipt_text_with_ai(uploaded_file):
                         {
                             "type": "text",
                             "text": """
-Read this shopping receipt carefully.
+Analyze this shopping receipt carefully.
 
-Extract all visible receipt information.
+Extract the receipt information into the required JSON structure.
 
-Focus especially on:
+Important rules:
 
-1. Product names
-2. Quantities
-3. Individual charged prices
-4. Total amount
-5. Store name if visible
-6. Date if visible
-
-Return the extracted information in clear and readable text.
-
-Do not guess information.
-
-If something is unclear or cannot be read,
-write "Unreadable" instead.
-
-Keep the response concise.
+1. Read product names exactly as clearly as possible.
+2. Extract the quantity for each item.
+3. Extract the charged unit price when visible.
+4. Extract the line total when visible.
+5. Extract the receipt total when visible.
+6. Extract store name and date when visible.
+7. Do not guess information.
+8. If information is not visible or cannot be read, use null.
+9. Keep numbers as numbers, not strings.
+10. Only include actual purchased items.
 """
                         },
                         {
@@ -99,15 +96,106 @@ Keep the response concise.
                     ]
                 }
             ],
+
             temperature=0.2,
-            max_completion_tokens=1000
+
+            max_completion_tokens=1500,
+
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "receipt_data",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+
+                        "properties": {
+
+                            "store_name": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+
+                            "date": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+
+                            "items": {
+                                "type": "array",
+
+                                "items": {
+                                    "type": "object",
+
+                                    "properties": {
+
+                                        "product_name": {
+                                            "type": "string"
+                                        },
+
+                                        "quantity": {
+                                            "type": [
+                                                "number",
+                                                "null"
+                                            ]
+                                        },
+
+                                        "charged_price": {
+                                            "type": [
+                                                "number",
+                                                "null"
+                                            ]
+                                        },
+
+                                        "line_total": {
+                                            "type": [
+                                                "number",
+                                                "null"
+                                            ]
+                                        }
+                                    },
+
+                                    "required": [
+                                        "product_name",
+                                        "quantity",
+                                        "charged_price",
+                                        "line_total"
+                                    ],
+
+                                    "additionalProperties": False
+                                }
+                            },
+
+                            "total_amount": {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ]
+                            }
+                        },
+
+                        "required": [
+                            "store_name",
+                            "date",
+                            "items",
+                            "total_amount"
+                        ],
+
+                        "additionalProperties": False
+                    }
+                }
+            }
         )
 
-        extracted_text = (
-            response.choices[0].message.content
-        )
+        content = response.choices[0].message.content
 
-        return extracted_text, None
+        receipt_data = json.loads(content)
+
+        return receipt_data, None
 
     except Exception as error:
 
@@ -139,10 +227,12 @@ def compare_price(charged_price, reference_price):
 
     return {
         "difference": round(difference, 2),
+
         "percentage_difference": round(
             percentage_difference,
             2
         ),
+
         "status": status
     }
 
@@ -179,7 +269,7 @@ Give a short and clear explanation for the consumer.
 
 Rules:
 
-- Do not claim the price is legally illegal.
+- Do not claim that the price is legally illegal.
 - Do not invent market information.
 - The reference price is only a comparison benchmark.
 - Prices can vary by shop, location, brand,
@@ -193,6 +283,7 @@ Rules:
 
         response = groq_client.chat.completions.create(
             model="openai/gpt-oss-20b",
+
             messages=[
                 {
                     "role": "system",
@@ -201,13 +292,17 @@ Rules:
                         "price verification assistant."
                     )
                 },
+
                 {
                     "role": "user",
                     "content": prompt
                 }
             ],
+
             temperature=0.2,
+
             max_completion_tokens=500,
+
             include_reasoning=False
         )
 
@@ -245,7 +340,11 @@ st.header("📤 Upload Your Receipt")
 
 uploaded_file = st.file_uploader(
     "Choose a receipt image",
-    type=["jpg", "jpeg", "png"],
+    type=[
+        "jpg",
+        "jpeg",
+        "png"
+    ],
     help="Upload a clear image of your shopping receipt."
 )
 
@@ -272,11 +371,11 @@ if uploaded_file is not None:
     ):
 
         with st.spinner(
-            "AI is reading your receipt..."
+            "AI is reading and understanding your receipt..."
         ):
 
-            extracted_text, error_message = (
-                extract_receipt_text_with_ai(
+            receipt_data, error_message = (
+                extract_receipt_data(
                     uploaded_file
                 )
             )
@@ -285,17 +384,92 @@ if uploaded_file is not None:
             "📄 AI Receipt Analysis"
         )
 
-        if extracted_text:
+        if receipt_data:
 
-            st.text_area(
-                "Receipt content",
-                extracted_text,
-                height=300
-            )
-
+            # -----------------------------
+            # Receipt Summary
+            # -----------------------------
             st.success(
                 "Receipt information extracted successfully!"
             )
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+
+                st.write("**Store**")
+
+                st.write(
+                    receipt_data["store_name"]
+                    if receipt_data["store_name"]
+                    else "Not detected"
+                )
+
+            with col2:
+
+                st.write("**Date**")
+
+                st.write(
+                    receipt_data["date"]
+                    if receipt_data["date"]
+                    else "Not detected"
+                )
+
+            st.divider()
+
+            # -----------------------------
+            # Extracted Items
+            # -----------------------------
+            st.write("### 🛒 Purchased Items")
+
+            items = receipt_data["items"]
+
+            if items:
+
+                items_df = pd.DataFrame(items)
+
+                items_df = items_df.rename(
+                    columns={
+                        "product_name": "Product",
+                        "quantity": "Quantity",
+                        "charged_price": "Charged Price (PKR)",
+                        "line_total": "Line Total (PKR)"
+                    }
+                )
+
+                st.dataframe(
+                    items_df,
+                    width="stretch",
+                    hide_index=True
+                )
+
+            else:
+
+                st.warning(
+                    "No purchased items were detected."
+                )
+
+            # -----------------------------
+            # Total Amount
+            # -----------------------------
+            st.divider()
+
+            total_amount = (
+                receipt_data["total_amount"]
+            )
+
+            if total_amount is not None:
+
+                st.metric(
+                    "Receipt Total",
+                    f"PKR {total_amount:,.2f}"
+                )
+
+            else:
+
+                st.info(
+                    "Receipt total could not be detected."
+                )
 
         else:
 
@@ -313,7 +487,9 @@ if uploaded_file is not None:
 # -----------------------------
 st.divider()
 
-st.header("💰 Price Comparison Engine")
+st.header(
+    "💰 Price Comparison Engine"
+)
 
 st.write(
     "Test how PriceProof compares a charged price "
@@ -403,64 +579,4 @@ if st.button(
     if groq_client:
 
         with st.spinner(
-            "AI is analyzing the price difference..."
-        ):
-
-            ai_analysis = analyze_with_ai(
-                selected_product,
-                charged_price,
-                reference_price,
-                result["difference"],
-                result["percentage_difference"],
-                result["status"]
-            )
-
-        st.info(ai_analysis)
-
-    else:
-
-        st.warning(
-            "Groq API key is not configured yet."
-        )
-
-
-# -----------------------------
-# AI Status
-# -----------------------------
-st.divider()
-
-st.subheader(
-    "🤖 Generative AI Status"
-)
-
-if groq_client:
-
-    st.success(
-        "Groq AI is configured and ready."
-    )
-
-else:
-
-    st.warning(
-        "Groq API key is not configured yet."
-    )
-
-
-# -----------------------------
-# Reference Database
-# -----------------------------
-with st.expander(
-    "📊 Reference Price Database"
-):
-
-    st.write(
-        "These are prototype reference prices used "
-        "for comparison. They are not official "
-        "legal prices."
-    )
-
-    st.dataframe(
-        price_data,
-        width="stretch",
-        hide_index=True
-    )
+            "AI is analyzing
