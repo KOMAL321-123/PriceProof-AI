@@ -1674,11 +1674,11 @@ if uploaded_file is not None:
 
             st.session_state.analysis_running = True
 
-             with st.spinner(
-                "AI is reading your receipt..."
-             ):
+                with st.spinner(
+                    "AI is reading your receipt..."
+                ):
 
-                try:
+               try:
 
                     mime_type = detect_mime_type(
                         uploaded_file.name
