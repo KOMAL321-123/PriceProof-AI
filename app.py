@@ -2089,6 +2089,23 @@ if st.session_state.analysis_complete:
                     )
 
                 st.markdown(
+                    "#### 📋 Evidence Summary"
+                )
+
+                st.write(
+                    f"PriceProof found that **{row['Product']}** was charged at "
+                    f"{format_currency(row['Charged Total'])}, compared with the "
+                    f"reference benchmark of {format_currency(row['Reference Total'])}. "
+                    f"This is {percentage:.1f}% above the benchmark "
+                    f"({format_currency(row['Difference'])} difference)."
+                )
+
+                st.caption(
+                    "This is a review signal based on benchmark data, not proof "
+                    "of illegal overcharging."
+                )
+
+                st.markdown(
                     "#### 🔎 What should you check?"
                 )
 
