@@ -32,39 +32,13 @@ st.markdown(
     """
     <style>
 
-    /* ======================================================
-       GLOBAL APP BACKGROUND
-       ====================================================== */
-
     .stApp {
         background:
-            radial-gradient(
-                circle at 8% 5%,
-                rgba(59, 130, 246, 0.10),
-                transparent 25%
-            ),
-            radial-gradient(
-                circle at 92% 8%,
-                rgba(16, 185, 129, 0.09),
-                transparent 24%
-            ),
-            radial-gradient(
-                circle at 50% 100%,
-                rgba(99, 102, 241, 0.07),
-                transparent 30%
-            ),
-            linear-gradient(
-                135deg,
-                #f8fbff 0%,
-                #f3f6fb 45%,
-                #eef4ff 100%
-            );
+            radial-gradient(circle at 8% 5%, rgba(59, 130, 246, 0.10), transparent 25%),
+            radial-gradient(circle at 92% 8%, rgba(16, 185, 129, 0.09), transparent 24%),
+            radial-gradient(circle at 50% 100%, rgba(99, 102, 241, 0.07), transparent 30%),
+            linear-gradient(135deg, #f8fbff 0%, #f3f6fb 45%, #eef4ff 100%);
     }
-
-
-    /* ======================================================
-       MAIN CONTENT
-       ====================================================== */
 
     .main .block-container {
         max-width: 1400px;
@@ -73,11 +47,6 @@ st.markdown(
         padding-left: 2rem;
         padding-right: 2rem;
     }
-
-
-    /* ======================================================
-       TYPOGRAPHY
-       ====================================================== */
 
     h1, h2, h3, h4 {
         letter-spacing: -0.025em;
@@ -96,44 +65,32 @@ st.markdown(
         color: #475569;
     }
 
-
-    /* ======================================================
-       HERO SECTION
-       ====================================================== */
+    /* HERO */
 
     .hero {
         position: relative;
         overflow: hidden;
-
-        background:
-            linear-gradient(
-                135deg,
-                #0f172a 0%,
-                #172554 45%,
-                #312e81 100%
-            );
-
+        background: linear-gradient(
+            135deg,
+            #0f172a 0%,
+            #172554 45%,
+            #312e81 100%
+        );
         padding: 2.7rem 3rem;
         border-radius: 26px;
         color: white;
         margin-bottom: 1.8rem;
-
-        box-shadow:
-            0 18px 45px rgba(15, 23, 42, 0.16);
-
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
         border: 1px solid rgba(255,255,255,0.08);
     }
 
     .hero::before {
         content: "";
         position: absolute;
-
         width: 280px;
         height: 280px;
-
         right: -100px;
         top: -120px;
-
         background: rgba(255,255,255,0.07);
         border-radius: 50%;
     }
@@ -141,13 +98,10 @@ st.markdown(
     .hero::after {
         content: "";
         position: absolute;
-
         width: 180px;
         height: 180px;
-
         right: 160px;
         bottom: -120px;
-
         background: rgba(255,255,255,0.05);
         border-radius: 50%;
     }
@@ -175,101 +129,57 @@ st.markdown(
     .hero-tag {
         display: inline-flex;
         align-items: center;
-
         margin-top: 1.1rem;
-
         padding: 0.48rem 1rem;
-
         border-radius: 999px;
-
         background: rgba(255,255,255,0.12);
         border: 1px solid rgba(255,255,255,0.14);
-
         color: #f8fafc;
         font-size: 0.88rem;
         font-weight: 600;
-
         backdrop-filter: blur(8px);
     }
 
-
-    /* ======================================================
-       GLASS / INFORMATION CARDS
-       ====================================================== */
+    /* CARDS */
 
     .info-card {
         background: rgba(255,255,255,0.84);
-
         border: 1px solid rgba(148,163,184,0.18);
-
         border-radius: 18px;
-
         padding: 1.35rem;
-
-        box-shadow:
-            0 8px 25px rgba(15,23,42,0.055);
-
+        box-shadow: 0 8px 25px rgba(15,23,42,0.055);
         backdrop-filter: blur(10px);
     }
 
-
-    /* ======================================================
-       METRIC CONTAINERS
-       ====================================================== */
-
     div[data-testid="metric-container"] {
-        background:
-            linear-gradient(
-                145deg,
-                rgba(255,255,255,0.96),
-                rgba(248,250,252,0.90)
-            );
-
+        background: linear-gradient(
+            145deg,
+            rgba(255,255,255,0.96),
+            rgba(248,250,252,0.90)
+        );
         border: 1px solid rgba(148,163,184,0.18);
-
         border-radius: 18px;
-
         padding: 1rem 1.1rem;
-
         min-height: 105px;
-
-        box-shadow:
-            0 7px 22px rgba(15,23,42,0.055);
-
-        transition:
-            transform 0.18s ease,
-            box-shadow 0.18s ease;
+        box-shadow: 0 7px 22px rgba(15,23,42,0.055);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
 
     div[data-testid="metric-container"]:hover {
         transform: translateY(-2px);
-
-        box-shadow:
-            0 12px 28px rgba(15,23,42,0.09);
+        box-shadow: 0 12px 28px rgba(15,23,42,0.09);
     }
 
-
-    /* ======================================================
-       CUSTOM METRIC CARD
-       ====================================================== */
-
     .metric-card {
-        background:
-            linear-gradient(
-                145deg,
-                rgba(255,255,255,0.96),
-                rgba(248,250,252,0.92)
-            );
-
+        background: linear-gradient(
+            145deg,
+            rgba(255,255,255,0.96),
+            rgba(248,250,252,0.92)
+        );
         padding: 1.25rem;
-
         border-radius: 18px;
-
         border: 1px solid rgba(148,163,184,0.18);
-
-        box-shadow:
-            0 7px 22px rgba(15,23,42,0.055);
-
+        box-shadow: 0 7px 22px rgba(15,23,42,0.055);
         min-height: 120px;
     }
 
@@ -286,97 +196,56 @@ st.markdown(
         color: #111827;
     }
 
-
-    /* ======================================================
-       SECTION LABEL
-       ====================================================== */
-
     .section-label {
         display: inline-flex;
         align-items: center;
-
         background: rgba(239,246,255,0.9);
-
         color: #1d4ed8;
-
         border: 1px solid rgba(59,130,246,0.14);
-
         padding: 0.35rem 0.75rem;
-
         border-radius: 999px;
-
         font-size: 0.78rem;
         font-weight: 700;
-
         margin-bottom: 0.5rem;
     }
 
-
-    /* ======================================================
-       STATUS CARDS
-       ====================================================== */
+    /* STATUS */
 
     .status-good {
         background: rgba(236,253,245,0.92);
-
         border-left: 5px solid #10b981;
-
         padding: 1rem 1.2rem;
-
         border-radius: 14px;
-
         margin: 0.8rem 0;
-
-        box-shadow:
-            0 5px 16px rgba(16,185,129,0.07);
+        box-shadow: 0 5px 16px rgba(16,185,129,0.07);
     }
 
     .status-warning {
         background: rgba(255,251,235,0.94);
-
         border-left: 5px solid #f59e0b;
-
         padding: 1rem 1.2rem;
-
         border-radius: 14px;
-
         margin: 0.8rem 0;
-
-        box-shadow:
-            0 5px 16px rgba(245,158,11,0.07);
+        box-shadow: 0 5px 16px rgba(245,158,11,0.07);
     }
 
     .status-info {
         background: rgba(239,246,255,0.94);
-
         border-left: 5px solid #3b82f6;
-
         padding: 1rem 1.2rem;
-
         border-radius: 14px;
-
         margin: 0.8rem 0;
-
-        box-shadow:
-            0 5px 16px rgba(59,130,246,0.07);
+        box-shadow: 0 5px 16px rgba(59,130,246,0.07);
     }
 
-
-    /* ======================================================
-       BUTTONS
-       ====================================================== */
+    /* BUTTONS */
 
     .stButton > button,
     .stDownloadButton > button {
-
         border-radius: 11px;
-
         min-height: 44px;
-
         font-weight: 700;
-
         border: 1px solid rgba(148,163,184,0.20);
-
         transition:
             transform 0.18s ease,
             box-shadow 0.18s ease,
@@ -385,313 +254,166 @@ st.markdown(
 
     .stButton > button:hover,
     .stDownloadButton > button:hover {
-
         transform: translateY(-1px);
-
-        box-shadow:
-            0 8px 20px rgba(15,23,42,0.11);
-
-        border-color:
-            rgba(59,130,246,0.28);
+        box-shadow: 0 8px 20px rgba(15,23,42,0.11);
+        border-color: rgba(59,130,246,0.28);
     }
 
     .stButton > button[kind="primary"] {
-
-        box-shadow:
-            0 7px 18px rgba(37,99,235,0.16);
+        box-shadow: 0 7px 18px rgba(37,99,235,0.16);
     }
 
-
-    /* ======================================================
-       FILE UPLOADER
-       ====================================================== */
+    /* FILE UPLOADER */
 
     div[data-testid="stFileUploader"] {
-
-        background:
-            linear-gradient(
-                145deg,
-                rgba(255,255,255,0.90),
-                rgba(248,250,252,0.78)
-            );
-
+        background: linear-gradient(
+            145deg,
+            rgba(255,255,255,0.90),
+            rgba(248,250,252,0.78)
+        );
         border: 1px dashed #93a4b8;
-
         border-radius: 18px;
-
         padding: 0.7rem;
-
-        box-shadow:
-            0 6px 20px rgba(15,23,42,0.045);
+        box-shadow: 0 6px 20px rgba(15,23,42,0.045);
     }
 
     div[data-testid="stFileUploader"]:hover {
-
         border-color: #3b82f6;
-
-        box-shadow:
-            0 8px 24px rgba(59,130,246,0.09);
+        box-shadow: 0 8px 24px rgba(59,130,246,0.09);
     }
 
-
-    /* ======================================================
-       EXPANDERS
-       ====================================================== */
+    /* EXPANDERS */
 
     div[data-testid="stExpander"] {
-
-        background:
-            rgba(255,255,255,0.80);
-
-        border:
-            1px solid rgba(148,163,184,0.18);
-
-        border-radius:
-            16px;
-
-        box-shadow:
-            0 6px 20px rgba(15,23,42,0.045);
-
-        overflow:
-            hidden;
+        background: rgba(255,255,255,0.80);
+        border: 1px solid rgba(148,163,184,0.18);
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(15,23,42,0.045);
+        overflow: hidden;
     }
 
-
-    /* ======================================================
-       ALERTS
-       ====================================================== */
+    /* ALERTS */
 
     div[data-testid="stAlert"] {
-
-        border-radius:
-            13px;
-
-        border:
-            1px solid rgba(148,163,184,0.12);
+        border-radius: 13px;
+        border: 1px solid rgba(148,163,184,0.12);
     }
 
-
-    /* ======================================================
-       DATAFRAME
-       ====================================================== */
+    /* DATAFRAME */
 
     div[data-testid="stDataFrame"] {
-
-        border-radius:
-            14px;
-
-        overflow:
-            hidden;
-
-        border:
-            1px solid rgba(148,163,184,0.18);
-
-        box-shadow:
-            0 6px 18px rgba(15,23,42,0.04);
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid rgba(148,163,184,0.18);
+        box-shadow: 0 6px 18px rgba(15,23,42,0.04);
     }
 
-
-    /* ======================================================
-       SELECT BOX / INPUTS
-       ====================================================== */
+    /* INPUTS */
 
     div[data-baseweb="select"] > div,
     div[data-baseweb="input"] > div,
     textarea {
-
-        border-radius:
-            11px !important;
+        border-radius: 11px !important;
     }
-
 
     input,
     textarea {
-
-        background:
-            rgba(255,255,255,0.86) !important;
+        background: rgba(255,255,255,0.86) !important;
     }
 
-
-    /* ======================================================
-       PROGRESS BAR
-       ====================================================== */
+    /* PROGRESS */
 
     div[data-testid="stProgressBar"] {
-
         margin-top: 0.6rem;
         margin-bottom: 0.8rem;
     }
 
-
-    /* ======================================================
-       IMAGE PREVIEW
-       ====================================================== */
-
     img {
-
-        border-radius:
-            14px;
+        border-radius: 14px;
     }
 
-
-    /* ======================================================
-       SIDEBAR
-       ====================================================== */
+    /* SIDEBAR */
 
     section[data-testid="stSidebar"] {
-
-        background:
-            linear-gradient(
-                180deg,
-                #0f172a 0%,
-                #172554 58%,
-                #1e1b4b 100%
-            );
-
-        border-right:
-            1px solid rgba(255,255,255,0.06);
+        background: linear-gradient(
+            180deg,
+            #0f172a 0%,
+            #172554 58%,
+            #1e1b4b 100%
+        );
+        border-right: 1px solid rgba(255,255,255,0.06);
     }
 
     section[data-testid="stSidebar"] * {
-
-        color:
-            #f8fafc;
+        color: #f8fafc;
     }
 
     section[data-testid="stSidebar"] .stCaption {
-
-        color:
-            #cbd5e1 !important;
+        color: #cbd5e1 !important;
     }
 
     section[data-testid="stSidebar"] hr {
-
-        border-top:
-            1px solid rgba(255,255,255,0.12);
+        border-top: 1px solid rgba(255,255,255,0.12);
     }
 
-
-    /* ======================================================
-       SIDEBAR BRAND
-       ====================================================== */
-
     .sidebar-brand {
-
-        padding:
-            0.8rem 0;
-
-        margin-bottom:
-            0.5rem;
+        padding: 0.8rem 0;
+        margin-bottom: 0.5rem;
     }
 
     .sidebar-brand-title {
-
-        font-size:
-            1.25rem;
-
-        font-weight:
-            800;
-
-        color:
-            white;
-
-        margin-bottom:
-            0.15rem;
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 0.15rem;
     }
 
     .sidebar-brand-subtitle {
-
-        font-size:
-            0.82rem;
-
-        color:
-            #cbd5e1;
+        font-size: 0.82rem;
+        color: #cbd5e1;
     }
-
-
-    /* ======================================================
-       DIVIDERS
-       ====================================================== */
 
     hr {
-
-        border:
-            none;
-
-        border-top:
-            1px solid rgba(148,163,184,0.22);
-
-        margin:
-            1.5rem 0;
+        border: none;
+        border-top: 1px solid rgba(148,163,184,0.22);
+        margin: 1.5rem 0;
     }
 
-
-    /* ======================================================
-       FOOTER
-       ====================================================== */
+    /* FOOTER */
 
     .footer {
-
-        text-align:
-            center;
-
-        color:
-            #64748b;
-
-        font-size:
-            0.84rem;
-
-        padding:
-            2.5rem 0 1rem 0;
-
-        margin-top:
-            1.5rem;
-
-        border-top:
-            1px solid rgba(148,163,184,0.18);
+        text-align: center;
+        color: #64748b;
+        font-size: 0.84rem;
+        padding: 2.5rem 0 1rem 0;
+        margin-top: 1.5rem;
+        border-top: 1px solid rgba(148,163,184,0.18);
     }
 
     .footer strong {
-
-        color:
-            #334155;
+        color: #334155;
     }
 
-
-    /* ======================================================
-       MOBILE FRIENDLY
-       ====================================================== */
+    /* MOBILE */
 
     @media (max-width: 768px) {
 
         .main .block-container {
-
-            padding-left:
-                1rem;
-
-            padding-right:
-                1rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
         }
 
         .hero {
-
-            padding:
-                2rem 1.4rem;
-
-            border-radius:
-                20px;
+            padding: 2rem 1.4rem;
+            border-radius: 20px;
         }
 
         .hero h1 {
-
-            font-size:
-                2.2rem;
+            font-size: 2.2rem;
         }
 
         .hero p {
-
-            font-size:
-                1rem;
+            font-size: 1rem;
         }
     }
 
@@ -778,14 +500,8 @@ def safe_float(value, default=0.0):
         return float(value)
 
     try:
-
         cleaned = str(value).replace(",", "")
-
-        cleaned = re.sub(
-            r"[^\d.\-]",
-            "",
-            cleaned
-        )
+        cleaned = re.sub(r"[^\d.\-]", "", cleaned)
 
         if cleaned in ["", "-", ".", "-."]:
             return default
@@ -793,7 +509,6 @@ def safe_float(value, default=0.0):
         return float(cleaned)
 
     except Exception:
-
         return default
 
 
@@ -824,10 +539,7 @@ def normalize_product_name(name):
     return name.strip()
 
 
-def encode_image_bytes(
-    image_bytes,
-    mime_type
-):
+def encode_image_bytes(image_bytes, mime_type):
 
     encoded = base64.b64encode(
         image_bytes
@@ -861,11 +573,8 @@ def extract_json_from_text(text):
     text = text.strip()
 
     try:
-
         return json.loads(text)
-
     except Exception:
-
         pass
 
     cleaned = re.sub(
@@ -881,11 +590,8 @@ def extract_json_from_text(text):
     ).strip()
 
     try:
-
         return json.loads(cleaned)
-
     except Exception:
-
         pass
 
     object_match = re.search(
@@ -897,13 +603,10 @@ def extract_json_from_text(text):
     if object_match:
 
         try:
-
             return json.loads(
                 object_match.group(0)
             )
-
         except Exception:
-
             pass
 
     return None
@@ -924,7 +627,6 @@ def format_currency(value):
 def load_products():
 
     if not os.path.exists("products.csv"):
-
         return pd.DataFrame()
 
     try:
@@ -948,13 +650,9 @@ def load_products():
 products_df = load_products()
 
 
-def find_column(
-    df,
-    candidates
-):
+def find_column(df, candidates):
 
     if df.empty:
-
         return None
 
     normalized = {
@@ -1040,13 +738,13 @@ def prepare_reference_database(df):
 
     result = pd.DataFrame()
 
-    result["product"] = df[
-        product_col
-    ].astype(str)
+    result["product"] = (
+        df[product_col].astype(str)
+    )
 
-    result["reference_price"] = df[
-        price_col
-    ].apply(safe_float)
+    result["reference_price"] = (
+        df[price_col].apply(safe_float)
+    )
 
     brand_col = find_column(
         df,
@@ -1116,10 +814,7 @@ reference_df = prepare_reference_database(
 # PRODUCT MATCHING
 # ============================================================
 
-def match_product(
-    product_name,
-    reference_data
-):
+def match_product(product_name, reference_data):
 
     if reference_data.empty:
 
@@ -1188,7 +883,10 @@ def match_product(
             best_score = score
             best_index = index
 
-    if best_index is None or best_score < 0.55:
+    if (
+        best_index is None
+        or best_score < 0.55
+    ):
 
         return {
             "matched": False,
@@ -1275,27 +973,36 @@ Rules:
 """
 
     response = client.chat.completions.create(
+
         model=VISION_MODEL,
+
         messages=[
             {
                 "role": "user",
                 "content": [
+
                     {
                         "type": "text",
                         "text": prompt
                     },
+
                     {
                         "type": "image_url",
                         "image_url": {
                             "url": image_url
                         }
                     }
+
                 ]
             }
         ],
+
         temperature=0,
+
         max_completion_tokens=700,
+
         reasoning_effort="none",
+
         response_format={
             "type": "json_object"
         }
@@ -1328,7 +1035,6 @@ Rules:
 def normalize_receipt_data(data):
 
     if not isinstance(data, dict):
-
         data = {}
 
     items = data.get(
@@ -1337,18 +1043,13 @@ def normalize_receipt_data(data):
     )
 
     if not isinstance(items, list):
-
         items = []
 
     normalized_items = []
 
     for item in items:
 
-        if not isinstance(
-            item,
-            dict
-        ):
-
+        if not isinstance(item, dict):
             continue
 
         name = clean_text(
@@ -1370,7 +1071,6 @@ def normalize_receipt_data(data):
         )
 
         if quantity <= 0:
-
             quantity = 1
 
         unit_price = safe_float(
@@ -1393,8 +1093,7 @@ def normalize_receipt_data(data):
         ):
 
             line_total = (
-                unit_price
-                * quantity
+                unit_price * quantity
             )
 
         if (
@@ -1403,8 +1102,7 @@ def normalize_receipt_data(data):
         ):
 
             unit_price = (
-                line_total
-                / quantity
+                line_total / quantity
             )
 
         normalized_items.append(
@@ -1500,8 +1198,7 @@ def analyze_receipt_items(
         if reference_price is not None:
 
             reference_total = (
-                reference_price
-                * quantity
+                reference_price * quantity
             )
 
             difference = (
@@ -1547,31 +1244,38 @@ def analyze_receipt_items(
                 "Difference": difference,
                 "Difference %": percentage,
                 "Status": status,
-                "Potentially Overpriced": potentially_overpriced,
-                "Match Score": match.get(
-                    "similarity",
-                    0
-                ),
-                "Reference Product": match.get(
-                    "reference_product",
-                    ""
-                ),
-                "Brand": match.get(
-                    "brand",
-                    ""
-                ),
-                "Category": match.get(
-                    "category",
-                    ""
-                ),
-                "Package Size": match.get(
-                    "size",
-                    ""
-                ),
-                "Reference Date": match.get(
-                    "date",
-                    ""
-                )
+                "Potentially Overpriced":
+                    potentially_overpriced,
+                "Match Score":
+                    match.get(
+                        "similarity",
+                        0
+                    ),
+                "Reference Product":
+                    match.get(
+                        "reference_product",
+                        ""
+                    ),
+                "Brand":
+                    match.get(
+                        "brand",
+                        ""
+                    ),
+                "Category":
+                    match.get(
+                        "category",
+                        ""
+                    ),
+                "Package Size":
+                    match.get(
+                        "size",
+                        ""
+                    ),
+                "Reference Date":
+                    match.get(
+                        "date",
+                        ""
+                    )
             }
         )
 
@@ -1590,7 +1294,6 @@ def calculate_price_health_score(
         analysis_df is None
         or analysis_df.empty
     ):
-
         return None
 
     matched = analysis_df[
@@ -1600,7 +1303,6 @@ def calculate_price_health_score(
     ]
 
     if matched.empty:
-
         return None
 
     scores = []
@@ -1612,27 +1314,21 @@ def calculate_price_health_score(
         )
 
         if diff <= 0:
-
             score = 100
 
         elif diff <= 5:
-
             score = 95
 
         elif diff <= 10:
-
             score = 85
 
         elif diff <= 20:
-
             score = 70
 
         elif diff <= 35:
-
             score = 50
 
         else:
-
             score = 25
 
         scores.append(score)
@@ -1646,19 +1342,15 @@ def calculate_price_health_score(
 def get_health_label(score):
 
     if score is None:
-
         return "Not Available"
 
     if score >= 90:
-
         return "Healthy"
 
     if score >= 75:
-
         return "Mostly Healthy"
 
     if score >= 60:
-
         return "Needs Review"
 
     return "Review Carefully"
@@ -1676,8 +1368,8 @@ def generate_ai_explanation(
     if analysis_df.empty:
 
         return (
-            "No receipt items were available "
-            "for analysis."
+            "No receipt items were "
+            "available for analysis."
         )
 
     records = []
@@ -1686,29 +1378,34 @@ def generate_ai_explanation(
 
         records.append(
             {
-                "product": row["Product"],
-                "charged": safe_float(
-                    row["Charged Total"]
-                ),
-                "reference": (
+                "product":
+                    row["Product"],
+
+                "charged":
+                    safe_float(
+                        row["Charged Total"]
+                    ),
+
+                "reference":
                     safe_float(
                         row["Reference Total"]
                     )
                     if pd.notna(
                         row["Reference Total"]
                     )
-                    else None
-                ),
-                "difference_percent": (
+                    else None,
+
+                "difference_percent":
                     safe_float(
                         row["Difference %"]
                     )
                     if pd.notna(
                         row["Difference %"]
                     )
-                    else None
-                ),
-                "status": row["Status"]
+                    else None,
+
+                "status":
+                    row["Status"]
             }
         )
 
@@ -1730,15 +1427,20 @@ Rules:
 """
 
     response = client.chat.completions.create(
+
         model=TEXT_MODEL,
+
         messages=[
             {
                 "role": "user",
                 "content": prompt
             }
         ],
+
         temperature=0.2,
+
         max_completion_tokens=300,
+
         reasoning_effort="low"
     )
 
@@ -1774,41 +1476,48 @@ def answer_user_question(
 
         records.append(
             {
-                "product": row["Product"],
-                "quantity": safe_float(
-                    row["Quantity"]
-                ),
-                "charged": safe_float(
-                    row["Charged Total"]
-                ),
-                "reference": (
+                "product":
+                    row["Product"],
+
+                "quantity":
+                    safe_float(
+                        row["Quantity"]
+                    ),
+
+                "charged":
+                    safe_float(
+                        row["Charged Total"]
+                    ),
+
+                "reference":
                     safe_float(
                         row["Reference Total"]
                     )
                     if pd.notna(
                         row["Reference Total"]
                     )
-                    else None
-                ),
-                "difference": (
+                    else None,
+
+                "difference":
                     safe_float(
                         row["Difference"]
                     )
                     if pd.notna(
                         row["Difference"]
                     )
-                    else None
-                ),
-                "difference_percent": (
+                    else None,
+
+                "difference_percent":
                     safe_float(
                         row["Difference %"]
                     )
                     if pd.notna(
                         row["Difference %"]
                     )
-                    else None
-                ),
-                "status": row["Status"]
+                    else None,
+
+                "status":
+                    row["Status"]
             }
         )
 
@@ -1835,15 +1544,20 @@ Rules:
 """
 
     response = client.chat.completions.create(
+
         model=TEXT_MODEL,
+
         messages=[
             {
                 "role": "user",
                 "content": prompt
             }
         ],
+
         temperature=0.2,
+
         max_completion_tokens=250,
+
         reasoning_effort="low"
     )
 
@@ -1873,29 +1587,29 @@ def calculate_total_consistency(
     )
 
     if receipt_total <= 0:
-
         return None
 
     if (
         analysis_df is None
         or analysis_df.empty
     ):
-
         return None
 
-    item_total = analysis_df[
-        "Charged Total"
-    ].apply(
-        safe_float
-    ).sum()
+    item_total = (
+        analysis_df["Charged Total"]
+        .apply(safe_float)
+        .sum()
+    )
 
     return {
-        "receipt_total": receipt_total,
-        "item_total": item_total,
-        "difference": (
-            receipt_total
-            - item_total
-        )
+        "receipt_total":
+            receipt_total,
+
+        "item_total":
+            item_total,
+
+        "difference":
+            receipt_total - item_total
     }
 
 
@@ -2009,13 +1723,11 @@ def generate_consumer_report(
     )
 
     lines.append(
-        "Reference prices are benchmarks, not official "
-        "government or legal prices."
+        "Reference prices are benchmarks, not official government or legal prices."
     )
 
     lines.append(
-        "A potentially high-price result does not by itself "
-        "prove illegal overcharging."
+        "A potentially high-price result does not by itself prove illegal overcharging."
     )
 
     return "\n".join(lines)
@@ -2028,12 +1740,14 @@ def generate_consumer_report(
 st.markdown(
     """
     <div class="hero">
+
         <div class="hero-content">
 
             <h1>🧾 PriceProof AI</h1>
 
             <p>
-                Detect overpricing. Verify the price. Know your rights.
+                Detect overpricing. Verify the price.
+                Know your rights.
             </p>
 
             <div class="hero-tag">
@@ -2041,6 +1755,7 @@ st.markdown(
             </div>
 
         </div>
+
     </div>
     """,
     unsafe_allow_html=True
@@ -2056,6 +1771,7 @@ with st.sidebar:
     st.markdown(
         """
         <div class="sidebar-brand">
+
             <div class="sidebar-brand-title">
                 🧾 PriceProof AI
             </div>
@@ -2063,6 +1779,7 @@ with st.sidebar:
             <div class="sidebar-brand-subtitle">
                 Smart consumer price verification
             </div>
+
         </div>
         """,
         unsafe_allow_html=True
@@ -2097,8 +1814,9 @@ with st.sidebar:
     )
 
     st.caption(
-        "Receipt images are processed for the analysis "
-        "session and are not intentionally stored by this app."
+        "Receipt images are processed for the "
+        "analysis session and are not intentionally "
+        "stored by this app."
     )
 
     st.divider()
@@ -2108,7 +1826,8 @@ with st.sidebar:
     )
 
     st.caption(
-        "Reference prices are benchmarks, not official legal prices."
+        "Reference prices are benchmarks, "
+        "not official legal prices."
     )
 
 
@@ -2202,7 +1921,8 @@ if client is None:
     )
 
     st.info(
-        "Add GROQ_API_KEY in Streamlit Cloud → Settings → Secrets."
+        "Add GROQ_API_KEY in "
+        "Streamlit Cloud → Settings → Secrets."
     )
 
     st.stop()
@@ -2213,7 +1933,9 @@ if client is None:
 # ============================================================
 
 st.markdown(
-    '<div class="section-label">STEP 1 • RECEIPT INPUT</div>',
+    '<div class="section-label">'
+    'STEP 1 • RECEIPT INPUT'
+    '</div>',
     unsafe_allow_html=True
 )
 
@@ -2222,7 +1944,8 @@ st.header(
 )
 
 st.caption(
-    "Upload a clear receipt image to begin the verification process."
+    "Upload a clear receipt image to begin "
+    "the verification process."
 )
 
 uploaded_file = st.file_uploader(
@@ -2260,8 +1983,13 @@ if uploaded_file is not None:
 
         st.stop()
 
-    st.session_state.receipt_image_bytes = image_bytes
-    st.session_state.receipt_filename = uploaded_file.name
+    st.session_state.receipt_image_bytes = (
+        image_bytes
+    )
+
+    st.session_state.receipt_filename = (
+        uploaded_file.name
+    )
 
     left, right = st.columns(
         [1, 1],
@@ -2281,11 +2009,14 @@ if uploaded_file is not None:
         st.markdown(
             """
             <div class="info-card">
+
                 <h3>🔍 Ready for Analysis</h3>
+
                 <p>
-                    Your receipt image is ready to be processed
-                    by the AI vision model.
+                    Your receipt image is ready to be
+                    processed by the AI vision model.
                 </p>
+
             </div>
             """,
             unsafe_allow_html=True
@@ -2312,14 +2043,18 @@ if uploaded_file is not None:
                         uploaded_file.name
                     )
 
-                    extracted = extract_receipt_with_ai(
-                        client,
-                        image_bytes,
-                        mime_type
+                    extracted = (
+                        extract_receipt_with_ai(
+                            client,
+                            image_bytes,
+                            mime_type
+                        )
                     )
 
-                    normalized = normalize_receipt_data(
-                        extracted
+                    normalized = (
+                        normalize_receipt_data(
+                            extracted
+                        )
                     )
 
                     if not normalized["items"]:
@@ -2333,14 +2068,20 @@ if uploaded_file is not None:
 
                     else:
 
-                        comparison = analyze_receipt_items(
-                            normalized,
-                            reference_df
+                        comparison = (
+                            analyze_receipt_items(
+                                normalized,
+                                reference_df
+                            )
                         )
 
-                        st.session_state.receipt_data = normalized
+                        st.session_state.receipt_data = (
+                            normalized
+                        )
 
-                        st.session_state.analysis_df = comparison
+                        st.session_state.analysis_df = (
+                            comparison
+                        )
 
                         st.session_state.analysis_complete = True
 
@@ -2357,19 +2098,21 @@ if uploaded_file is not None:
                     error_text = str(error)
 
                     st.session_state.analysis_complete = False
+
                     st.session_state.analysis_running = False
 
                     if "429" in error_text:
 
                         st.error(
-                            "Groq rate limit reached while reading "
-                            "the receipt."
+                            "Groq rate limit reached "
+                            "while reading the receipt."
                         )
 
                         st.info(
-                            "The app has been optimized to use a small "
-                            "receipt-extraction response. Please wait "
-                            "a short moment and try Analyze again."
+                            "The app has been optimized to use "
+                            "a small receipt-extraction response. "
+                            "Please wait a short moment and try "
+                            "Analyze again."
                         )
 
                     else:
@@ -2389,14 +2132,20 @@ if uploaded_file is not None:
 
 if st.session_state.analysis_complete:
 
-    receipt_data = st.session_state.receipt_data
+    receipt_data = (
+        st.session_state.receipt_data
+    )
 
-    analysis_df = st.session_state.analysis_df
+    analysis_df = (
+        st.session_state.analysis_df
+    )
 
     st.divider()
 
     st.markdown(
-        '<div class="section-label">STEP 2 • VERIFICATION RESULTS</div>',
+        '<div class="section-label">'
+        'STEP 2 • VERIFICATION RESULTS'
+        '</div>',
         unsafe_allow_html=True
     )
 
@@ -2427,14 +2176,11 @@ if st.session_state.analysis_complete:
         )
     )
 
-    health_score = calculate_price_health_score(
-        analysis_df
+    health_score = (
+        calculate_price_health_score(
+            analysis_df
+        )
     )
-
-
-    # ========================================================
-    # METRICS
-    # ========================================================
 
     c1, c2, c3, c4, c5 = st.columns(5)
 
@@ -2472,16 +2218,14 @@ if st.session_state.analysis_complete:
 
         st.metric(
             "Price Health",
-            (
-                f"{health_score}/100"
-                if health_score is not None
-                else "N/A"
-            )
+            f"{health_score}/100"
+            if health_score is not None
+            else "N/A"
         )
 
 
     # ========================================================
-    # QUICK RESULT SUMMARY
+    # PRICE CHECK SUMMARY
     # ========================================================
 
     st.subheader(
@@ -2490,8 +2234,15 @@ if st.session_state.analysis_complete:
 
     within_reference = int(
         (
-            (analysis_df["Reference Unit Price"].notna())
-            & (~analysis_df["Potentially Overpriced"])
+            analysis_df[
+                "Reference Unit Price"
+            ].notna()
+            &
+            (
+                ~analysis_df[
+                    "Potentially Overpriced"
+                ]
+            )
         ).sum()
     )
 
@@ -2501,13 +2252,14 @@ if st.session_state.analysis_complete:
         ].isna().sum()
     )
 
-    matched_positive_differences = analysis_df[
+    matched_positive_differences = (
         analysis_df[
-            "Reference Unit Price"
-        ].notna()
-    ][
-        "Difference %"
-    ].dropna()
+            analysis_df[
+                "Reference Unit Price"
+            ].notna()
+        ]["Difference %"]
+        .dropna()
+    )
 
     highest_difference = (
         matched_positive_differences.max()
@@ -2549,6 +2301,7 @@ if st.session_state.analysis_complete:
             )
         )
 
+
     if potentially_overpriced > 0:
 
         st.warning(
@@ -2560,7 +2313,8 @@ if st.session_state.analysis_complete:
 
         st.info(
             "ℹ️ No potentially high-priced items were detected, "
-            "but some items could not be matched with the reference database."
+            "but some items could not be matched with the "
+            "reference database."
         )
 
     else:
@@ -2647,12 +2401,14 @@ if st.session_state.analysis_complete:
 
 
     # ========================================================
-    # TOTAL CHECK
+    # TOTAL CONSISTENCY
     # ========================================================
 
-    consistency = calculate_total_consistency(
-        receipt_data,
-        analysis_df
+    consistency = (
+        calculate_total_consistency(
+            receipt_data,
+            analysis_df
+        )
     )
 
     if consistency:
@@ -2661,17 +2417,17 @@ if st.session_state.analysis_complete:
             "🧮 Receipt Total Check"
         )
 
-        receipt_total_check = consistency[
-            "receipt_total"
-        ]
+        receipt_total_check = (
+            consistency["receipt_total"]
+        )
 
-        item_total_check = consistency[
-            "item_total"
-        ]
+        item_total_check = (
+            consistency["item_total"]
+        )
 
-        difference_check = consistency[
-            "difference"
-        ]
+        difference_check = (
+            consistency["difference"]
+        )
 
         if abs(difference_check) <= 1:
 
@@ -2683,19 +2439,22 @@ if st.session_state.analysis_complete:
         else:
 
             st.warning(
-                "⚠ The receipt total differs from the "
-                "sum of extracted items."
+                "⚠ The receipt total differs from "
+                "the sum of extracted items."
             )
 
             st.caption(
-                f"Receipt: {format_currency(receipt_total_check)} | "
-                f"Items: {format_currency(item_total_check)} | "
-                f"Difference: {format_currency(abs(difference_check))}"
+                f"Receipt: "
+                f"{format_currency(receipt_total_check)} | "
+                f"Items: "
+                f"{format_currency(item_total_check)} | "
+                f"Difference: "
+                f"{format_currency(abs(difference_check))}"
             )
 
 
     # ========================================================
-    # FLAGGED ITEMS
+    # ITEMS WORTH REVIEWING
     # ========================================================
 
     st.subheader(
@@ -2711,7 +2470,8 @@ if st.session_state.analysis_complete:
     if not flagged_df.empty:
 
         st.warning(
-            f"{len(flagged_df)} item(s) may deserve further review."
+            f"{len(flagged_df)} item(s) may deserve "
+            "further review."
         )
 
         for _, row in flagged_df.iterrows():
@@ -2759,16 +2519,18 @@ if st.session_state.analysis_complete:
                 )
 
                 st.write(
-                    f"PriceProof found that **{row['Product']}** was charged at "
-                    f"{format_currency(row['Charged Total'])}, compared with the "
-                    f"reference benchmark of {format_currency(row['Reference Total'])}. "
+                    f"PriceProof found that **{row['Product']}** "
+                    f"was charged at "
+                    f"{format_currency(row['Charged Total'])}, "
+                    f"compared with the reference benchmark of "
+                    f"{format_currency(row['Reference Total'])}. "
                     f"This is {percentage:.1f}% above the benchmark "
                     f"({format_currency(row['Difference'])} difference)."
                 )
 
                 st.caption(
-                    "This is a review signal based on benchmark data, not proof "
-                    "of illegal overcharging."
+                    "This is a review signal based on benchmark "
+                    "data, not proof of illegal overcharging."
                 )
 
                 st.markdown(
@@ -2777,11 +2539,11 @@ if st.session_state.analysis_complete:
 
                 st.write(
                     """
-                    • Brand and exact product  
-                    • Package size or weight  
-                    • Quantity purchased  
-                    • Promotions or discounts  
-                    • Receipt date  
+                    • Brand and exact product
+                    • Package size or weight
+                    • Quantity purchased
+                    • Promotions or discounts
+                    • Receipt date
                     • Local market price
                     """
                 )
@@ -2795,7 +2557,7 @@ if st.session_state.analysis_complete:
 
 
     # ========================================================
-    # PRODUCT TABLE
+    # PRODUCT ANALYSIS
     # ========================================================
 
     st.subheader(
@@ -2816,8 +2578,11 @@ if st.session_state.analysis_complete:
 
     display_df = display_df.rename(
         columns={
-            "Charged Unit Price": "Charged",
-            "Reference Unit Price": "Reference"
+            "Charged Unit Price":
+                "Charged",
+
+            "Reference Unit Price":
+                "Reference"
         }
     )
 
@@ -2854,8 +2619,11 @@ if st.session_state.analysis_complete:
 
         chart_data = chart_data.rename(
             columns={
-                "Charged Unit Price": "Charged",
-                "Reference Unit Price": "Reference"
+                "Charged Unit Price":
+                    "Charged",
+
+                "Reference Unit Price":
+                    "Reference"
             }
         )
 
@@ -2907,7 +2675,7 @@ if st.session_state.analysis_complete:
 
 
     # ========================================================
-    # AI EXPLANATION
+    # AI PRICE ANALYSIS
     # ========================================================
 
     st.subheader(
@@ -2959,7 +2727,7 @@ if st.session_state.analysis_complete:
 
 
     # ========================================================
-    # ASK AI
+    # ASK PRICEPROOF AI
     # ========================================================
 
     st.subheader(
@@ -2971,10 +2739,15 @@ if st.session_state.analysis_complete:
     )
 
     example_questions = [
+
         "Which item should I check first?",
+
         "How much more did I pay than the benchmarks?",
+
         "Which products have no reference match?",
+
         "What is the most expensive item?",
+
         "Are there any suspicious price differences?"
     ]
 
@@ -2988,7 +2761,8 @@ if st.session_state.analysis_complete:
     custom_question = st.text_input(
         "Or type your own question",
         placeholder=(
-            "Example: Which item has the biggest price difference?"
+            "Example: Which item has the "
+            "biggest price difference?"
         )
     )
 
@@ -3002,7 +2776,8 @@ if st.session_state.analysis_complete:
             if custom_question.strip()
             else (
                 selected_question
-                if selected_question != "Choose a question..."
+                if selected_question
+                != "Choose a question..."
                 else ""
             )
         )
@@ -3021,11 +2796,13 @@ if st.session_state.analysis_complete:
 
                 try:
 
-                    answer = answer_user_question(
-                        client,
-                        question,
-                        receipt_data,
-                        analysis_df
+                    answer = (
+                        answer_user_question(
+                            client,
+                            question,
+                            receipt_data,
+                            analysis_df
+                        )
                     )
 
                     st.session_state.chat_history.append(
@@ -3083,15 +2860,12 @@ if st.session_state.analysis_complete:
 
         manual_product = st.selectbox(
             "Select a reference product",
-            reference_df[
-                "product"
-            ].tolist()
+            reference_df["product"].tolist()
         )
 
         selected = reference_df[
-            reference_df[
-                "product"
-            ] == manual_product
+            reference_df["product"]
+            == manual_product
         ]
 
         if not selected.empty:
@@ -3133,7 +2907,7 @@ if st.session_state.analysis_complete:
 
 
     # ========================================================
-    # DOWNLOADS
+    # DOWNLOAD RESULTS
     # ========================================================
 
     st.subheader(
@@ -3163,12 +2937,15 @@ if st.session_state.analysis_complete:
 
         json_output = json.dumps(
             {
-                "receipt": receipt_data,
-                "analysis": analysis_df.fillna(
-                    ""
-                ).to_dict(
-                    orient="records"
-                )
+                "receipt":
+                    receipt_data,
+
+                "analysis":
+                    analysis_df
+                    .fillna("")
+                    .to_dict(
+                        orient="records"
+                    )
             },
             indent=2,
             default=str
@@ -3233,7 +3010,7 @@ if st.session_state.analysis_complete:
 
 
 # ============================================================
-# CLEAN EMPTY STATE
+# EMPTY STATE
 # ============================================================
 
 else:
@@ -3241,7 +3018,9 @@ else:
     st.divider()
 
     st.markdown(
-        '<div class="section-label">GET STARTED</div>',
+        '<div class="section-label">'
+        'GET STARTED'
+        '</div>',
         unsafe_allow_html=True
     )
 
@@ -3253,7 +3032,8 @@ else:
         "Upload a clear shopping receipt above. "
         "PriceProof AI will extract the products, "
         "compare prices with reference benchmarks, "
-        "and identify items that may deserve further review."
+        "and identify items that may deserve "
+        "further review."
     )
 
     e1, e2, e3 = st.columns(
@@ -3309,4 +3089,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-````
