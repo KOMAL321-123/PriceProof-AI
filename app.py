@@ -1665,14 +1665,16 @@ if uploaded_file is not None:
         )
 
         analyze_button = st.button(
-    "🔍 Analyze Receipt with AI",
-    type="primary",
-    use_container_width=True,
-    disabled=st.session_state.analysis_running
-)
+            "🔍 Analyze Receipt with AI",
+            type="primary",
+            use_container_width=True,
+            disabled=st.session_state.analysis_running
+        )
+
         if analyze_button:
 
             st.session_state.analysis_running = True
+
             with st.spinner(
                 "AI is reading your receipt..."
             ):
@@ -1721,6 +1723,7 @@ if uploaded_file is not None:
                             "Receipt analyzed successfully."
                         )
                         st.session_state.analysis_running = False
+
                 except Exception as error:
 
                     error_text = str(error)
@@ -1728,7 +1731,7 @@ if uploaded_file is not None:
                     st.session_state.analysis_complete = False
                     st.session_state.analysis_running = False
 
-                if "429" in error_text:
+                    if "429" in error_text:
 
                         st.error(
                             "Groq rate limit reached while reading "
