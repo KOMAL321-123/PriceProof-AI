@@ -11,6 +11,122 @@ import difflib
 from datetime import datetime
 import plotly.express as px
 
+# ========================================================
+# PROFESSIONAL UI STYLING
+# ========================================================
+
+st.markdown(
+    """
+    <style>
+    /* Main application background */
+    .stApp {
+        background:
+            radial-gradient(circle at 10% 0%, rgba(59, 130, 246, 0.08), transparent 28%),
+            radial-gradient(circle at 90% 10%, rgba(16, 185, 129, 0.07), transparent 26%),
+            linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+    }
+
+    /* Main content width and spacing */
+    .main .block-container {
+        max-width: 1250px;
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+    }
+
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #0f172a 0%, #172554 100%);
+    }
+
+    section[data-testid="stSidebar"] * {
+        color: #f8fafc;
+    }
+
+    section[data-testid="stSidebar"] .stCaption {
+        color: #cbd5e1 !important;
+    }
+
+    /* Headings */
+    h1, h2, h3 {
+        letter-spacing: -0.02em;
+    }
+
+    /* Cards / metric containers */
+    div[data-testid="metric-container"] {
+        background: rgba(255, 255, 255, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.20);
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    /* Buttons */
+    .stButton > button,
+    .stDownloadButton > button {
+        border-radius: 10px;
+        font-weight: 600;
+        min-height: 42px;
+        transition: all 0.18s ease;
+    }
+
+    .stButton > button:hover,
+    .stDownloadButton > button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+    }
+
+    /* File uploader */
+    div[data-testid="stFileUploader"] {
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px dashed #94a3b8;
+        border-radius: 16px;
+        padding: 8px;
+    }
+
+    /* Expanders */
+    div[data-testid="stExpander"] {
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    }
+
+    /* Alerts */
+    div[data-testid="stAlert"] {
+        border-radius: 12px;
+    }
+
+    /* Dataframe */
+    div[data-testid="stDataFrame"] {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(148, 163, 184, 0.20);
+    }
+
+    /* Select boxes and text inputs */
+    div[data-baseweb="select"] > div,
+    div[data-baseweb="input"] > div,
+    textarea {
+        border-radius: 10px !important;
+    }
+
+    /* Links */
+    a {
+        font-weight: 600;
+    }
+
+    /* Subtle divider */
+    hr {
+        border: none;
+        border-top: 1px solid rgba(148, 163, 184, 0.28);
+        margin: 1.5rem 0;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
 
 # ============================================================
 # PRICEPROOF AI
