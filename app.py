@@ -1842,6 +1842,77 @@ if st.session_state.analysis_complete:
 
 
     # ========================================================
+    # QUICK RESULT SUMMARY
+    # ========================================================
+
+    st.subheader("🎯 Price Check Complete")
+
+    within_reference = int(
+        (
+            (analysis_df["Reference Unit Price"].notna())
+            & (~analysis_df["Potentially Overpriced"])
+        ).sum()
+    )
+
+    unmatched_items = int(
+        analysis_df["Reference Unit Price"].isna().sum()
+    )
+
+    matched_positive_differences = analysis_df[
+        analysis_df["Reference Unit Price"].notna()
+    ]["Difference %"].dropna()
+
+    highest_difference = (
+        matched_positive_differences.max()
+        if not matched_positive_differences.empty
+        else None
+    )
+
+    s1, s2, s3, s4 = st.columns(4)
+
+    with s1:
+        st.metric(
+            "⚠️ Potentially High",
+            potentially_overpriced
+        )
+
+    with s2:
+        st.metric(
+            "✅ Within Benchmark",
+            within_reference
+        )
+
+    with s3:
+        st.metric(
+            "❓ No Reference Match",
+            unmatched_items
+        )
+
+    with s4:
+        st.metric(
+            "📈 Highest Difference",
+            (
+                f"+{highest_difference:.1f}%"
+                if highest_difference is not None
+                else "N/A"
+            )
+        )
+
+    if potentially_overpriced > 0:
+        st.warning(
+            f"⚠️ {potentially_overpriced} item(s) may deserve further review based on the available benchmark data."
+        )
+    elif unmatched_items > 0:
+        st.info(
+            "ℹ️ No potentially high-priced items were detected, but some items could not be matched with the reference database."
+        )
+    else:
+        st.success(
+            "✅ No potentially high-priced items were detected against the available benchmarks."
+        )
+
+
+    # ========================================================
     # RECEIPT INFORMATION
     # ========================================================
 
